@@ -1,0 +1,259 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 49
+-        versionName '1.48'
++        versionCode 50
++        versionName '1.49'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -100,6 +100,16 @@
+         click("Джойстик 2");chooseMode(0);int second=headerDevice(2);if(first==second)throw new AssertionError("Slots share the same source");key(second,KeyEvent.ACTION_DOWN,97);checkHeld("Нажато: B");
+         key(first,KeyEvent.ACTION_UP,96);checkHeld("Нажато: B");click("Джойстик 1");checkHeld("Нет удерживаемых кнопок");click("Кнопки");check("Джойстик 1");check("Проверено 1 / 16");
+         swipe(false);check("Предположительное Подключение");checkHeld("Нажато: B");swipe(false);checkHeld("Нет удерживаемых кнопок");swipe(true);checkHeld("Нажато: B");swipe(true);check("Джойстик 2");check("Проверено 1 / 16");key(second,KeyEvent.ACTION_UP,97);checkHeld("Нет удерживаемых кнопок");
++        try{
++            java.lang.reflect.Field enabled=MainActivity.class.getDeclaredField("autoFollowControllers");enabled.setAccessible(true);boolean prior=enabled.getBoolean(activity);enabled.setBoolean(activity,true);
++            try{
++                key(first,KeyEvent.ACTION_DOWN,99);check("Gamepad 1");checkHeld("Нажато: X");
++                key(second,KeyEvent.ACTION_DOWN,100);check("Gamepad 2");checkHeld("Нажато: Y");
++                key(first,KeyEvent.ACTION_UP,99);check("Gamepad 2");
++                hat(first,1,0);check("Gamepad 1");hat(first,0,0);key(second,KeyEvent.ACTION_UP,100);check("Gamepad 1");
++                click("Кнопки");key(second,KeyEvent.ACTION_DOWN,97);check("Keyboard");key(second,KeyEvent.ACTION_UP,97);
++            }finally{enabled.setBoolean(activity,prior);}
++        }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+     }
+     private View description(View view,String prefix){
+         if(view.getContentDescription()!=null&&view.getContentDescription().toString().startsWith(prefix))return view;
+@@ -209,6 +219,9 @@
+             ((EditText)FocusNavigation.find(editor.getWindow().getDecorView(),"bt:label-title")).setText("Windows TV");find(editor.getWindow().getDecorView(),"3",true).performClick();find(editor.getWindow().getDecorView(),"Сохранить",true).performClick();
+             TextView row=(TextView)FocusNavigation.find(originalBluetooth.view(),"bt:saved|"+entry.address);
+             if(!row.getText().toString().startsWith("[3] Windows TV")||!entry.displayName().equals(systemName))throw new AssertionError("App label must update row without changing Android alias");
++            show.invoke(originalBluetooth,entry,null,true);menu=(AlertDialog)field(originalBluetooth,"deviceMenu");find(menu.getWindow().getDecorView(),"Метка в приложении",true).performClick();editor=(AlertDialog)field(originalBluetooth,"labelEditor");
++            ((EditText)FocusNavigation.find(editor.getWindow().getDecorView(),"bt:label-number")).setText("42");find(editor.getWindow().getDecorView(),"Сохранить",true).performClick();
++            if(!row.getText().toString().startsWith("[42] Windows TV"))throw new AssertionError("Custom badge number was not saved");
+             ((BluetoothControllerNames)field(originalBluetooth,"controllerNames")).saveLabel(entry.address,"",0);
+             show.invoke(originalBluetooth,entry,null,true);
+         }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+@@ -310,7 +323,7 @@
+             click("Джойстик 2");checkControllerTools();boolean secondOnline=headerOnline(2);
+             if(firstOnline&&secondOnline){checkDualControllers();report.putString("virtual_input","PASS: separate controller state, hidden release, both controller pages and Buttons via swipes");return;}
+             if(!secondOnline){
+-                check("Подключиться");if(find(activity.getWindow().getDecorView(),"Предположительное Подключение",false)!=null||guide(activity.getWindow().getDecorView())!=null)throw new AssertionError("Offline second controller must offer connection and controller tools");
++                check("Предположительное Подключение");check("Android");check("Windows");check("macOS");check("Switch");if(guide(activity.getWindow().getDecorView())==null)throw new AssertionError("Offline second controller must show the same profile help as first");
+             }
+             click("Джойстик 1");chooseMode(0);click("Кнопки");checkButtonsPage();check("Проверено 0 / 16");
+             swipe(true);checkButtonsPage();check("Проверено 0 / 16");
+--- a/app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java
++++ b/app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java
+@@ -2,13 +2,15 @@
+ 
+ /** App-only labels do not rename Android devices, merge identities or change modes. */
+ public final class BluetoothDeviceLabel {
++    public static final int MAX_BADGE=99;
+     public final String title;
+     public final int badge;
+     public BluetoothDeviceLabel(String title,int badge){
+         String clean=BluetoothGamepadFilter.cleanName(title);
+         this.title=clean.substring(0,clean.offsetByCodePoints(0,Math.min(32,clean.codePointCount(0,clean.length()))));
+-        this.badge=badge>=1&&badge<=3?badge:0;
++        this.badge=badge>=1&&badge<=MAX_BADGE?badge:0;
+     }
++    public static int number(String text){try{int value=Integer.parseInt(text.trim());return value>=1&&value<=MAX_BADGE?value:0;}catch(NumberFormatException|NullPointerException ignored){return 0;}}
+     public String displayName(String systemName){return (badge==0?"":"["+badge+"] ")+(title.isEmpty()?BluetoothGamepadFilter.cleanName(systemName):title);}
+     public boolean empty(){return title.isEmpty()&&badge==0;}
+ }
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -274,9 +274,11 @@
+         form.addView(label("Метка и номер видны только в этом приложении. Имя Android и режим геймпада не меняются.",14,MUTED));
+         EditText title=new EditText(activity);title.setSingleLine(true);title.setTextSize(16);title.setHint("Например: Android TV или Windows");title.setText(current.title);title.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(64)});title.setTag(R.id.navigation_key,"bt:label-title");form.addView(title,new LinearLayout.LayoutParams(-1,-2));
+         Button preset=button("Выбрать подпись режима",()->{AlertDialog choices=new FocusDialogBuilder(activity).setTitle("Метка, заданная вами").setItems(new String[]{"Android","Windows","macOS","Switch"},(d,n)->title.setText(new String[]{"Android","Windows","macOS","Switch"}[n])).setNegativeButton("Отмена",null).show();labelPresets=choices;choices.setOnDismissListener(d->{if(labelPresets==choices)labelPresets=null;});});form.addView(preset);
+-        form.addView(label("Номер для различения одинаковых устройств",14,MUTED));RadioGroup badges=new RadioGroup(activity);badges.setOrientation(LinearLayout.HORIZONTAL);badges.setBaselineAligned(false);form.addView(badges);
+-        for(int n=0;n<4;n++){RadioButton badge=new RadioButton(activity);badge.setId(View.generateViewId());badge.setText(n==0?"Нет":String.valueOf(n));badge.setContentDescription(n==0?"Без номера":"Номер "+n);badge.setTag(n);badge.setMinHeight(dp(48));badges.addView(badge,new RadioGroup.LayoutParams(0,-2,1));if(n==current.badge)badges.check(badge.getId());}
+-        AlertDialog editor=new FocusDialogBuilder(activity).setTitle("Метка в приложении").setView(scroll).setPositiveButton("Сохранить",(d,w)->{View checked=badges.findViewById(badges.getCheckedRadioButtonId());controllerNames.saveLabel(entry.address,title.getText().toString(),checked==null?0:(Integer)checked.getTag());status.setText("Метка сохранена в приложении.");refreshRows();}).setNeutralButton("Убрать метку",(d,w)->{controllerNames.saveLabel(entry.address,"",0);refreshRows();}).setNegativeButton("Отмена",null).show();labelEditor=editor;
++        form.addView(label("Номер 1–99 для различения устройств (необязательно)",14,MUTED));
++        EditText number=new EditText(activity);number.setTextSize(16);number.setSingleLine(true);number.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);number.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(2)});number.setHint("Без номера");number.setText(current.badge==0?"":String.valueOf(current.badge));number.setTag(R.id.navigation_key,"bt:label-number");form.addView(number,new LinearLayout.LayoutParams(-1,-2));
++        for(int row=0;row<2;row++){LinearLayout choices=new LinearLayout(activity);choices.setBaselineAligned(false);form.addView(choices);for(int col=0;col<4;col++){final int badge=row*4+col+1;Button choice=button(String.valueOf(badge),()->number.setText(String.valueOf(badge)));choice.setContentDescription("Номер "+badge);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(col==0?0:dp(4),dp(4),0,0);choices.addView(choice,lp);}}
++        form.addView(button("Без номера",()->number.setText("")));
++        AlertDialog editor=new FocusDialogBuilder(activity).setTitle("Метка в приложении").setView(scroll).setPositiveButton("Сохранить",(d,w)->{controllerNames.saveLabel(entry.address,title.getText().toString(),BluetoothDeviceLabel.number(number.getText().toString()));status.setText("Метка сохранена в приложении.");refreshRows();}).setNeutralButton("Убрать метку",(d,w)->{controllerNames.saveLabel(entry.address,"",0);refreshRows();}).setNegativeButton("Отмена",null).show();labelEditor=editor;
+         editor.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);editor.setOnDismissListener(d->{if(labelEditor==editor)labelEditor=null;});
+     }
+     private void closeLabelEditor(){if(labelPresets!=null){AlertDialog previous=labelPresets;labelPresets=null;previous.dismiss();}if(labelEditor!=null){AlertDialog previous=labelEditor;labelEditor=null;previous.dismiss();}}
+--- a/app/src/main/java/app/m30/companion/ControllerAutoFollow.java
++++ b/app/src/main/java/app/m30/companion/ControllerAutoFollow.java
+@@ -0,0 +1,15 @@
++package app.m30.companion;
++
++/** Page selection follows fresh controller activity, never releases or a raw-input tab. */
++public final class ControllerAutoFollow {
++    private ControllerAutoFollow(){}
++    public static boolean key(boolean down,int repeat,boolean alreadyHeld){return down&&repeat==0&&!alreadyHeld;}
++    public static boolean axis(Float previous,float value){
++        if(!Float.isFinite(value)||Math.abs(value)<.7f)return false;
++        return previous==null||!Float.isFinite(previous)||Math.abs(previous)<.7f||Math.signum(previous)!=Math.signum(value);
++    }
++    public static int page(int current,int slot,boolean enabled,boolean mainWindowReady,boolean physicalGamepad,boolean freshActivity){
++        if(!enabled||!mainWindowReady||!physicalGamepad||!freshActivity||(current!=0&&current!=2)||slot<0||slot>1)return current;
++        return slot==0?0:2;
++    }
++}
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.48 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.49 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.48 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.49 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -33,6 +33,7 @@
+     }};
+ 
+     private boolean navigationLocked=true;
++    private boolean autoFollowControllers=true;
+     private int pendingSourceId=-1;
+     private TextView sourceHintView;
+     private Button useSourceButton,firmwareEntry,bootAccessButton;
+@@ -84,6 +85,7 @@
+         getWindow().setStatusBarColor(BG); getWindow().setNavigationBarColor(BG);
+         try{String version=getPackageManager().getPackageInfo(getPackageName(),0).versionName;if(version!=null&&!version.isEmpty())appVersion=version;}catch(PackageManager.NameNotFoundException ignored){}
+         controllers=new ControllerBank(getPreferences(0).getInt("mode",0));
++        autoFollowControllers=getPreferences(0).getBoolean("follow_controller_input",true);
+         controllers.restore(0,getPreferences(0).getString("controller.0",getPreferences(0).getString("device","")));
+         controllers.restore(1,getPreferences(0).getString("controller.1",""));
+         activeSlot=controllers.dual()?getPreferences(0).getInt("active_controller",0):0;
+@@ -378,10 +380,20 @@
+     }
+     private void resetTest(){session.dpad.reset();session.state.reset();session.axes.clear();session.log.clear();session.monitor.clearSelected();session.lastWasAxis=false;session.lastAxisToken=null;session.lastInput=0;refreshLive();}
+     private void showExtraActions(){
+-        String[] items={"Исправить подсветку кнопок","Сбросить проверку","Выбрать M30","Найти M30 по нажатию","Диагностика","Справка M30","Инструкция выбранного режима","Поиск геймпадов Bluetooth"};
++        String[] items={"Исправить подсветку кнопок","Сбросить проверку","Выбрать M30","Найти M30 по нажатию","Диагностика","Справка M30","Инструкция выбранного режима","Поиск геймпадов Bluetooth","Автопереход по нажатию: "+(autoFollowControllers?"включён":"выключен")};
+         new FocusDialogBuilder(dialogContext()).setTitle("Дополнительно").setItems(items,(dialog,n)->{
+-            if(n==0)showBindingPicker();else if(n==1)resetTest();else if(n==2)devicePicker();else if(n==3)beginSourceDiscovery();else if(n==4)showDiagnostics();else if(n==5)showHelp();else if(n==6)showModeInstructions();else if(n==7)openFullBluetoothSearch();
++            if(n==0)showBindingPicker();else if(n==1)resetTest();else if(n==2)devicePicker();else if(n==3)beginSourceDiscovery();else if(n==4)showDiagnostics();else if(n==5)showHelp();else if(n==6)showModeInstructions();else if(n==7)openFullBluetoothSearch();else if(n==8)showAutoFollowSetting();
+         }).setNegativeButton("Закрыть",null).show();
++    }
++    private void showAutoFollowSetting(){
++        new FocusDialogBuilder(dialogContext()).setTitle("Автопереход по нажатию").setMessage("На страницах джойстиков новое нажатие кнопки или отклонение крестовины открывает страницу того геймпада, от которого пришёл ввод. Отпускание, нейтраль осей и повтор удержания не переключают вкладку. В Keyboard, меню, диагностике и во время назначения кнопки автопереход не действует.")
++            .setPositiveButton(autoFollowControllers?"Выключить":"Включить",(d,w)->{autoFollowControllers=!autoFollowControllers;getPreferences(0).edit().putBoolean("follow_controller_input",autoFollowControllers).apply();toast(autoFollowControllers?"Автопереход включён":"Автопереход выключен");}).setNegativeButton("Отмена",null).show();
++    }
++    private boolean followControllerInput(ControllerSession target,boolean physicalGamepad,boolean freshActivity){
++        int slot=target==controllers.slots[0]?0:target==controllers.slots[1]?1:-1;
++        boolean ready=hasWindowFocus()&&!inlineBluetoothOpen&&diagnosticsDialog==null&&dpadDialog==null&&session.waiting==null&&!touchSwiping&&!discoveringSource;
++        int next=ControllerAutoFollow.page(page,slot,autoFollowControllers,ready,physicalGamepad,freshActivity);
++        if(next==page)return false;switchPage(next);return true;
+     }
+     private void queryBootModel(){
+         if(bootQueryRunning||pendingBootName!=null){toast("Проверка загрузчика уже запущена");return;}
+@@ -641,10 +653,12 @@
+             ControllerSession target=controllers.forDevice(e.getDeviceId());InputMonitor.Key key=diagnosticKey(e);
+             if(page==1)inputTest.record(key);
+             if(target!=null){
++                boolean freshActivity=ControllerAutoFollow.key(e.getAction()==KeyEvent.ACTION_DOWN,e.getRepeatCount(),target.state.down.contains(keyToken(e.getKeyCode(),e.getScanCode())));
+                 target.monitor.record(key,key.deviceId);target.lastWasAxis=false;
+                 observeM30Home(target,e.getDevice(),key);
+                 if(e.getRepeatCount()==0){token(target,keyToken(e.getKeyCode(),e.getScanCode()),e.getAction()==KeyEvent.ACTION_DOWN);addLog(target,key.summary());}
+                 target.dpad.key(key.code,key.down,key.repeat,target.state.active("SELECT"),e.getEventTime());
++                if(followControllerInput(target,fromGamepad,freshActivity))return true;
+                 if(target!=session&&session.monitor.otherEnabled)session.monitor.other(key.summary());
+                 if(page==1||target==session||session.monitor.otherEnabled)refreshLive();return true;
+             }
+@@ -665,17 +679,21 @@
+         ControllerSession target=controllers.forDevice(e.getDeviceId());
+         if(target!=null&&e.getActionMasked()==MotionEvent.ACTION_MOVE){
+             InputDevice input=e.getDevice();if(input==null)return true;
++            boolean freshActivity=false;
+             Map<Integer,Float> directionAxes=new HashMap<>();Set<Integer> centeredAxes=new HashSet<>();
+             for(InputDevice.MotionRange r:input.getMotionRanges()){
+                 if((e.getSource()&r.getSource())!=r.getSource())continue;
+                 directionAxes.put(r.getAxis(),PadState.normalize(e.getAxisValue(r.getAxis()),r.getFlat()));if(r.getMin()<0)centeredAxes.add(r.getAxis());
+                 int axis=r.getAxis();float value=PadState.normalize(e.getAxisValue(axis),r.getFlat());Float previous=target.axes.put(MotionEvent.axisToString(axis),value);
+                 if((previous==null?value!=0:previous!=value)&&(value!=0||(previous!=null&&previous!=0))){target.lastWasAxis=true;target.lastAxis=axis;target.lastAxisValue=value;float direction=value!=0?value:previous;target.lastAxisToken=(r.getMin()>=0?"T:":"A:")+axis+":"+(direction<0?"-":"+");}
+-                if(r.getMin()<0&&(axis==MotionEvent.AXIS_HAT_X||axis==MotionEvent.AXIS_HAT_Y||axis==MotionEvent.AXIS_X||axis==MotionEvent.AXIS_Y||axis==MotionEvent.AXIS_Z||axis==MotionEvent.AXIS_RZ||axis==MotionEvent.AXIS_RX||axis==MotionEvent.AXIS_RY)){
++                boolean directional=r.getMin()<0&&(axis==MotionEvent.AXIS_HAT_X||axis==MotionEvent.AXIS_HAT_Y||axis==MotionEvent.AXIS_X||axis==MotionEvent.AXIS_Y||axis==MotionEvent.AXIS_Z||axis==MotionEvent.AXIS_RZ||axis==MotionEvent.AXIS_RX||axis==MotionEvent.AXIS_RY);
++                if((directional||r.getMin()>=0&&value>0)&&ControllerAutoFollow.axis(previous,value))freshActivity=true;
++                if(directional){
+                     token(target,"A:"+axis+":-",value<-.5f);token(target,"A:"+axis+":+",value>.5f);
+                 }else if(r.getMin()>=0)token(target,"T:"+axis+":+",value>.5f);
+             }
+             target.dpad.axes(directionAxes,centeredAxes,target.state.active("SELECT"),e.getEventTime());
++            if(followControllerInput(target,e.isFromSource(InputDevice.SOURCE_JOYSTICK),freshActivity))return true;
+             if(target==session)refreshLive();return true;
+         }
+         if(session.monitor.otherEnabled&&!selected(e.getDeviceId())&&e.isFromSource(InputDevice.SOURCE_JOYSTICK)&&e.getActionMasked()==MotionEvent.ACTION_MOVE){
+--- a/test-core.sh
++++ b/test-core.sh
+@@ -3,7 +3,7 @@
+ cd "$(dirname "$0")"
+ out=$(mktemp -d)
+ trap 'rm -rf "$out"' EXIT
+-javac -d "$out" app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java tests/BluetoothDeviceLabelTest.java app/src/main/java/app/m30/companion/BluetoothSlotLinks.java tests/BluetoothSlotLinksTest.java app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
++javac -d "$out" app/src/main/java/app/m30/companion/ControllerAutoFollow.java tests/ControllerAutoFollowTest.java app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java tests/BluetoothDeviceLabelTest.java app/src/main/java/app/m30/companion/BluetoothSlotLinks.java tests/BluetoothSlotLinksTest.java app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
+ java -cp "$out" PadStateTest
+ java -cp "$out" DiagnosticsTest
+ java -cp "$out" ReconnectionTest
+@@ -43,3 +43,5 @@
+ java -cp "$out" BluetoothSlotLinksTest
+ 
+ java -cp "$out" BluetoothDeviceLabelTest
++
++java -cp "$out" ControllerAutoFollowTest
+--- a/tests/BluetoothDeviceLabelTest.java
++++ b/tests/BluetoothDeviceLabelTest.java
+@@ -9,7 +9,9 @@
+         check(system.equals("8BitDo M30 gamepad"),"Android's name remains separate");
+         check(new BluetoothDeviceLabel("",1).displayName(system).equals("[1] "+system),"Number-only label retains system name");
+         check(new BluetoothDeviceLabel("",0).displayName(system).equals(system),"Removing label restores system name");
+-        check(new BluetoothDeviceLabel(null,99).empty(),"Invalid badge and missing label are harmless");
++        check(new BluetoothDeviceLabel(null,100).empty(),"Invalid badge and missing label are harmless");
++        check(new BluetoothDeviceLabel("TV",99).displayName(system).equals("[99] TV"),"Custom two-digit numbers remain available");
++        check(BluetoothDeviceLabel.number("42")==42&&BluetoothDeviceLabel.number(" 8 ")==8&&BluetoothDeviceLabel.number("")==0&&BluetoothDeviceLabel.number("100")==0&&BluetoothDeviceLabel.number("bad")==0,"Number entry handles empty, custom and invalid values");
+         String emoji="😀".repeat(40);BluetoothDeviceLabel longName=new BluetoothDeviceLabel(emoji,3);
+         check(longName.title.codePointCount(0,longName.title.length())==32&&!Character.isHighSurrogate(longName.title.charAt(longName.title.length()-1)),"Length limit cannot split Unicode characters");
+         check(new BluetoothDeviceLabel("Windows",0).displayName(system).equals("Windows"),"A mode label is user text, not a new system name or firmware readout");
+--- a/tests/ControllerAutoFollowTest.java
++++ b/tests/ControllerAutoFollowTest.java
+@@ -0,0 +1,22 @@
++import app.m30.companion.*;
++
++public final class ControllerAutoFollowTest {
++    static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
++    static int target(int page,int slot,boolean activation){return ControllerAutoFollow.page(page,slot,true,true,true,activation);}
++    public static void main(String[] args){
++        check(target(0,1,ControllerAutoFollow.key(true,0,false))==2,"Second pad press opens its own page");
++        check(target(2,0,ControllerAutoFollow.key(true,0,false))==0,"First pad press returns to first page");
++        check(target(2,0,ControllerAutoFollow.key(false,0,true))==2,"Releasing previously held first pad cannot steal second page");
++        check(!ControllerAutoFollow.key(true,1,true)&&!ControllerAutoFollow.key(true,0,true),"Repeat or duplicate DOWN cannot bounce pages");
++        check(target(1,0,true)==1&&target(1,1,true)==1,"Keyboard remains a universal input screen");
++        check(ControllerAutoFollow.page(0,1,false,true,true,true)==0,"User can disable auto-follow");
++        check(ControllerAutoFollow.page(0,1,true,false,true,true)==0,"Menus, overlays, calibration or missing window focus protect current UI");
++        check(ControllerAutoFollow.page(0,1,true,true,false,true)==0&&target(0,-1,true)==0,"Remote, keyboard and unassigned input cannot select controller page");
++        check(!ControllerAutoFollow.axis(1f,0)&&!ControllerAutoFollow.axis(null,.03f)&&!ControllerAutoFollow.axis(.8f,.81f),"Neutral, noise and held-axis updates do not switch");
++        check(ControllerAutoFollow.axis(0f,-1)&&ControllerAutoFollow.axis(-1f,1)&&ControllerAutoFollow.axis(.6f,.8f),"Fresh direction and threshold crossings can follow D-pad/trigger");
++        check(!ControllerAutoFollow.axis(null,Float.NaN)&&!ControllerAutoFollow.axis(0f,Float.POSITIVE_INFINITY),"Malformed axes cannot change pages");
++        ControllerSession first=new ControllerSession(0),second=new ControllerSession(1);first.state.set("K:96",true);second.state.set("K:97",true);
++        check(target(0,1,true)==2&&first.state.down.contains("K:96")&&second.state.down.contains("K:97"),"Page choice does not clear either pad's held input");
++        System.out.println("PASS: controller auto-follow, reverse press, release/repeat/noise guards, raw tab, modal and source isolation");
++    }
++}

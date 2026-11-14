@@ -1,0 +1,29 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.software.companion_device_setup" android:required="false" />
+    <application android:banner="@drawable/tv_banner" android:label="${m30AppLabel}" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
+        <activity android:name=".BluetoothAliasActivity" android:exported="false" />
+        <activity android:name=".BluetoothControllerActivity" android:exported="false" />
+        <activity android:name=".M30FirmwareActivity" android:exported="false" />
+        <service android:name=".M30UpdateService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+        <activity android:name=".MainActivity" android:exported="true" android:icon="@mipmap/ic_m30_launcher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

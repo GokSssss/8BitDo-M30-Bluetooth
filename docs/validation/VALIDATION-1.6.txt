@@ -1,0 +1,15 @@
+M30 Companion 1.6 — статус проверки
+
+ПРОЙДЕНО
+- assembleDebug, assembleDebugAndroidTest, lintDebug: BUILD SUCCESSFUL.
+- PadStateTest, DiagnosticsTest, ReconnectionTest, SwipeNavigationTest, ConnectionGuideTest: PASS.
+- Для всех четырёх режимов короткая и полная инструкции согласованы; включают только своё сочетание. Регрессия: Windows содержит X + START и не содержит Android B + START.
+- Геометрия: все 16 кнопок находятся внутри классического округлого корпуса с зазором 2 единицы макета; лицевые кнопки внутри правой подложки. Символы ★/−/♥ рисуются векторно.
+- Подпись APK проверена; совпадает с предыдущими версиями. versionName 1.6, versionCode 7, applicationId app.m30.companion.
+
+НЕ ПОДТВЕРЖДЕНО
+- Android SmokeInstrumentation не выполнялся. Проверки выбора режима через Spinner и отсутствия устаревшего B + START в Windows собраны.
+- Отрисовка/размеры на телефоне, живые события и Bluetooth конкретного M30 требуют проверки пользователем.
+- PNG-предпросмотр — отдельная отрисовка по координатам PadView, не Android-скриншот.
+
+APK SHA-256: f95e5ba1dfaddfc467e3248d1b9c966557364a31f9656b98727b230132eacaf7

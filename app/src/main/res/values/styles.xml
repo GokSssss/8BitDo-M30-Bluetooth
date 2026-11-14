@@ -1,0 +1,23 @@
+<resources>
+    <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:textColorPrimary">#F6F3E8</item>
+        <item name="android:textColorSecondary">#BBB7A8</item>
+        <item name="android:alertDialogTheme">@style/M30DialogTheme</item>
+        <item name="android:colorAccent">#B6A45E</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">#000000</item>
+    </style>
+    <style name="M30DialogTheme" parent="android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">#B6A45E</item>
+        <item name="android:colorBackground">#181818</item>
+        <item name="android:windowBackground">#181818</item>
+        <item name="android:textColorPrimary">#F6F3E8</item>
+        <item name="android:textColorSecondary">#BBB7A8</item>
+    </style>
+    <style name="M30OrangeDialogTheme" parent="M30DialogTheme"><item name="android:colorAccent">#B66F45</item></style>
+    <style name="M30GrayDialogTheme" parent="M30DialogTheme"><item name="android:colorAccent">#BFBFBF</item></style>
+</resources>

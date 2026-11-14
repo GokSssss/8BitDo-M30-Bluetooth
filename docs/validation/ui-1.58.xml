@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.m30.companion.TvUiRegressionTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-13T15:53:25" hostname="326f27afb2f9" time="9.942">
+  <properties/>
+  <testcase name="chosenSystemSearchDoesNotAskForLocationOrStartClassicDiscovery" classname="app.m30.companion.TvUiRegressionTest" time="5.643"/>
+  <testcase name="wideLabelsAndBothHelpButtonsRemainUsableWithLargeText" classname="app.m30.companion.TvUiRegressionTest" time="2.661"/>
+  <testcase name="portraitCaptionAndHelpFitWithLargeText" classname="app.m30.companion.TvUiRegressionTest" time="0.6"/>
+  <testcase name="fallbackIsOpaqueAndCheckboxMovesFocusToContinue" classname="app.m30.companion.TvUiRegressionTest" time="0.556"/>
+  <testcase name="oldTvWithLocationOffOffersSettingsAndNeverLocationGate" classname="app.m30.companion.TvUiRegressionTest" time="0.482"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Intent = Intent { act=android.location.PROVIDERS_CHANGED }; Matching wrappers: []
+Intent = Intent { act=android.location.MODE_CHANGED }; Matching wrappers: []
+]]></system-err>
+</testsuite>

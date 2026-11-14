@@ -1,0 +1,768 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -7,13 +7,13 @@
+         applicationId (previewMode ? 'app.m30.companion.preview' : 'app.m30.companion')
+         minSdk 26
+         targetSdk 35
+-        versionCode 54
+-        versionName (previewMode ? '1.53-preview' : '1.53')
++        versionCode 55
++        versionName (previewMode ? '1.54-preview' : '1.54')
+         manifestPlaceholders = [m30AppLabel: previewMode ? 'M30 Проверка' : 'M30 Companion']
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+-    // Never silently replace the original signing key with a newly generated debug key.
++    // Stable main key is explicitly approved and backed up on Drive; never auto-generate a debug key.
+     def m30Store = System.getenv(previewMode ? 'M30_PREVIEW_SIGNING_STORE' : 'M30_SIGNING_STORE')
+     signingConfigs {
+         original {
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -18,7 +18,7 @@
+     private void check(String text){if(find(activity.getWindow().getDecorView(),text,false)==null)throw new AssertionError("Missing UI: "+text);}
+     private void click(String text){View v=find(activity.getWindow().getDecorView(),text,true);if(v==null)throw new AssertionError("Missing action: "+text);v.performClick();}
+     private PadView header(View view){
+-        if(view instanceof PadView){ViewParent p=view.getParent();while(p!=null){if(p instanceof ScrollView&&activity.getResources().getConfiguration().orientation!=android.content.res.Configuration.ORIENTATION_LANDSCAPE)throw new AssertionError("Portrait pad must be outside the scrolling page");p=p.getParent();}return (PadView)view;}
++        if(view instanceof PadView)return (PadView)view;
+         if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++){PadView pad=header(group.getChildAt(i));if(pad!=null)return pad;}}return null;
+     }
+     private void checkInstructionLayout(){
+@@ -27,7 +27,7 @@
+         for(String command:commands){String text="Нажмите "+command+" и отпустите обе кнопки.";CharSequence formatted=InstructionText.format(text);StaticLayout layout=StaticLayout.Builder.obtain(formatted,0,formatted.length(),paint,155).build();int start=text.indexOf(command),end=start+command.length()-1;if(layout.getLineForOffset(start)!=layout.getLineForOffset(end))throw new AssertionError("Command wrapped: "+command);}
+         BatteryIndicator battery=new BatteryIndicator(getTargetContext());battery.setCapacity(Float.NaN);if(!battery.getContentDescription().toString().contains("нет данных"))throw new AssertionError("Missing battery must remain unknown");battery.setCapacity(0);if(!battery.getContentDescription().toString().contains("0%"))throw new AssertionError("Empty battery is a real zero");
+     }
+-    private void chooseMode(int mode){click(new String[]{"Android","Windows","Switch"}[mode]);}
++    private void chooseMode(int mode){View choice=FocusNavigation.find(activity.getWindow().getDecorView(),"mode:"+mode);if(choice==null)throw new AssertionError("Missing mode choice");choice.performClick();}
+     private void checkModeOnOpen(){
+         try{
+             java.lang.reflect.Field field=MainActivity.class.getDeclaredField("session");field.setAccessible(true);ControllerSession session=(ControllerSession)field.get(activity);
+@@ -35,7 +35,7 @@
+             int manual=candidate==0?1:0;chooseMode(manual);
+             java.lang.reflect.Method refresh=MainActivity.class.getDeclaredMethod("refreshLive");refresh.setAccessible(true);refresh.invoke(activity);
+             if(session.mode!=manual)throw new AssertionError("Live refresh overwrote manual profile choice");
+-            click("Кнопки");click("Джойстик 1");
++            click("Тест кнопок");click("Джойстик 1");
+             if(session.mode!=(candidate>=0?candidate:manual))throw new AssertionError("Opening the controller page must select its inferred mode; unknown mode must preserve manual selection");
+         }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+     }
+@@ -45,6 +45,7 @@
+         View scroller=FocusNavigation.find(decor,"page:scroll-all");
+         if(landscape){if(!(scroller instanceof ScrollView)||FocusNavigation.find(scroller,"header:pad")==null||FocusNavigation.find(scroller,"tab:0")==null)throw new AssertionError("Landscape header and tabs must share full-page scroll");}
+         else if(scroller!=null)throw new AssertionError("Portrait header must remain fixed");
++        if(!(field(activity,"joinedFrame") instanceof JoinedTabFrame))throw new AssertionError("Missing joined tab frame");Button settings=(Button)FocusNavigation.find(decor,"header:options");if(settings==null||settings.getCompoundDrawablesRelative()[0]==null)throw new AssertionError("Options must use the outlined vector icon");
+         ViewGroup row=(ViewGroup)field(activity,"tabs");View region=(View)field(activity,"topRegion");
+         if(region!=null&&screenBounds(row).bottom>screenBounds(region).top)throw new AssertionError("Tabs must precede controller header");
+         for(int n=0;n<row.getChildCount();n++){View child=row.getChildAt(n);if(child.getTop()<0||child.getBottom()>row.getHeight())throw new AssertionError("Tab clipped by row");}
+@@ -91,7 +92,7 @@
+     private void checkDualControllers(){
+         click("Джойстик 1");chooseMode(0);int first=headerDevice(1);key(first,KeyEvent.ACTION_DOWN,96);checkHeld("Нажато: A");
+         click("Джойстик 2");chooseMode(0);int second=headerDevice(2);if(first==second)throw new AssertionError("Slots share the same source");key(second,KeyEvent.ACTION_DOWN,97);checkHeld("Нажато: B");
+-        key(first,KeyEvent.ACTION_UP,96);checkHeld("Нажато: B");click("Джойстик 1");checkHeld("Нет удерживаемых кнопок");click("Кнопки");check("Джойстик 1");check("Проверено 1 / 16");
++        key(first,KeyEvent.ACTION_UP,96);checkHeld("Нажато: B");click("Джойстик 1");checkHeld("Нет удерживаемых кнопок");click("Тест кнопок");check("Джойстик 1");check("Проверено 1 / 16");
+         swipe(false);check("Подключение M30");checkHeld("Нажато: B");swipe(false);checkHeld("Нет удерживаемых кнопок");swipe(true);checkHeld("Нажато: B");swipe(true);check("Джойстик 2");check("Проверено 1 / 16");key(second,KeyEvent.ACTION_UP,97);checkHeld("Нет удерживаемых кнопок");
+         try{
+             java.lang.reflect.Field enabled=MainActivity.class.getDeclaredField("autoFollowControllers");enabled.setAccessible(true);boolean prior=enabled.getBoolean(activity);enabled.setBoolean(activity,true);
+@@ -103,7 +104,7 @@
+                 if(secondSession.mode!=manualProfile)throw new AssertionError("Automatic page following must not replace the manually selected profile or clear its first press");
+                 key(first,KeyEvent.ACTION_UP,99);checkPage(2);
+                 hat(first,1,0);checkPage(0);hat(first,0,0);key(second,KeyEvent.ACTION_UP,100);checkPage(0);
+-                click("Кнопки");key(second,KeyEvent.ACTION_DOWN,97);check("Keyboard");key(second,KeyEvent.ACTION_UP,97);
++                click("Тест кнопок");key(second,KeyEvent.ACTION_DOWN,97);check("Тест кнопок");key(second,KeyEvent.ACTION_UP,97);
+             }finally{secondSession.mode=priorProfile;enabled.setBoolean(activity,prior);}
+         }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+     }
+@@ -118,10 +119,10 @@
+     private void checkControllerCount(int expected){
+         try{java.lang.reflect.Field field=MainActivity.class.getDeclaredField("session");field.setAccessible(true);ControllerSession current=(ControllerSession)field.get(activity);if(current.state.testedCount()!=expected)throw new AssertionError("Foreign event changed controller test count");}catch(ReflectiveOperationException error){throw new AssertionError(error);}
+     }
+-    private void checkControllerTools(){check("Options");check("Клавиши");checkHeader();click("Options");Dialog menu=(Dialog)field(activity,"optionsDialog");if(menu==null||find(menu.getWindow().getDecorView(),"Дополнительно",true)==null||find(menu.getWindow().getDecorView(),"Прошивка · обновление USB",true)==null)throw new AssertionError("Options must contain both existing tools");menu.dismiss();}
++    private void checkControllerTools(){check("Опции");check("Клавиши");checkHeader();click("Опции");Dialog menu=(Dialog)field(activity,"optionsDialog");if(menu==null||find(menu.getWindow().getDecorView(),"Дополнительно",true)==null||find(menu.getWindow().getDecorView(),"Прошивка · обновление USB",true)==null)throw new AssertionError("Options must contain both existing tools");menu.dismiss();}
+     private void checkButtonsPage(){
+         View root=activity.getWindow().getDecorView();if(header(root)!=null||guide(root)!=null)throw new AssertionError("Buttons page must not contain a controller drawing");
+-        if(find(root,"Options",false)!=null||find(root,"Прошивка ·",false)!=null)throw new AssertionError("Controller tools must only be on joystick pages");
++        if(find(root,"Опции",false)!=null||find(root,"Прошивка ·",false)!=null)throw new AssertionError("Controller tools must only be on joystick pages");
+         if(description(root,"Панель кнопок.")==null)throw new AssertionError("Missing independent physical button panel");
+     }
+     private void checkOverlays(){
+@@ -154,7 +155,7 @@
+     private void remoteKey(int code){sendKeyDownUpSync(code);waitForIdleSync();}
+     private void checkRemoteNavigation(){
+         runOnMainSync(()->{
+-            click("Кнопки");View tab=FocusNavigation.find(activity.getWindow().getDecorView(),"tab:0");
++            click("Тест кнопок");View tab=FocusNavigation.find(activity.getWindow().getDecorView(),"tab:0");
+             if(tab==null||!tab.isFocusable()||tab.getForeground()==null)throw new AssertionError("Tab missing TV focus treatment");
+             tab.requestFocusFromTouch();
+         });waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_CENTER);
+@@ -162,10 +163,10 @@
+         waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_CENTER);
+         runOnMainSync(()->{
+             check("Windows · X-input");if(!"mode:1".equals(FocusNavigation.key(activity.getCurrentFocus())))throw new AssertionError("Mode change lost remote focus");
+-            click("Кнопки");key(-42,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_F1);checkLargeCode(KeyEvent.KEYCODE_F1);key(-42,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_F1);FocusNavigation.find(activity.getWindow().getDecorView(),"tab:1").requestFocusFromTouch();
++            click("Тест кнопок");key(-42,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_F1);checkLargeCode(KeyEvent.KEYCODE_F1);key(-42,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_F1);FocusNavigation.find(activity.getWindow().getDecorView(),"tab:1").requestFocusFromTouch();
+         });waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_LEFT);
+         runOnMainSync(()->{
+-            checkPage(2);click("Кнопки");checkLargeCode(KeyEvent.KEYCODE_DPAD_LEFT);click("Джойстик 1");check("После PAIR: один постоянный огонёк");
++            checkPage(2);click("Тест кнопок");checkLargeCode(KeyEvent.KEYCODE_DPAD_LEFT);click("Джойстик 1");check("После PAIR: один постоянный огонёк");
+             try{
+                 java.lang.reflect.Method open=MainActivity.class.getDeclaredMethod("showDpadMenu");open.setAccessible(true);open.invoke(activity);
+                 java.lang.reflect.Field field=MainActivity.class.getDeclaredField("dpadDialog");field.setAccessible(true);Dialog dialog=(Dialog)field.get(activity);
+@@ -187,9 +188,9 @@
+             java.lang.reflect.Method update=BluetoothSearchController.class.getDeclaredMethod("updateControls");update.setAccessible(true);
+             try{
+                 owns.setBoolean(originalBluetooth,true);update.invoke(originalBluetooth);
+-                if(!((TextView)toggle).getText().toString().equals("Стоп")||FocusNavigation.find(originalBluetooth.view(),"bt:search")!=toggle)throw new AssertionError("Same search button must become Stop");
++                if(!((TextView)toggle).getText().toString().equals("Остановить поиск")||FocusNavigation.find(originalBluetooth.view(),"bt:search")!=toggle)throw new AssertionError("Same search button must become Stop");
+             }finally{owns.setBoolean(originalBluetooth,false);update.invoke(originalBluetooth);}
+-            if(!((TextView)toggle).getText().toString().equals("Старт поиска"))throw new AssertionError("Stopped discovery must restore Start text");
++            if(!((TextView)toggle).getText().toString().equals("Начать поиск"))throw new AssertionError("Stopped discovery must restore Start text");
+             TextView heading=(TextView)field(originalBluetooth,"savedHeading");if(!heading.getText().toString().equals("Ранее подключённые ("+list.section(true).size()+")"))throw new AssertionError("Saved count must count saved rows, including found bond only once");
+             ScrollView scroll=(ScrollView)FocusNavigation.find(originalBluetooth.view(),"bt:saved-scroll");
+             if(scroll==null||!scroll.isVerticalScrollBarEnabled()||scroll.getVerticalScrollbarPosition()!=View.SCROLLBAR_POSITION_LEFT||scroll.isScrollbarFadingEnabled())throw new AssertionError("Saved list needs persistent left position scrollbar");
+@@ -236,16 +237,16 @@
+             checkPage(0);check("START + B");check("START + X");check("START + A");check("START + Y");
+             View root=activity.getWindow().getDecorView();View bt=FocusNavigation.find(root,"bluetooth:toggle"),choose=FocusNavigation.find(root,"header:choose"),battery=FocusNavigation.find(root,"header:battery"),pad=FocusNavigation.find(root,"header:pad");
+             for(View action:new View[]{bt,choose,battery,pad})if(action==null||!action.isFocusable()||action.getForeground()==null)throw new AssertionError("Header action unreachable/unframed");
+-            if(choose.getNextFocusUpId()!=battery.getId()||battery.getNextFocusUpId()!=bt.getId()||bt.getNextFocusRightId()!=pad.getId()||pad.getNextFocusLeftId()!=bt.getId())throw new AssertionError("Header focus routes missing");
++            if(choose.getNextFocusUpId()!=bt.getId()||battery.getNextFocusDownId()!=pad.getId()||bt.getNextFocusRightId()!=pad.getId()||pad.getNextFocusLeftId()!=bt.getId())throw new AssertionError("Header focus routes missing");
+             originalScroll=(ScrollView)field(activity,"contentScroll");originalScrollY=originalScroll.getScrollY();bluetoothBounds=screenBounds(bt);tabBounds=screenBounds(FocusNavigation.find(root,"tab:0"));bt.performClick();
+         });waitForIdleSync();
+         runOnMainSync(()->{
+-            unchangedOverlayGeometry();check("Старт поиска");check("Системные настройки Bluetooth");check("Ранее подключённые");check("Найдены рядом");
++            unchangedOverlayGeometry();check("Начать поиск");check("Системные настройки Bluetooth");check("Ранее подключённые");check("Найдены рядом");
+             originalBluetooth=(BluetoothSearchController)field(activity,"inlineBluetooth");
+             android.content.SharedPreferences mainPrefs=activity.getPreferences(0),linkedPrefs=(android.content.SharedPreferences)field(field(originalBluetooth,"controllerNames"),"slots");String probe="instrumentation.preview.prefs";mainPrefs.edit().putString(probe,"same-main-store").commit();if(!linkedPrefs.getString(probe,"").equals("same-main-store"))throw new AssertionError("Controller labels must use the actual MainActivity preferences in either package");mainPrefs.edit().remove(probe).commit();
+             TextView btStatus=(TextView)FocusNavigation.find(originalBluetooth.view(),"bt:status");if(btStatus.getEllipsize()!=null||btStatus.getMaxLines()<=2||btStatus.getTextSize()<14*activity.getResources().getDisplayMetrics().scaledDensity)throw new AssertionError("Bluetooth status must wrap without clipping or tiny text");
+             if(originalBluetooth==null||originalBluetooth.searching())throw new AssertionError("Overlay must open without automatic discovery");
+-            if(!(originalBluetooth.view().getParent() instanceof FrameLayout)||header(activity.getWindow().getDecorView()).isShown())throw new AssertionError("Panel must cover fixed header, with base hidden from focus");
++            if(originalBluetooth.view().getParent()!=field(activity,"singleBluetoothHost")||!header(activity.getWindow().getDecorView()).isShown()||((View)field(activity,"content")).getVisibility()!=View.VISIBLE)throw new AssertionError("Portrait/single Connection must append below all existing blocks");if(((View)field(activity,"singleBluetoothHost")).getTop()<((View)field(activity,"content")).getBottom())throw new AssertionError("Bluetooth must be below the instruction card");
+             LinearLayout columns=(LinearLayout)FocusNavigation.find(originalBluetooth.view(),"bt:columns");if(columns==null||columns.getOrientation()!=LinearLayout.HORIZONTAL||columns.getChildCount()!=2)throw new AssertionError("Need two independent columns");
+             BluetoothDeviceList list=(BluetoothDeviceList)field(originalBluetooth,"devices");String address="AA:BB:CC:DD:EE:FF";list.offer(address,"M30 test",BluetoothGamepadFilter.M30,12,true);
+             try{java.lang.reflect.Method refresh=BluetoothSearchController.class.getDeclaredMethod("refreshRows");refresh.setAccessible(true);refresh.invoke(originalBluetooth);}catch(ReflectiveOperationException e){throw new AssertionError(e);}
+@@ -265,12 +266,12 @@
+             activity.onBackPressed();FocusNavigation.find(activity.getWindow().getDecorView(),"tab:0").requestFocusFromTouch();
+         });waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+         runOnMainSync(()->checkPage(2));remoteKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+-        runOnMainSync(()->check("Keyboard"));remoteKey(KeyEvent.KEYCODE_DPAD_LEFT);
++        runOnMainSync(()->check("Тест кнопок"));remoteKey(KeyEvent.KEYCODE_DPAD_LEFT);
+         runOnMainSync(()->checkPage(2));remoteKey(KeyEvent.KEYCODE_DPAD_LEFT);
+         runOnMainSync(()->{checkPage(0);FocusNavigation.find(activity.getWindow().getDecorView(),"header:choose").requestFocusFromTouch();});
+         remoteKey(KeyEvent.KEYCODE_DPAD_UP);
+-        runOnMainSync(()->{if(!"header:battery".equals(FocusNavigation.key(activity.getCurrentFocus())))throw new AssertionError("Choose UP must reach battery");checkPage(0);});
+-        remoteKey(KeyEvent.KEYCODE_DPAD_UP);remoteKey(KeyEvent.KEYCODE_DPAD_RIGHT);
++        runOnMainSync(()->{if(!"bluetooth:toggle".equals(FocusNavigation.key(activity.getCurrentFocus())))throw new AssertionError("Choose UP must reach Connection");checkPage(0);});
++        remoteKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+         runOnMainSync(()->{if(!"header:pad".equals(FocusNavigation.key(activity.getCurrentFocus())))throw new AssertionError("Header RIGHT must focus pad, not change page");checkPage(0);});
+         remoteKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+         runOnMainSync(()->{checkPage(2);FocusNavigation.find(activity.getWindow().getDecorView(),"header:choose").requestFocusFromTouch();});
+@@ -288,7 +289,7 @@
+             long now=SystemClock.uptimeMillis();
+             activity.dispatchKeyEvent(new KeyEvent(now,now,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT,0,0,-42,0,0,InputDevice.SOURCE_DPAD));
+             for(int repeat=1;repeat<4;repeat++)activity.dispatchKeyEvent(new KeyEvent(now,now+repeat,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT,repeat,0,-42,0,0,InputDevice.SOURCE_DPAD));
+-            activity.dispatchKeyEvent(new KeyEvent(now,now+4,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_DPAD_RIGHT,0,0,-42,0,0,InputDevice.SOURCE_DPAD));check("Keyboard");
++            activity.dispatchKeyEvent(new KeyEvent(now,now+4,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_DPAD_RIGHT,0,0,-42,0,0,InputDevice.SOURCE_DPAD));check("Тест кнопок");
+             click("Джойстик 1");
+         });waitForIdleSync();
+     }
+@@ -323,7 +324,7 @@
+     @Override public void onStart(){Bundle report=new Bundle();try{
+         activity=startActivitySync(new Intent(getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+         if(field(activity,"widePanels")!=null){checkWideWorkspace(report);return;}
+-        runOnMainSync(()->{check("App ");check("Подключение M30");if(header(activity.getWindow().getDecorView()).getContentDescription().toString().contains("ID -1"))throw new AssertionError("Virtual Android source shown as a connected controller");checkHeader();checkInstructionLayout();check("Android");check("Windows");check("Switch");chooseMode(1);});waitForIdleSync();
++        runOnMainSync(()->{check("Версия ");check("Подключение M30");if(header(activity.getWindow().getDecorView()).getContentDescription().toString().contains("ID -1"))throw new AssertionError("Virtual Android source shown as a connected controller");checkHeader();checkInstructionLayout();check("Android");check("Windows");check("Switch");chooseMode(1);});waitForIdleSync();
+         runOnMainSync(()->{check("X + START");checkGuide("C: —");checkGuideSizing();if(find(activity.getWindow().getDecorView(),"B + START",false)!=null)throw new AssertionError("Windows instructions show stale Android combination");chooseMode(2);checkGuide("★: Снимок на Switch");chooseMode(0);checkGuide("★: Turbo");});waitForIdleSync();
+         runOnMainSync(()->{
+             check("B + START");checkModeOnOpen();
+@@ -333,7 +334,7 @@
+             if(!secondOnline){
+                 check("Подключение M30");check("Android");check("Windows");check("macOS");check("Switch");check("START + B");check("Клавиши");
+             }
+-            click("Джойстик 1");chooseMode(0);click("Кнопки");checkButtonsPage();check("Проверено 0 / 16");
++            click("Джойстик 1");chooseMode(0);click("Тест кнопок");checkButtonsPage();check("Проверено 0 / 16");
+             swipe(true);checkButtonsPage();check("Проверено 0 / 16");
+             key(-42,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_BUTTON_A);checkLargeCode(KeyEvent.KEYCODE_BUTTON_A);checkControllerCount(0);key(-42,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_BUTTON_A);
+             InputDevice virtual=null;for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null&&d.getName().equals("M30 Virtual Test"))virtual=d;}
+@@ -341,7 +342,7 @@
+                 int id=virtual.getId();key(id,KeyEvent.ACTION_DOWN,96);key(id,KeyEvent.ACTION_DOWN,97);checkHeld("A + B");checkLargeCode(97);check("Код 97 · BUTTON_B = 1");check("Обычно в Android:");check("Назад / отмена");
+                 key(-42,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_F1);checkLargeCode(KeyEvent.KEYCODE_F1);check("Нажатий на этом экране:");checkControllerCount(2);key(-42,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_F1);
+                 click("Джойстик 1");check("Подключение M30");checkHeader();checkHeld("A + B");checkGuide("B: Назад");key(id,KeyEvent.ACTION_UP,96);checkHeld("Нет удерживаемых кнопок");
+-                click("Кнопки");checkLargeCode(KeyEvent.KEYCODE_F1);key(id,KeyEvent.ACTION_UP,97);checkHeld("Нет удерживаемых кнопок");
++                click("Тест кнопок");checkLargeCode(KeyEvent.KEYCODE_F1);key(id,KeyEvent.ACTION_UP,97);checkHeld("Нет удерживаемых кнопок");
+                 key(id,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_BUTTON_16);checkLargeCode(KeyEvent.KEYCODE_BUTTON_16);key(id,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_BUTTON_16);checkLargeCode(KeyEvent.KEYCODE_BUTTON_16);
+                 hat(id,-1,-1);checkHeld("↑ + ←");hat(id,0,0);checkHeld("Нет удерживаемых кнопок");
+                 report.putString("virtual_input","PASS: controller header on joystick pages, independent button panel, live keys across swipes, universal foreign key display with controller counter isolation, retained codes, HAT diagonals");
+@@ -351,7 +352,7 @@
+         checkControllerPageAlignment();
+         checkRemoteNavigation();
+         Activity beforeSearch=activity;activity=startActivitySync(new Intent(getTargetContext(),BluetoothControllerActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+-        runOnMainSync(()->{check("Bluetooth · геймпады");check("Ранее подключённые");check("Найдены рядом");check("Старт поиска");check("Системные настройки Bluetooth");check("Проверить кнопки");
++        runOnMainSync(()->{check("Bluetooth · геймпады");check("Ранее подключённые");check("Найдены рядом");check("Начать поиск");check("Системные настройки Bluetooth");check("Проверить кнопки");
+             try{java.lang.reflect.Field field=BluetoothControllerActivity.class.getDeclaredField("search");field.setAccessible(true);if(((BluetoothSearchController)field.get(activity)).searching())throw new AssertionError("Opening the screen must not start discovery");}catch(ReflectiveOperationException error){throw new AssertionError(error);}
+             activity.finish();});activity=beforeSearch;
+         Activity main=activity;activity=startActivitySync(new Intent(getTargetContext(),M30FirmwareActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -103,6 +103,11 @@
+         buildActions(shell);buildStatus(shell);buildLists(shell,0);
+     }
+     private void buildActions(LinearLayout target){
++        if(compact){
++            actions=new LinearLayout(activity);actions.setGravity(Gravity.CENTER_VERTICAL);target.addView(actions,new LinearLayout.LayoutParams(-1,-2));headerReserve=new Space(activity);actions.addView(headerReserve,new LinearLayout.LayoutParams(0,1));
++            settings=button("Системные настройки Bluetooth",()->openSettings(Settings.ACTION_BLUETOOTH_SETTINGS));settings.setTag(R.id.navigation_key,"bt:settings");settings.setTextSize(12);settings.setMaxLines(2);settings.setPadding(dp(5),dp(5),dp(5),dp(5));settings.setMinHeight(dp(44));LinearLayout.LayoutParams settingsLp=new LinearLayout.LayoutParams(0,-2,1.4f);actions.addView(settings,settingsLp);
++            search=button("Начать поиск",this::toggleSearch);search.setTag(R.id.navigation_key,"bt:search");search.setTextSize(12);search.setPadding(dp(5),dp(5),dp(5),dp(5));search.setMinHeight(dp(44));LinearLayout.LayoutParams searchLp=new LinearLayout.LayoutParams(0,-2,1);searchLp.leftMargin=dp(5);actions.addView(search,searchLp);return;
++        }
+         int topHeight=dp(56),bottomHeight=dp(48);
+         actions=new LinearLayout(activity);actions.setOrientation(LinearLayout.VERTICAL);target.addView(actions,new LinearLayout.LayoutParams(-1,topHeight+dp(8)+bottomHeight));
+         LinearLayout top=new LinearLayout(activity);top.setGravity(Gravity.CENTER_VERTICAL);actions.addView(top,new LinearLayout.LayoutParams(-1,topHeight));
+@@ -110,7 +115,7 @@
+         settings=button("Системные настройки Bluetooth",()->openSettings(Settings.ACTION_BLUETOOTH_SETTINGS));settings.setContentDescription("Системные настройки Bluetooth");settings.setTag(R.id.navigation_key,"bt:settings");settings.setTextSize(14);settings.setPadding(dp(6),dp(4),dp(6),dp(4));settings.setMaxLines(2);LinearLayout.LayoutParams set=new LinearLayout.LayoutParams(0,topHeight,1);set.leftMargin=compact?dp(8):0;top.addView(settings,set);
+         Space gap=new Space(activity);actions.addView(gap,new LinearLayout.LayoutParams(1,dp(8)));
+         LinearLayout searchRow=new LinearLayout(activity);actions.addView(searchRow,new LinearLayout.LayoutParams(-1,bottomHeight));
+-        search=button("Старт поиска",this::toggleSearch);search.setTag(R.id.navigation_key,"bt:search");search.setMinHeight(0);search.setMinimumHeight(0);search.setPadding(dp(8),dp(4),dp(8),dp(4));searchRow.addView(search,new LinearLayout.LayoutParams(-1,bottomHeight));
++        search=button("Начать поиск",this::toggleSearch);search.setTag(R.id.navigation_key,"bt:search");search.setMinHeight(0);search.setMinimumHeight(0);search.setPadding(dp(8),dp(4),dp(8),dp(4));searchRow.addView(search,new LinearLayout.LayoutParams(-1,bottomHeight));
+     }
+     private void buildStatus(LinearLayout target){
+         status=label(adapter==null?"Bluetooth недоступен.":"Выберите устройство или начните поиск.",14,TEXT);status.setPadding(dp(2),dp(3),dp(2),dp(3));status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);status.setTag(R.id.navigation_key,"bt:status");
+@@ -126,7 +131,7 @@
+             if(Build.VERSION.SDK_INT>=29){GradientDrawable thumb=shape(MUTED);scroll.setVerticalScrollbarThumbDrawable(thumb);scroll.setVerticalScrollbarTrackDrawable(shape(0xff333333));}
+         }
+         column.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));LinearLayout inside=new LinearLayout(activity);inside.setOrientation(LinearLayout.VERTICAL);scroll.addView(inside);
+-        TextView empty=label(saved?(canReadSaved()?"Сохранённых геймпадов нет.":"Нажмите ↻, чтобы загрузить пары Android."):"Нажмите «Старт поиска».",13,MUTED);empty.setPadding(0,dp(3),0,dp(3));inside.addView(empty);if(saved)savedEmpty=empty;else foundEmpty=empty;
++        TextView empty=label(saved?(canReadSaved()?"Сохранённых геймпадов нет.":"Нажмите ↻, чтобы загрузить пары Android."):"Нажмите «Начать поиск».",13,MUTED);empty.setPadding(0,dp(3),0,dp(3));inside.addView(empty);if(saved)savedEmpty=empty;else foundEmpty=empty;
+         LinearLayout group=new LinearLayout(activity);group.setOrientation(LinearLayout.VERTICAL);inside.addView(group);return group;
+     }
+     private void buildLists(LinearLayout target,int height){
+@@ -180,7 +185,7 @@
+             if(!adapter.isEnabled()){activity.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),ENABLE);return;}
+             if(Build.VERSION.SDK_INT<=30&&!locationEnabled()){
+                 status.setText("На этой версии Android для поиска Bluetooth нужна включённая геолокация. Координаты приложение не получает.");
+-                new FocusDialogBuilder(activity).setTitle("Включите геолокацию для поиска").setMessage("На Android 8–11 поиск Bluetooth зависит от системной геолокации. Включите её и нажмите «Старт поиска» снова.").setPositiveButton("Настройки",(d,w)->openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)).setNegativeButton("Закрыть",null).show();return;
++                new FocusDialogBuilder(activity).setTitle("Включите геолокацию для поиска").setMessage("На Android 8–11 поиск Bluetooth зависит от системной геолокации. Включите её и нажмите «Начать поиск» снова.").setPositiveButton("Настройки",(d,w)->openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)).setNegativeButton("Закрыть",null).show();return;
+             }
+             registerBluetooth();
+             if(adapter.isDiscovering()){status.setText("Уже идёт другой поиск Bluetooth. Дождитесь его завершения и повторите.");return;}
+@@ -326,7 +331,7 @@
+     }
+     private void accessLost(){finishScan(null);pairing.fail();devices.clear();refreshRows();status.setText("Нет доступа к Bluetooth. Разрешите доступ или откройте настройки.");updateControls();}
+     private void updateControls(){if(search==null)return;boolean busy=pairing.phase()==BluetoothPairingState.PAIRING;
+-        search.setEnabled(adapter!=null&&!busy);search.setText(ownsDiscovery?"Стоп":"Старт поиска");search.setContentDescription(ownsDiscovery?"Остановить поиск геймпадов":"Начать поиск геймпадов");search.setTextColor(search.isEnabled()?BG:MUTED);search.setBackground(shape(search.isEnabled()?accent:0xff242424));
++        search.setEnabled(adapter!=null&&!busy);search.setText(ownsDiscovery?"Остановить поиск":"Начать поиск");search.setContentDescription(ownsDiscovery?"Остановить поиск геймпадов":"Начать поиск геймпадов");search.setTextColor(search.isEnabled()?BG:MUTED);search.setBackground(shape(search.isEnabled()?accent:0xff242424));
+         if(savedButton!=null)savedButton.setEnabled(adapter!=null&&!busy&&!ownsDiscovery);for(Button row:rows.values())row.setEnabled(!busy);wireFocus();
+     }
+     private void openSettings(String action){try{activity.startActivity(new Intent(action));}catch(ActivityNotFoundException error){try{activity.startActivity(new Intent(Settings.ACTION_SETTINGS));}catch(ActivityNotFoundException ignored){status.setText("На устройстве нет приложения настроек.");}}}
+--- a/app/src/main/java/app/m30/companion/ConnectionCardView.java
++++ b/app/src/main/java/app/m30/companion/ConnectionCardView.java
+@@ -0,0 +1,36 @@
++package app.m30.companion;
++
++import android.content.Context;
++import android.graphics.Typeface;
++import android.graphics.drawable.GradientDrawable;
++import android.view.*;
++import android.widget.*;
++
++/** The same compact, mode-specific instructions on single and paired layouts. */
++final class ConnectionCardView extends LinearLayout {
++    interface Select {void mode(int value);}
++    private static final int TEXT=0xfff6f3e8,MUTED=0xffbbb7a8;
++    private final int accent;
++    private final String prefix;
++    private final TextView profile;
++    private final LinearLayout[] choices=new LinearLayout[4];
++    private final TextView[] instructions=new TextView[3];
++    ConnectionCardView(Context context,int mode,int accent,String prefix,Select select,Runnable help){
++        super(context);this.accent=accent;this.prefix=prefix;setOrientation(VERTICAL);setPadding(dp(9),dp(5),dp(9),dp(7));setBackground(shape(0xff181818,false));setTag(R.id.navigation_key,prefix+"card");
++        LinearLayout heading=new LinearLayout(context);heading.setGravity(Gravity.CENTER_VERTICAL);addView(heading,new LayoutParams(-1,-2));
++        TextView title=text("Подключение M30",13,TEXT);heading.addView(title,new LayoutParams(-2,-2));profile=text("",11,accent);profile.setSingleLine(true);profile.setEllipsize(android.text.TextUtils.TruncateAt.END);profile.setPadding(dp(4),0,dp(3),0);heading.addView(profile,new LayoutParams(0,-2,1));
++        TextView info=text("ⓘ",18,accent);info.setGravity(Gravity.CENTER);info.setMinimumHeight(dp(32));info.setMinimumWidth(dp(28));info.setTag(R.id.navigation_key,prefix+"help");info.setContentDescription("Режимы и огоньки подключения. Открыть справку");info.setOnClickListener(v->help.run());heading.addView(info,new LayoutParams(-2,-2));
++        LinearLayout row=new LinearLayout(context);row.setBaselineAligned(false);addView(row,new LayoutParams(-1,-2));String[] names={"Android","Windows","macOS","Switch"};int[] order={0,1,3,2};
++        for(int n=0;n<4;n++){final int m=order[n];LinearLayout choice=new LinearLayout(context);choice.setOrientation(VERTICAL);choice.setGravity(Gravity.CENTER);choice.setPadding(dp(2),dp(3),dp(2),dp(3));choice.setMinimumHeight(dp(52));choice.setTag(R.id.navigation_key,prefix+"mode:"+m);choice.setOnClickListener(v->select.mode(m));
++            TextView label=text(names[n],13,MUTED);label.setSingleLine(true);label.setGravity(Gravity.CENTER);label.setAutoSizeTextTypeUniformWithConfiguration(10,13,1,android.util.TypedValue.COMPLEX_UNIT_SP);choice.addView(label,new LayoutParams(-1,-2));TextView chord=text(ConnectionGuide.shortKey(m),10,MUTED);chord.setSingleLine(true);chord.setGravity(Gravity.CENTER);choice.addView(chord,new LayoutParams(-1,-2));ModeLedsView leds=new ModeLedsView(context,m);leds.setAccent(accent);choice.addView(leds,new LayoutParams(-1,dp(14)));LayoutParams lp=new LayoutParams(0,-1,1);if(n>0)lp.leftMargin=dp(3);row.addView(choice,lp);choices[m]=choice;
++        }
++        TextView before=text("Огоньки при подключении · до PAIR — режим ⓘ",12,MUTED);before.setGravity(Gravity.CENTER);before.setPadding(0,dp(3),0,dp(3));addView(before,new LayoutParams(-1,-2));
++        for(int n=0;n<3;n++){instructions[n]=text("",13,TEXT);instructions[n].setPadding(0,dp(2),0,dp(2));addView(instructions[n],new LayoutParams(-1,-2));}
++        TextView after=text(ConnectionGuide.connectedLeds(),12,MUTED);after.setPadding(0,dp(4),0,0);addView(after,new LayoutParams(-1,-2));setMode(mode);
++    }
++    private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
++    private TextView text(String value,int size,int color){TextView t=new TextView(getContext());t.setText(InstructionText.format(value));t.setTextSize(size);t.setTextColor(color);t.setIncludeFontPadding(false);return t;}
++    private GradientDrawable shape(int color,boolean border){GradientDrawable g=new GradientDrawable();g.setColor(color);g.setCornerRadius(dp(10));if(border)g.setStroke(dp(1.3f),accent);return g;}
++    View mode(int mode){return choices[mode];}
++    void setMode(int mode){profile.setText("· "+ConnectionGuide.names()[mode]);profile.setContentDescription("Инструкция выбранного режима: "+ConnectionGuide.names()[mode]+". Выбор не переключает режим джойстика.");for(int m=0;m<4;m++){boolean selected=m==mode;LinearLayout c=choices[m];c.setSelected(selected);c.setBackground(shape(selected?0xff2d2b22:0xff181818,selected));c.setContentDescription(ConnectionGuide.names()[m]+(selected?", выбран":", выбрать")+". "+ConnectionGuide.shortKey(m)+". "+ConnectionGuide.ledDescription(m));for(int child=0;child<2;child++){TextView t=(TextView)c.getChildAt(child);t.setTextColor(selected?accent:MUTED);t.setTypeface(null,child==0&&selected?Typeface.BOLD:Typeface.NORMAL);}}String[] steps=ConnectionGuide.compactSteps(mode);for(int n=0;n<3;n++)instructions[n].setText(InstructionText.format(steps[n]));}
++}
+--- a/app/src/main/java/app/m30/companion/ControllerPanelView.java
++++ b/app/src/main/java/app/m30/companion/ControllerPanelView.java
+@@ -8,67 +8,47 @@
+ import android.widget.*;
+ import java.util.*;
+ 
+-/** One independently observed controller in the wide, two-controller workspace. */
++/** Independent controller state and controls in the approved wide workspace. */
+ final class ControllerPanelView extends FrameLayout {
+-    interface Actions { void run(int slot,String action); }
++    interface Actions {void run(int slot,String action);}
+     private static final int TEXT=0xfff6f3e8,MUTED=0xffbbb7a8,CARD=0xff181818;
+     final int slot,accent;
+     final LinearLayout body;
+     final PadView pad;
+     final Button connect,choose,options,keys;
+-    final TextView battery,name,code,event,estimate;
++    final TextView battery,name,code,event,version;
+     final BatteryIndicator indicator;
++    final ConnectionCardView connection;
+     private final Actions actions;
+     private final ControllerSession session;
+-    private final Button[] modes=new Button[4];
+-    private final TextView[] steps=new TextView[3];
+-    private final LinearLayout modeRow;
++    private final LinearLayout charge;
+     private int shownMode=-1;
+ 
+     ControllerPanelView(Context context,int slot,ControllerSession session,Actions actions){
+         super(context);this.slot=slot;this.session=session;this.actions=actions;accent=slot==0?0xffb6a45e:0xffb66f45;
+-        setTag(R.id.navigation_key,"wide:"+slot);setPadding(dp(6),dp(6),dp(6),dp(6));
+-        body=column();addView(body,new LayoutParams(-1,-2));
+-        name=text("Gamepad "+(slot+1),14,accent);name.setMinimumHeight(dp(28));body.addView(name);
++        setTag(R.id.navigation_key,"wide:"+slot);setPadding(dp(5),dp(4),dp(5),dp(5));body=column();addView(body,new LayoutParams(-1,-2));
++        name=text("Джойстик "+(slot+1),13,accent);body.addView(name);
+         LinearLayout hero=new LinearLayout(context);hero.setGravity(Gravity.CENTER_VERTICAL);body.addView(hero,new LinearLayout.LayoutParams(-1,-2));
+-        LinearLayout rail=column();hero.addView(rail,new LinearLayout.LayoutParams(dp(116),-2));
+-        connect=action("Connect","bluetooth");rail.addView(connect);
+-        LinearLayout charge=new LinearLayout(context);charge.setGravity(Gravity.CENTER_VERTICAL);charge.setMinimumHeight(dp(32));charge.setTag(R.id.navigation_key,key("battery"));charge.setOnClickListener(v->actions.run(slot,"battery"));rail.addView(charge);
+-        indicator=new BatteryIndicator(context);indicator.setAccent(accent);charge.addView(indicator,new LinearLayout.LayoutParams(dp(24),dp(16)));battery=text("—",13,accent);battery.setPadding(dp(6),0,0,0);charge.addView(battery);
+-        choose=action("Choose","choose");rail.addView(choose);options=action("Options","options");rail.addView(options);keys=action("Клавиши","keys");rail.addView(keys);
+-        LinearLayout diagram=column();diagram.setGravity(Gravity.CENTER);hero.addView(diagram,new LinearLayout.LayoutParams(0,-2,1));
+-        pad=new PadView(context,session.state,null);pad.setDisplayStyle(slot,false);pad.setTag(R.id.navigation_key,key("pad"));diagram.addView(pad,new LinearLayout.LayoutParams(-1,-2));
+-        TextView version=text("M30 Companion",11,MUTED);version.setGravity(Gravity.CENTER);diagram.addView(version,new LinearLayout.LayoutParams(-1,-2));
+-        LinearLayout summary=column();summary.setBackground(shape(CARD));summary.setPadding(dp(10),dp(6),dp(10),dp(6));LinearLayout.LayoutParams summaryLp=new LinearLayout.LayoutParams(-1,-2);summaryLp.setMargins(0,dp(8),0,dp(10));body.addView(summary,summaryLp);
+-        code=text("Код — · значение —",14,TEXT);code.setTypeface(Typeface.MONOSPACE);code.setSingleLine(true);code.setAutoSizeTextTypeUniformWithConfiguration(11,14,1,android.util.TypedValue.COMPLEX_UNIT_SP);summary.addView(code,new LinearLayout.LayoutParams(-1,-2));event=text("Подключите M30",14,accent);event.setSingleLine(true);event.setEllipsize(android.text.TextUtils.TruncateAt.END);summary.addView(event,new LinearLayout.LayoutParams(-1,-2));
+-        LinearLayout guide=column();guide.setPadding(dp(12),dp(6),dp(12),dp(12));guide.setBackground(shape(CARD));body.addView(guide,new LinearLayout.LayoutParams(-1,-2));
+-        TextView heading=text("Подключение M30  ⓘ",15,TEXT);heading.setMinimumHeight(dp(44));heading.setGravity(Gravity.CENTER);heading.setTag(R.id.navigation_key,key("help"));heading.setOnClickListener(v->actions.run(slot,"led"));guide.addView(heading,new LinearLayout.LayoutParams(-1,-2));
+-        estimate=text("Джойстик не подключён",14,MUTED);estimate.setGravity(Gravity.CENTER);guide.addView(estimate,new LinearLayout.LayoutParams(-1,-2));
+-        modeRow=new LinearLayout(context);modeRow.setBaselineAligned(false);guide.addView(modeRow,new LinearLayout.LayoutParams(-1,-2));
+-        String[] names={"Android","Windows","macOS","Switch"};int[] order={0,1,3,2};
+-        for(int n=0;n<4;n++){final int mode=order[n];Button b=new Button(context);b.setAllCaps(false);b.setTextSize(12);b.setPadding(dp(2),dp(5),dp(2),dp(5));b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(dp(72));b.setTag(R.id.navigation_key,key("mode:"+mode));b.setText(names[n]+"\n"+ConnectionGuide.shortKey(mode)+"\n"+new String[]{"●○○○","●●○○","●●●○","●●●●"}[n]);b.setOnClickListener(v->actions.run(slot,"mode:"+mode));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);if(n>0)lp.leftMargin=dp(3);modeRow.addView(b,lp);modes[mode]=b;}
+-        TextView before=text("Огоньки при включении · до PAIR",12,MUTED);before.setGravity(Gravity.CENTER);guide.addView(before,new LinearLayout.LayoutParams(-1,-2));
+-        for(int i=0;i<3;i++){steps[i]=text("",14,TEXT);guide.addView(steps[i],new LinearLayout.LayoutParams(-1,-2));}
+-        TextView after=text(ConnectionGuide.connectedLeds(),13,MUTED);after.setPadding(0,dp(8),0,0);guide.addView(after,new LinearLayout.LayoutParams(-1,-2));
+-        setMinimumHeight(dp(420));
++        LinearLayout rail=column();TextView measure=text("Подключение",12,accent);int width=Math.max(dp(100),(int)Math.ceil(measure.getPaint().measureText("Подключение"))+dp(26));hero.addView(rail,new LinearLayout.LayoutParams(width,-2));
++        connect=action("Подключение","bluetooth",R.drawable.ic_bluetooth);choose=action("Выбрать","choose",R.drawable.ic_gamepad);options=action("Опции","options",R.drawable.ic_options_outline);keys=action("Клавиши","keys",R.drawable.ic_info_outline);for(Button b:new Button[]{connect,choose,options,keys})rail.addView(b);
++        FrameLayout diagram=new FrameLayout(context);diagram.setPadding(0,0,0,dp(16));hero.addView(diagram,new LinearLayout.LayoutParams(0,-2,1));pad=new PadView(context,session.state,null);pad.setDisplayStyle(slot,false);pad.setTag(R.id.navigation_key,key("pad"));diagram.addView(pad,new LayoutParams(-1,-2));
++        charge=new LinearLayout(context);charge.setGravity(Gravity.CENTER_VERTICAL);charge.setMinimumHeight(dp(20));charge.setTag(R.id.navigation_key,key("battery"));charge.setOnClickListener(v->actions.run(slot,"battery"));indicator=new BatteryIndicator(context);indicator.setAccent(accent);charge.addView(indicator,new LinearLayout.LayoutParams(dp(18),dp(12)));battery=text("—",11,accent);battery.setPadding(dp(4),0,0,0);charge.addView(battery);diagram.addView(charge,new LayoutParams(-2,dp(20),Gravity.TOP|Gravity.CENTER_HORIZONTAL));
++        version=text("",10,MUTED);version.setGravity(Gravity.CENTER);version.setSingleLine(true);diagram.addView(version,new LayoutParams(-1,dp(16),Gravity.BOTTOM));
++        LinearLayout summary=column();summary.setBackground(shape(CARD));summary.setPadding(dp(8),dp(4),dp(8),dp(4));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.setMargins(0,dp(4),0,dp(5));body.addView(summary,lp);code=text("Код — · значение —",13,TEXT);code.setTypeface(Typeface.MONOSPACE);code.setSingleLine(true);code.setAutoSizeTextTypeUniformWithConfiguration(10,13,1,android.util.TypedValue.COMPLEX_UNIT_SP);summary.addView(code,new LinearLayout.LayoutParams(-1,-2));event=text("Подключите M30",13,accent);event.setSingleLine(true);event.setEllipsize(android.text.TextUtils.TruncateAt.END);summary.addView(event,new LinearLayout.LayoutParams(-1,-2));
++        connection=new ConnectionCardView(context,session.mode,accent,key(""),m->actions.run(slot,"mode:"+m),()->actions.run(slot,"led"));body.addView(connection,new LinearLayout.LayoutParams(-1,-2));
+     }
+-    String key(String name){return "wide:"+slot+":"+name;}
+-    private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
++    String key(String action){return "wide:"+slot+":"+action;}
++    private int dp(float v){return Math.round(v*getResources().getDisplayMetrics().density);}
+     private LinearLayout column(){LinearLayout l=new LinearLayout(getContext());l.setOrientation(LinearLayout.VERTICAL);return l;}
+-    private GradientDrawable shape(int color){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(12));return d;}
+-    private TextView text(String value,int size,int color){TextView t=new TextView(getContext());t.setText(InstructionText.format(value));t.setTextSize(size);t.setTextColor(color);t.setPadding(0,dp(3),0,dp(3));return t;}
+-    private Button action(String label,String action){Button b=new Button(getContext());b.setAllCaps(false);b.setText(label);b.setTextSize(13);b.setTextColor(accent);b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(dp(40));b.setPadding(dp(6),dp(4),dp(6),dp(4));b.setBackground(shape(CARD));b.setTag(R.id.navigation_key,key(action));b.setOnClickListener(v->actions.run(slot,action));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(6);b.setLayoutParams(lp);return b;}
+-    void refresh(String alias,float capacity,ModeDetector.Result detected,String version,boolean selected){
+-        GradientDrawable border=shape(0xff000000);border.setStroke(dp(1),selected?accent:0xff30302b);setBackground(border);
+-        name.setText("Gamepad "+(slot+1)+" · "+alias);connect.setText(session.connected()?"Connect":"No Connect");connect.setTextColor(session.connected()?accent:0xfff36b65);connect.setContentDescription("Геймпад "+(slot+1)+". "+(session.connected()?alias+" · ID "+session.deviceId:"Не подключён")+". Открыть Connection в соседнем поле");
+-        indicator.setCapacity(capacity);battery.setText(capacity<0?"—":Math.round(capacity*100)+"%");
+-        pad.setModelName(session.deviceName);pad.waiting=session.waiting;pad.setDpadInfo(session.dpad.caption(),()->actions.run(slot,"dpad"));pad.invalidate();ArrayList<String> held=new ArrayList<>();for(String label:PadState.LABELS)if(session.state.active(label))held.add(label);pad.setContentDescription("Геймпад "+(slot+1)+". "+alias+". "+(held.isEmpty()?"Нет удерживаемых кнопок":"Нажато: "+String.join(" + ",held)));
+-        InputMonitor.Key last=session.monitor.lastSelected;
+-        code.setText(session.lastWasAxis?String.format(Locale.ROOT,"AX %d · %s = %.3f",session.lastAxis,android.view.MotionEvent.axisToString(session.lastAxis),session.lastAxisValue):last==null?"Код — · значение —":"Код "+last.code+" · "+last.name.replace("KEYCODE_","")+" = "+(last.down?1:0));
+-        event.setText(session.lastWasAxis?"Ось · "+(Math.abs(session.lastAxisValue)<0.001f?"нейтраль":"активна"):last==null?(session.connected()?"Нажмите кнопку для проверки":"Подключите M30"):last.name.replace("KEYCODE_","")+" · "+(last.down?"нажато":"отпущено"));
+-        estimate.setText(!session.connected()?"Джойстик не подключён":detected.candidate<0?"Режим не определён · ⓘ":ConnectionGuide.names()[detected.candidate]);
+-        if(shownMode!=session.mode){shownMode=session.mode;for(int mode=0;mode<4;mode++){boolean chosen=mode==shownMode;GradientDrawable bg=shape(chosen?0xff2d2b22:0xff181818);if(chosen)bg.setStroke(dp(1.5f),accent);modes[mode].setBackground(bg);modes[mode].setTextColor(chosen?accent:MUTED);modes[mode].setTypeface(null,chosen?Typeface.BOLD:Typeface.NORMAL);modes[mode].setSelected(chosen);}String[] instructions=ConnectionGuide.compactSteps(shownMode);for(int i=0;i<3;i++)steps[i].setText(InstructionText.format(instructions[i]));}
+-        ((TextView)((LinearLayout)pad.getParent()).getChildAt(1)).setText("App "+version+" · FW —");
++    private GradientDrawable shape(int color){GradientDrawable g=new GradientDrawable();g.setColor(color);g.setCornerRadius(dp(10));return g;}
++    private TextView text(String value,int size,int color){TextView t=new TextView(getContext());t.setText(InstructionText.format(value));t.setTextSize(size);t.setTextColor(color);t.setIncludeFontPadding(false);t.setPadding(0,dp(2),0,dp(2));return t;}
++    private void icon(Button button,int drawable,int tint){android.graphics.drawable.Drawable d=getContext().getDrawable(drawable).mutate();d.setTint(tint);d.setBounds(0,0,dp(13),dp(13));button.setCompoundDrawablesRelative(d,null,null,null);button.setCompoundDrawablePadding(dp(4));}
++    private Button action(String label,String action,int image){Button b=new Button(getContext());b.setText(label);b.setAllCaps(false);b.setTextSize(12);b.setTextColor(accent);b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(dp(36));b.setPadding(dp(5),dp(3),dp(5),dp(3));b.setGravity(Gravity.CENTER_VERTICAL|Gravity.START);b.setBackground(shape(CARD));b.setTag(R.id.navigation_key,key(action));b.setOnClickListener(v->actions.run(slot,action));icon(b,image,accent);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(3);b.setLayoutParams(lp);return b;}
++    void refresh(String alias,float capacity,ModeDetector.Result detected,String appVersion,boolean selected){
++        GradientDrawable border=shape(0xff000000);border.setStroke(dp(1),selected?accent:0xff30302b);setBackground(border);name.setText("Джойстик "+(slot+1)+" · "+alias);int color=session.connected()?accent:0xfff36b65;connect.setTextColor(color);icon(connect,session.connected()?R.drawable.ic_bluetooth:R.drawable.ic_bluetooth_off,color);connect.setContentDescription("Джойстик "+(slot+1)+". "+(session.connected()?alias+" · ID "+session.deviceId:"Не подключён")+". Открыть подключение в соседнем поле");indicator.setCapacity(capacity);battery.setText(capacity<0?"—":Math.round(capacity*100)+"%");charge.setContentDescription(capacity<0?"Заряд: нет данных от Android":"Заряд: "+Math.round(capacity*100)+"%");
++        pad.setModelName(session.deviceName);pad.waiting=session.waiting;pad.setDpadInfo(session.dpad.caption(),()->actions.run(slot,"dpad"));pad.invalidate();ArrayList<String> held=new ArrayList<>();for(String label:PadState.LABELS)if(session.state.active(label))held.add(label);pad.setContentDescription("Джойстик "+(slot+1)+". "+alias+". "+(held.isEmpty()?"Нет удерживаемых кнопок":"Нажато: "+String.join(" + ",held)));
++        InputMonitor.Key last=session.monitor.lastSelected;code.setText(session.lastWasAxis?String.format(Locale.ROOT,"AX %d · %s = %.3f",session.lastAxis,android.view.MotionEvent.axisToString(session.lastAxis),session.lastAxisValue):last==null?"Код — · значение —":"Код "+last.code+" · "+last.name.replace("KEYCODE_","")+" = "+(last.down?1:0));event.setText(session.lastWasAxis?"Ось · "+(Math.abs(session.lastAxisValue)<0.001f?"нейтраль":"активна"):last==null?(session.connected()?"Нажмите кнопку для проверки":"Подключите M30"):last.name.replace("KEYCODE_","")+" · "+(last.down?"нажато":"отпущено"));
++        if(shownMode!=session.mode){shownMode=session.mode;connection.setMode(shownMode);}connection.setContentDescription("Инструкция "+ConnectionGuide.names()[session.mode]+". "+(!session.connected()?"Джойстик не подключён":detected.title)+". Режим по признакам Android, не чтение прошивки.");version.setText("Версия "+appVersion+" · прошивка —");
+     }
+-    void routes(View tab){View batteryView=(View)battery.getParent();View[] rail={connect,batteryView,choose,options,keys};for(int n=0;n<rail.length;n++){FocusNavigation.route(rail[n],View.FOCUS_UP,n==0?tab:rail[n-1]);FocusNavigation.route(rail[n],View.FOCUS_DOWN,n==rail.length-1?modes[0]:rail[n+1]);FocusNavigation.route(rail[n],View.FOCUS_RIGHT,pad);}FocusNavigation.route(pad,View.FOCUS_LEFT,connect);FocusNavigation.route(pad,View.FOCUS_UP,tab);FocusNavigation.route(pad,View.FOCUS_DOWN,modes[0]);for(Button b:modes)FocusNavigation.route(b,View.FOCUS_UP,keys);}
++    void routes(View tab){View[] rail={connect,choose,options,keys};for(int n=0;n<rail.length;n++){FocusNavigation.route(rail[n],View.FOCUS_UP,n==0?tab:rail[n-1]);FocusNavigation.route(rail[n],View.FOCUS_DOWN,n==3?connection.mode(0):rail[n+1]);FocusNavigation.route(rail[n],View.FOCUS_RIGHT,pad);}FocusNavigation.route(pad,View.FOCUS_LEFT,connect);FocusNavigation.route(pad,View.FOCUS_UP,charge);FocusNavigation.route(charge,View.FOCUS_DOWN,pad);FocusNavigation.route(charge,View.FOCUS_UP,tab);FocusNavigation.route(charge,View.FOCUS_LEFT,connect);FocusNavigation.route(pad,View.FOCUS_DOWN,connection.mode(0));for(int m=0;m<4;m++)FocusNavigation.route(connection.mode(m),View.FOCUS_UP,keys);}
+ }
+--- a/app/src/main/java/app/m30/companion/JoinedTabFrame.java
++++ b/app/src/main/java/app/m30/companion/JoinedTabFrame.java
+@@ -0,0 +1,30 @@
++package app.m30.companion;
++
++import android.content.Context;
++import android.graphics.*;
++import android.graphics.drawable.Drawable;
++import android.view.View;
++import android.widget.FrameLayout;
++
++/** Draws a shared page outline with an opening below the selected folder tab. */
++final class JoinedTabFrame extends FrameLayout {
++    private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
++    private View selected;
++    JoinedTabFrame(Context context){super(context);setWillNotDraw(false);setBackgroundColor(Color.BLACK);int p=dp(7);setPadding(p,p,p,p);}
++    private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
++    void select(View tab){selected=tab;invalidate();}
++    @Override protected void onDraw(Canvas canvas){
++        super.onDraw(canvas);float edge=dp(1)/2f,w=getWidth()-edge,h=getHeight()-edge,r=dp(14),start=edge,end=edge;
++        if(selected!=null){int[] tab=new int[2],frame=new int[2];selected.getLocationOnScreen(tab);getLocationOnScreen(frame);start=Math.max(edge,tab[0]-frame[0]);end=Math.min(w,start+selected.getWidth());}
++        paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(Math.max(1,dp(1)));paint.setColor(0xffaaa99e);
++        Path path=new Path();path.moveTo(start,edge);path.lineTo(edge,edge);path.lineTo(edge,h-r);path.quadTo(edge,h,edge+r,h);path.lineTo(w-r,h);path.quadTo(w,h,w,h-r);path.lineTo(w,edge);path.lineTo(end,edge);canvas.drawPath(path,paint);
++    }
++    static Drawable tab(Context context,boolean selected){return new Drawable(){
++        final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);final float density=context.getResources().getDisplayMetrics().density;
++        public void draw(Canvas c){Rect b=getBounds();float inset=density*.5f,r=13*density,left=b.left+inset,right=b.right-inset,top=b.top+inset,bottom=b.bottom;
++            Path shape=new Path();shape.moveTo(left,bottom);shape.lineTo(left,top+r);shape.quadTo(left,top,left+r,top);shape.lineTo(right-r,top);shape.quadTo(right,top,right,top+r);shape.lineTo(right,bottom);
++            p.setColor(Color.BLACK);p.setStyle(Paint.Style.FILL);c.drawPath(shape,p);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(density);p.setColor(selected?0xffaaa99e:0xff60605a);c.drawPath(shape,p);
++        }
++        public void setAlpha(int a){} public void setColorFilter(ColorFilter f){} public int getOpacity(){return PixelFormat.TRANSLUCENT;}
++    };}
++}
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -47,7 +47,9 @@
+     private final Handler handler=new Handler(Looper.getMainLooper());
+     private InputManager inputs;
+     private InputDevice device;
+-    private LinearLayout root, content, tabs,buttonGrid;
++    private LinearLayout root, content, tabs,buttonGrid,pageBody,singleBluetoothHost;
++    private JoinedTabFrame joinedFrame;
++    private ConnectionCardView connectionCard;
+     private final Map<String,TextView> buttonCells=new LinkedHashMap<>();
+     private ScrollView contentScroll;
+     private boolean wholePageScroll,wideControllers;
+@@ -126,99 +128,48 @@
+     private LinearLayout card(String heading,LinearLayout c){c.setPadding(dp(14),dp(12),dp(14),dp(12));c.setBackground(shape(CARD,22));
+         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(14);content.addView(c,lp);if(heading!=null){TextView label=title(heading,18);int slotName=heading.indexOf("Джойстик 2");if(slotName>=0){android.text.SpannableString caption=new android.text.SpannableString(label.getText());caption.setSpan(new android.text.style.ForegroundColorSpan(ORANGE),slotName,slotName+"Джойстик 2".length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);label.setText(caption);}c.addView(label);}return c;}
+     private void render(){
+-        int previousScroll=contentScroll==null?0:contentScroll.getScrollY();
+-        int overlayScroll=inlineBluetoothOpen&&contentScroll!=null?contentScroll.getScrollY():-1;
+-        String focusedKey=FocusNavigation.key(getCurrentFocus());
++        int previousScroll=contentScroll==null?0:contentScroll.getScrollY();String focusedKey=FocusNavigation.key(getCurrentFocus());
+         if(inlineBluetooth!=null&&inlineBluetooth.view().getParent() instanceof ViewGroup)((ViewGroup)inlineBluetooth.view().getParent()).removeView(inlineBluetooth.view());
+-        firmwareEntry=null;firmwareCableHint=null;lastUsbStateCheck=0;buttonGrid=null;buttonCells.clear();
+-        status=null;details=null;live=null;progress=null;batteryView=null;bindHint=null;pad=null;headerBattery=null;headerBluetooth=null;headerPercent=null;headerConnection=null;headerVersions=null;headerInputLine=null;headerInputAction=null;lastCodeView=null;lastNameView=null;lastDetailsView=null;modeResultView=null;sourceHintView=null;useSourceButton=null;inputSourceView=null;
+-        widePanels=null;wideOverlay=null;wideControllers=wideControllerLayout();
+-        wholePageScroll=getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+-        root=column();root.setBackgroundColor(BG);root.setPadding(dp(16),0,dp(16),0);
+-        if(wholePageScroll){
+-            ScrollView scroller=new ScrollView(this);scroller.setBackgroundColor(BG);scroller.setFillViewport(true);scroller.setSmoothScrollingEnabled(false);scroller.setTag(R.id.navigation_key,"page:scroll-all");scroller.addView(root,new ScrollView.LayoutParams(-1,-2));contentScroll=scroller;setContentView(scroller);
+-            if(Build.VERSION.SDK_INT>=30)scroller.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(i.left,i.top,i.right,i.bottom);return insets;});
+-        }else{
+-            setContentView(root);
+-            if(Build.VERSION.SDK_INT>=30)root.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(dp(16)+i.left,i.top,dp(16)+i.right,i.bottom);return insets;});
+-        }
+-        tabs=new LinearLayout(this);tabs.setBaselineAligned(false);tabs.setGravity(Gravity.CENTER_VERTICAL);root.addView(tabs);
+-        int[] pages=SwipeNavigation.order(true);String[] names={"Джойстик 1","Джойстик 2","Кнопки\nKeyboard"};
+-        for(int n=0;n<pages.length;n++){
+-            final int tab=pages[n];boolean selected=page==tab;
+-            boolean offlineSecond=tab==2&&!controllers.slots[1].connected();
+-            int tabAccent=tab==0?YELLOW:tab==2?ORANGE:0xff454545;
+-            int fill=tab==1&&selected?tabAccent:CARD;
+-            int foreground=tab!=1?tabAccent:selected?TEXT:MUTED;
+-            TextView t=text(names[n],14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(3),dp(3),dp(3));t.setMaxLines(2);t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+-            GradientDrawable tabBackground=shape(fill,12);if(tab!=1&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:tabAccent);t.setTag(R.id.navigation_key,"tab:"+tab);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
+-            t.setMinimumHeight(dp(56));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
+-        }
+-        gap(root,10);
+-        root.setContentDescription(RemoteNavigation.pageCaption(page));
+-        if(wideControllers&&page!=1){renderWideControllers();return;}
+-        topRegion=new FrameLayout(this);root.addView(topRegion,new LinearLayout.LayoutParams(-1,-2));topBase=column();topRegion.addView(topBase,new FrameLayout.LayoutParams(-1,-2));
++        firmwareEntry=null;firmwareCableHint=null;lastUsbStateCheck=0;buttonGrid=null;buttonCells.clear();status=null;details=null;live=null;progress=null;batteryView=null;bindHint=null;pad=null;headerBattery=null;headerBluetooth=null;headerPercent=null;headerConnection=null;headerVersions=null;headerInputLine=null;headerInputAction=null;lastCodeView=null;lastNameView=null;lastDetailsView=null;modeResultView=null;sourceHintView=null;useSourceButton=null;inputSourceView=null;connectionCard=null;singleBluetoothHost=null;bluetoothPlaceholder=null;widePanels=null;wideOverlay=null;
++        wideControllers=wideControllerLayout();wholePageScroll=getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;
++        root=column();root.setBackgroundColor(BG);root.setPadding(dp(12),0,dp(12),0);
++        if(wholePageScroll){ScrollView scroller=new ScrollView(this);scroller.setBackgroundColor(BG);scroller.setFillViewport(true);scroller.setSmoothScrollingEnabled(false);scroller.setTag(R.id.navigation_key,"page:scroll-all");scroller.addView(root,new ScrollView.LayoutParams(-1,-2));contentScroll=scroller;setContentView(scroller);if(Build.VERSION.SDK_INT>=30)scroller.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars()|WindowInsets.Type.displayCutout());v.setPadding(i.left,i.top,i.right,i.bottom);return insets;});}
++        else{setContentView(root);if(Build.VERSION.SDK_INT>=30)root.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars()|WindowInsets.Type.displayCutout());v.setPadding(dp(12)+i.left,i.top,dp(12)+i.right,i.bottom);return insets;});}
++        tabs=new LinearLayout(this);tabs.setBaselineAligned(false);root.addView(tabs,new LinearLayout.LayoutParams(-1,-2));int[] order=SwipeNavigation.order(true);String[] names={"Джойстик 1","Джойстик 2","Тест кнопок"};View selectedTab=null;
++        for(int n=0;n<order.length;n++){final int target=order[n];boolean selected=page==target;int color=selected?(target==0?YELLOW:target==2?ORANGE:TEXT):MUTED;TextView tab=text(names[n],14,color);tab.setIncludeFontPadding(false);tab.setGravity(Gravity.CENTER);tab.setPadding(dp(3),dp(6),dp(3),dp(6));tab.setMaxLines(2);tab.setEllipsize(android.text.TextUtils.TruncateAt.END);tab.setMinimumHeight(dp(52));tab.setBackground(JoinedTabFrame.tab(this,selected));tab.setSelected(selected);tab.setFocusable(true);tab.setTag(R.id.navigation_key,"tab:"+target);tab.setOnClickListener(v->switchPage(target));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);if(n>0)lp.leftMargin=dp(3);tabs.addView(tab,lp);if(selected)selectedTab=tab;}
++        joinedFrame=new JoinedTabFrame(this);joinedFrame.select(selectedTab);root.addView(joinedFrame,new LinearLayout.LayoutParams(-1,wholePageScroll?-2:0,wholePageScroll?0:1));root.setContentDescription(RemoteNavigation.pageCaption(page));pageBody=column();pageBody.setMinimumHeight(Math.max(dp(140),guideViewportHeight()-dp(70)));
++        if(wholePageScroll)joinedFrame.addView(pageBody,new FrameLayout.LayoutParams(-1,-2));else{ScrollView scroller=new ScrollView(this);scroller.setFillViewport(true);scroller.setSmoothScrollingEnabled(false);scroller.setTag(R.id.navigation_key,"page:scroll-content");joinedFrame.addView(scroller,new FrameLayout.LayoutParams(-1,-1));scroller.addView(pageBody,new ScrollView.LayoutParams(-1,-2));contentScroll=scroller;}
++        if(wideControllers&&page!=1){renderWideControllers(focusedKey,previousScroll);return;}
++        topRegion=new FrameLayout(this);pageBody.addView(topRegion,new LinearLayout.LayoutParams(-1,-2));topBase=column();topRegion.addView(topBase,new FrameLayout.LayoutParams(-1,-2));
+         if(page!=1){
+-        LinearLayout header=new LinearLayout(this);header.setGravity(Gravity.CENTER_VERTICAL);
+-        int headerHeight=220;
+-        LinearLayout.LayoutParams headerLayout=new LinearLayout.LayoutParams(-1,dp(headerHeight));topBase.addView(header,headerLayout);
+-        LinearLayout brand=column();LinearLayout.LayoutParams brandLayout=new LinearLayout.LayoutParams(dp(120),-2);header.addView(brand,brandLayout);
+-        LinearLayout link=new LinearLayout(this);link.setGravity(Gravity.CENTER_VERTICAL);link.setBackground(shape(CARD,8));link.setPadding(dp(4),0,dp(4),0);link.setTag(R.id.navigation_key,"bluetooth:toggle");link.setOnClickListener(v->toggleInlineBluetooth());link.setContentDescription("Статус M30. Открыть поиск геймпадов Bluetooth");bluetoothButton=link;bluetoothPlaceholder=new View(this);brand.addView(bluetoothPlaceholder,new LinearLayout.LayoutParams(-1,dp(32)));
+-        headerBluetooth=new ImageView(this);link.addView(headerBluetooth,new LinearLayout.LayoutParams(dp(16),dp(22)));
+-        headerConnection=text("",13,MUTED);headerConnection.setPadding(0,0,0,0);headerConnection.setSingleLine(true);LinearLayout.LayoutParams statusLabel=new LinearLayout.LayoutParams(-2,-2);statusLabel.leftMargin=dp(3);link.addView(headerConnection,statusLabel);
+-        int controlHeight=Math.max(dp(40),headerConnection.getLineHeight()+dp(12)),controlWidth=Math.max(dp(120),(int)Math.ceil(headerConnection.getPaint().measureText("No Connect"))+dp(40));
+-        bluetoothPlaceholder.setLayoutParams(new LinearLayout.LayoutParams(controlWidth,controlHeight));brandLayout.width=controlWidth;link.setMinimumHeight(controlHeight);gap(brand,8);
+-        LinearLayout charge=new LinearLayout(this);charge.setGravity(Gravity.CENTER_VERTICAL);brand.addView(charge);
+-        headerBattery=new BatteryIndicator(this);headerBattery.setAccent(headerAccent());headerBattery.setNeutral(page==1);charge.addView(headerBattery,new LinearLayout.LayoutParams(dp(24),dp(15)));
+-        headerPercent=text("—",13,headerAccent());LinearLayout.LayoutParams percentLayout=new LinearLayout.LayoutParams(-2,-2);percentLayout.leftMargin=dp(5);charge.addView(headerPercent,percentLayout);charge.setOnClickListener(v->showBatteryInfo());charge.setTag(R.id.navigation_key,"header:battery");charge.setMinimumHeight(dp(28));
+-        gap(brand,8);LinearLayout actions=new LinearLayout(this);brand.addView(actions);
+-        Button choose=new Button(this);choose.setText("Choose");choose.setTextSize(13);choose.setAllCaps(false);choose.setTextColor(headerAccent());choose.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(headerAccent()));choose.setPadding(dp(4),0,dp(4),0);choose.setMinWidth(0);choose.setMinimumWidth(0);choose.setMinHeight(0);choose.setMinimumHeight(0);choose.setBackground(shape(CARD,8));choose.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_gamepad,0,0,0);choose.setCompoundDrawablePadding(dp(2));choose.setTag(R.id.navigation_key,"header:choose");choose.setContentDescription("Выбрать M30");choose.setOnClickListener(v->devicePicker());LinearLayout.LayoutParams chooserLayout=new LinearLayout.LayoutParams(controlWidth,controlHeight);actions.addView(choose,chooserLayout);
+-        gap(brand,8);Button options=headerAction("Options","header:options",this::showOptions,controlWidth,controlHeight);brand.addView(options);
+-        gap(brand,8);Button keys=headerAction("Клавиши","header:keys",this::showButtonGuide,controlWidth,controlHeight);brand.addView(keys);
+-        headerLayout.height=Math.max(dp(headerHeight),4*controlHeight+Math.max(dp(28),headerPercent.getLineHeight()+dp(8))+dp(32));
+-        FrameLayout padArea=new FrameLayout(this);header.addView(padArea,new LinearLayout.LayoutParams(0,-1,1));
+-        pad=new PadView(this,session.state,null);pad.setTag(R.id.navigation_key,"header:pad");pad.setDisplayStyle(activeSlot,page==1);pad.waiting=session.waiting;FrameLayout.LayoutParams padLayout=new FrameLayout.LayoutParams(-1,-1);padLayout.topMargin=dp(4);padLayout.bottomMargin=dp(18);padArea.addView(pad,padLayout);
+-        headerVersions=text("App "+appVersion+" · FW —",10,MUTED);headerVersions.setGravity(Gravity.CENTER);headerVersions.setPadding(0,0,0,0);headerVersions.setSingleLine(true);headerVersions.setContentDescription("Версия приложения "+appVersion+". Версия прошивки геймпада не получена.");int versionsHeight=Math.max(dp(18),headerVersions.getLineHeight()+dp(2));padLayout.bottomMargin=versionsHeight;padArea.addView(headerVersions,new FrameLayout.LayoutParams(-1,versionsHeight,Gravity.BOTTOM));
+-        }
+-        gap(topBase,6);inputSummary=column();inputSummary.setBackground(shape(CARD,10));inputSummary.setPadding(dp(10),dp(4),dp(10),dp(4));inputSummary.setMinimumHeight(dp(56));topBase.addView(inputSummary,new LinearLayout.LayoutParams(-1,-2));
+-        headerInputLine=text("",14,TEXT);headerInputLine.setTypeface(Typeface.MONOSPACE);headerInputLine.setSingleLine(true);headerInputLine.setAutoSizeTextTypeUniformWithConfiguration(11,14,1,android.util.TypedValue.COMPLEX_UNIT_SP);headerInputLine.setEllipsize(android.text.TextUtils.TruncateAt.END);headerInputLine.setPadding(0,dp(3),0,dp(3));inputSummary.addView(headerInputLine,new LinearLayout.LayoutParams(-1,-2));
+-        headerInputAction=text("",14,accent());headerInputAction.setSingleLine(true);headerInputAction.setEllipsize(android.text.TextUtils.TruncateAt.END);headerInputAction.setPadding(0,dp(3),0,dp(3));inputSummary.addView(headerInputAction,new LinearLayout.LayoutParams(-1,-2));
+-        if(page!=1){
+-            topRegion.addView(bluetoothButton,new FrameLayout.LayoutParams(bluetoothPlaceholder.getLayoutParams().width,bluetoothPlaceholder.getLayoutParams().height));
+-            topBase.addOnLayoutChangeListener((v,l,t,r,b,ol,ot,or,ob)->positionBluetoothButton());
+-            FrameLayout expected=topRegion;topRegion.post(()->{if(topRegion!=expected)return;positionBluetoothButton();if(inlineBluetoothOpen)showInlineBluetooth();});
+-        }
+-        content=column();
+-        if(wholePageScroll)root.addView(content,new LinearLayout.LayoutParams(-1,-2));
+-        else{contentScroll=new ScrollView(this);contentScroll.setFillViewport(false);root.addView(contentScroll,new LinearLayout.LayoutParams(-1,0,1));contentScroll.addView(content);}
+-        if(page!=1)connectionPage();else testPage();
+-        refreshLive();
+-        FocusNavigation.prepare(root);
+-        // Mode labels delegate touch to their parent, but only the whole choice is a focus stop.
+-        disableModeLabelFocus(root);
+-        wireRemoteFocus();
+-        if(overlayScroll>=0){ScrollView expectedScroll=contentScroll;expectedScroll.post(()->{if(contentScroll==expectedScroll)expectedScroll.scrollTo(0,overlayScroll);});}
+-        boolean television=(getResources().getConfiguration().uiMode&android.content.res.Configuration.UI_MODE_TYPE_MASK)==android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
+-        if(focusedKey!=null||television){
+-            View restored=FocusNavigation.find(root,focusedKey);if(restored==null)restored=FocusNavigation.find(root,"tab:"+page);
+-            if(restored!=null)restored.requestFocus();
+-        }
+-        if(wholePageScroll)restoreScrollBeforeDraw(contentScroll,overlayScroll>=0?overlayScroll:previousScroll);
++            LinearLayout hero=new LinearLayout(this);hero.setGravity(Gravity.CENTER_VERTICAL);topBase.addView(hero,new LinearLayout.LayoutParams(-1,-2));LinearLayout rail=column();
++            LinearLayout link=new LinearLayout(this);link.setGravity(Gravity.CENTER_VERTICAL);link.setBackground(shape(CARD,9));link.setPadding(dp(4),0,dp(4),0);link.setTag(R.id.navigation_key,"bluetooth:toggle");link.setContentDescription("Подключение M30. Открыть Bluetooth внизу страницы");link.setOnClickListener(v->toggleInlineBluetooth());bluetoothButton=link;
++            headerBluetooth=new ImageView(this);link.addView(headerBluetooth,new LinearLayout.LayoutParams(dp(14),dp(18)));headerConnection=text("Подключение",12,headerAccent());headerConnection.setPadding(dp(3),0,0,0);headerConnection.setSingleLine(true);link.addView(headerConnection);
++            int controlHeight=Math.max(dp(36),headerConnection.getLineHeight()+dp(10)),controlWidth=Math.max(dp(100),(int)Math.ceil(headerConnection.getPaint().measureText("Подключение"))+dp(28));hero.addView(rail,new LinearLayout.LayoutParams(controlWidth,-2));link.setMinimumHeight(controlHeight);rail.addView(link,new LinearLayout.LayoutParams(-1,controlHeight));
++            gap(rail,3);rail.addView(headerAction("Выбрать","header:choose",this::devicePicker,controlWidth,controlHeight,R.drawable.ic_gamepad));gap(rail,3);rail.addView(headerAction("Опции","header:options",this::showOptions,controlWidth,controlHeight,R.drawable.ic_options_outline));gap(rail,3);rail.addView(headerAction("Клавиши","header:keys",this::showButtonGuide,controlWidth,controlHeight,R.drawable.ic_info_outline));
++            FrameLayout diagram=new FrameLayout(this);diagram.setPadding(dp(3),0,0,dp(16));hero.addView(diagram,new LinearLayout.LayoutParams(0,-2,1));pad=new PadView(this,session.state,null);pad.setTag(R.id.navigation_key,"header:pad");pad.setDisplayStyle(activeSlot,false);diagram.addView(pad,new FrameLayout.LayoutParams(-1,-2));
++            LinearLayout charge=new LinearLayout(this);charge.setGravity(Gravity.CENTER_VERTICAL);charge.setTag(R.id.navigation_key,"header:battery");charge.setContentDescription("Заряд M30");charge.setOnClickListener(v->showBatteryInfo());headerBattery=new BatteryIndicator(this);headerBattery.setAccent(headerAccent());charge.addView(headerBattery,new LinearLayout.LayoutParams(dp(18),dp(12)));headerPercent=text("—",11,headerAccent());headerPercent.setPadding(dp(4),0,0,0);charge.addView(headerPercent);diagram.addView(charge,new FrameLayout.LayoutParams(-2,dp(20),Gravity.TOP|Gravity.CENTER_HORIZONTAL));
++            headerVersions=text("Версия "+appVersion+" · прошивка —",10,MUTED);headerVersions.setGravity(Gravity.CENTER);headerVersions.setPadding(0,0,0,0);headerVersions.setSingleLine(true);diagram.addView(headerVersions,new FrameLayout.LayoutParams(-1,dp(16),Gravity.BOTTOM));
++        }
++        inputSummary=column();inputSummary.setBackground(shape(CARD,9));inputSummary.setPadding(dp(8),dp(4),dp(8),dp(4));inputSummary.setMinimumHeight(dp(44));LinearLayout.LayoutParams summaryLp=new LinearLayout.LayoutParams(-1,-2);summaryLp.setMargins(0,dp(4),0,dp(5));topBase.addView(inputSummary,summaryLp);
++        headerInputLine=text("",13,TEXT);headerInputLine.setIncludeFontPadding(false);headerInputLine.setTypeface(Typeface.MONOSPACE);headerInputLine.setSingleLine(true);headerInputLine.setAutoSizeTextTypeUniformWithConfiguration(10,13,1,android.util.TypedValue.COMPLEX_UNIT_SP);headerInputLine.setPadding(0,dp(1),0,dp(1));inputSummary.addView(headerInputLine,new LinearLayout.LayoutParams(-1,-2));headerInputAction=text("",13,accent());headerInputAction.setIncludeFontPadding(false);headerInputAction.setSingleLine(true);headerInputAction.setEllipsize(android.text.TextUtils.TruncateAt.END);headerInputAction.setPadding(0,dp(1),0,dp(1));inputSummary.addView(headerInputAction,new LinearLayout.LayoutParams(-1,-2));
++        content=column();pageBody.addView(content,new LinearLayout.LayoutParams(-1,-2));if(page!=1)connectionPage();else testPage();refreshLive();FocusNavigation.prepare(root);disableModeLabelFocus(root);wireRemoteFocus();
++        if(inlineBluetoothOpen&&page!=1)showInlineBluetooth();View restored=FocusNavigation.find(root,focusedKey);boolean tv=(getResources().getConfiguration().uiMode&android.content.res.Configuration.UI_MODE_TYPE_MASK)==android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;if(restored==null&&tv)restored=FocusNavigation.find(root,"tab:"+page);if(restored!=null&&restored.isShown())restored.requestFocus();restoreScrollBeforeDraw(contentScroll,previousScroll);
+     }
+     private boolean wideControllerLayout(){
+         android.content.res.Configuration c=getResources().getConfiguration();
+         return c.orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE&&(c.smallestScreenWidthDp>=600||(c.uiMode&android.content.res.Configuration.UI_MODE_TYPE_MASK)==android.content.res.Configuration.UI_MODE_TYPE_TELEVISION);
+     }
+-    private void renderWideControllers(){
++    private void renderWideControllers(String focusedKey,int previousScroll){
+         topRegion=null;topBase=null;bluetoothButton=null;bluetoothPlaceholder=null;
+-        LinearLayout pair=new LinearLayout(this);pair.setBaselineAligned(false);pair.setTag(R.id.navigation_key,"wide:pair");root.addView(pair,new LinearLayout.LayoutParams(-1,-2));content=pair;
++        LinearLayout pair=new LinearLayout(this);pair.setBaselineAligned(false);pair.setTag(R.id.navigation_key,"wide:pair");pageBody.addView(pair,new LinearLayout.LayoutParams(-1,-2));content=pair;
+         widePanels=new ControllerPanelView[2];
+         for(int slot=0;slot<2;slot++){widePanels[slot]=new ControllerPanelView(this,slot,controllers.slots[slot],this::wideAction);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);if(slot>0)lp.leftMargin=dp(12);pair.addView(widePanels[slot],lp);}
+         refreshLive();FocusNavigation.prepare(root);wireRemoteFocus();
+         if(inlineBluetoothOpen){ControllerPanelView expected=widePanels[0];root.post(()->{if(widePanels!=null&&widePanels[0]==expected)showInlineBluetooth();});}
+         boolean tv=(getResources().getConfiguration().uiMode&android.content.res.Configuration.UI_MODE_TYPE_MASK)==android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
+-        if(tv){View tab=FocusNavigation.find(root,"tab:"+page);if(tab!=null)tab.requestFocus();}
+-        restoreScrollBeforeDraw(contentScroll,0);
++        View restored=FocusNavigation.find(root,focusedKey);if(restored==null&&tv)restored=FocusNavigation.find(root,"tab:"+page);if(restored!=null&&restored.isShown())restored.requestFocus();
++        restoreScrollBeforeDraw(contentScroll,previousScroll);
+     }
+     private void wideAction(int slot,String action){
+         int target=slot==0?0:2;if(page!=target)switchPage(target,false);
+@@ -233,7 +184,7 @@
+         if(inlineBluetooth==null){inlineBluetooth=new BluetoothSearchController(this,inlineSaved,true,slotAccent(),()->{closeInlineBluetooth();switchPage(1);});inlineSaved=null;if(mainResumed)inlineBluetooth.resume();}
+         inlineBluetooth.reserveHeader(0,0);
+         if(wideOverlay==null){wideOverlay=column();wideOverlay.setPadding(dp(8),dp(8),dp(8),dp(8));wideOverlay.setBackgroundColor(BG);wideOverlay.setTag(R.id.navigation_key,"wide:connection");
+-            LinearLayout titleRow=new LinearLayout(this);titleRow.setGravity(Gravity.CENTER_VERTICAL);wideOverlay.addView(titleRow,new LinearLayout.LayoutParams(-1,-2));TextView label=title("Connection · Джойстик "+(activeSlot+1),16);titleRow.addView(label,new LinearLayout.LayoutParams(0,-2,1));Button close=headerAction("Закрыть","wide:connection:close",this::closeInlineBluetooth,dp(96),dp(44));titleRow.addView(close);
++            LinearLayout titleRow=new LinearLayout(this);titleRow.setGravity(Gravity.CENTER_VERTICAL);wideOverlay.addView(titleRow,new LinearLayout.LayoutParams(-1,-2));TextView label=title("Подключение · Джойстик "+(activeSlot+1),16);titleRow.addView(label,new LinearLayout.LayoutParams(0,-2,1));Button close=headerAction("Закрыть","wide:connection:close",this::closeInlineBluetooth,dp(96),dp(44));titleRow.addView(close);
+             if(inlineBluetooth.view().getParent() instanceof ViewGroup)((ViewGroup)inlineBluetooth.view().getParent()).removeView(inlineBluetooth.view());wideOverlay.addView(inlineBluetooth.view(),new LinearLayout.LayoutParams(-1,0,1));opposite.addView(wideOverlay,new FrameLayout.LayoutParams(-1,-1));}
+         opposite.body.setVisibility(View.INVISIBLE);wideOverlay.bringToFront();FocusNavigation.prepare(wideOverlay);wireRemoteFocus();
+     }
+@@ -256,32 +207,11 @@
+             if(inlineBluetoothOpen&&inlineBluetooth!=null){inlineBluetooth.boundaries(widePanels[activeSlot].connect,FocusNavigation.find(root,"wide:connection:close"));FocusNavigation.route(widePanels[activeSlot].connect,activeSlot==0?View.FOCUS_RIGHT:View.FOCUS_LEFT,inlineBluetooth.firstAction());}
+             return;
+         }
+-        View bluetooth=FocusNavigation.find(root,"bluetooth:toggle"),battery=FocusNavigation.find(root,"header:battery"),choose=FocusNavigation.find(root,"header:choose"),diagram=FocusNavigation.find(root,"header:pad");
+-        View currentTab=FocusNavigation.find(root,"tab:"+page);
+-        View options=FocusNavigation.find(root,"header:options"),keys=FocusNavigation.find(root,"header:keys"),firstMode=FocusNavigation.find(root,"mode:0");
+-        View[] left={bluetooth,battery,choose,options,keys};
+-        for(int n=0;n<left.length;n++){
+-            FocusNavigation.route(left[n],View.FOCUS_UP,n==0?currentTab:left[n-1]);
+-            FocusNavigation.route(left[n],View.FOCUS_DOWN,n==left.length-1?(inlineBluetoothOpen&&inlineBluetooth!=null?inlineBluetooth.firstAction():firstMode):left[n+1]);
+-            FocusNavigation.route(left[n],View.FOCUS_RIGHT,diagram);
+-        }
+-        FocusNavigation.route(diagram,View.FOCUS_LEFT,bluetooth);
+-        FocusNavigation.route(diagram,View.FOCUS_UP,currentTab);
+-        FocusNavigation.route(diagram,View.FOCUS_DOWN,inlineBluetoothOpen&&inlineBluetooth!=null?inlineBluetooth.firstAction():firstMode);
+-        for(int tab:new int[]{0,2,1}){
+-            View t=FocusNavigation.find(root,"tab:"+tab);
+-            FocusNavigation.route(t,View.FOCUS_DOWN,inlineBluetoothOpen&&inlineBluetooth!=null?inlineBluetooth.firstAction():bluetooth);
+-        }
+-        View previous=null;for(int mode:new int[]{0,1,3,2}){
+-            View choice=FocusNavigation.find(root,"mode:"+mode);
+-            FocusNavigation.route(choice,View.FOCUS_UP,keys);
+-            if(previous!=null&&choice!=null){FocusNavigation.route(previous,View.FOCUS_RIGHT,choice);FocusNavigation.route(choice,View.FOCUS_LEFT,previous);}previous=choice;
+-        }
+-        if(inlineBluetoothOpen&&inlineBluetooth!=null){
+-            inlineBluetooth.boundaries(bluetooth,currentTab);
+-            FocusNavigation.route(bluetooth,View.FOCUS_DOWN,inlineBluetooth.firstAction());
+-            FocusNavigation.route(bluetooth,View.FOCUS_RIGHT,inlineBluetooth.firstAction());
+-        }
++        View bluetooth=FocusNavigation.find(root,"bluetooth:toggle"),battery=FocusNavigation.find(root,"header:battery"),choose=FocusNavigation.find(root,"header:choose"),diagram=FocusNavigation.find(root,"header:pad"),options=FocusNavigation.find(root,"header:options"),keys=FocusNavigation.find(root,"header:keys"),currentTab=FocusNavigation.find(root,"tab:"+page);View[] rail={bluetooth,choose,options,keys};
++        for(int n=0;n<rail.length;n++){FocusNavigation.route(rail[n],View.FOCUS_UP,n==0?currentTab:rail[n-1]);FocusNavigation.route(rail[n],View.FOCUS_DOWN,n==3?FocusNavigation.find(root,"mode:0"):rail[n+1]);FocusNavigation.route(rail[n],View.FOCUS_RIGHT,diagram);}
++        FocusNavigation.route(diagram,View.FOCUS_LEFT,bluetooth);FocusNavigation.route(diagram,View.FOCUS_RIGHT,diagram);FocusNavigation.route(diagram,View.FOCUS_UP,battery);FocusNavigation.route(battery,View.FOCUS_DOWN,diagram);FocusNavigation.route(battery,View.FOCUS_UP,currentTab);FocusNavigation.route(battery,View.FOCUS_LEFT,bluetooth);FocusNavigation.route(diagram,View.FOCUS_DOWN,FocusNavigation.find(root,"mode:0"));for(int tab:new int[]{0,2,1})FocusNavigation.route(FocusNavigation.find(root,"tab:"+tab),View.FOCUS_DOWN,bluetooth);
++        View previous=null;for(int mode:new int[]{0,1,3,2}){View choice=FocusNavigation.find(root,"mode:"+mode);FocusNavigation.route(choice,View.FOCUS_UP,keys);if(previous!=null){FocusNavigation.route(previous,View.FOCUS_RIGHT,choice);FocusNavigation.route(choice,View.FOCUS_LEFT,previous);}if(inlineBluetoothOpen&&inlineBluetooth!=null)FocusNavigation.route(choice,View.FOCUS_DOWN,inlineBluetooth.firstAction());previous=choice;}
++        if(inlineBluetoothOpen&&inlineBluetooth!=null)inlineBluetooth.boundaries(FocusNavigation.find(root,"mode:0"),FocusNavigation.find(root,"single:connection:close"));
+     }
+     private int connectionPageId(){return activeSlot==0?0:2;}
+     private InputDevice controllerDevice(ControllerSession target){return target.connected()?InputDevice.getDevice(target.deviceId):null;}
+@@ -314,29 +244,10 @@
+         return super.dispatchTouchEvent(e);
+     }
+     private void connectionPage(){
+-        LinearLayout c=card(null);
+-        TextView connectionHeading=text("Подключение M30  ⓘ",15,TEXT);connectionHeading.setMinimumHeight(dp(44));connectionHeading.setFocusable(true);connectionHeading.setTag(R.id.navigation_key,"connection:help");connectionHeading.setOnClickListener(v->showLedGuide());connectionHeading.setIncludeFontPadding(false);connectionHeading.setGravity(Gravity.CENTER);c.addView(connectionHeading,new LinearLayout.LayoutParams(-1,-2));
+-        modeResultView=text("—",14,accent());modeResultView.setIncludeFontPadding(false);modeResultView.setGravity(Gravity.CENTER);c.addView(modeResultView,new LinearLayout.LayoutParams(-1,-2));modeResultView.setOnClickListener(v->new FocusDialogBuilder(dialogContext()).setTitle("Определение режима").setMessage(modeResult().evidence+"\n\nВыделенный пункт ниже выбирает инструкцию и схему. Он не переключает режим джойстика.").setPositiveButton("Закрыть",null).show());gap(c,8);
+-        LinearLayout modes=new LinearLayout(this);modes.setGravity(Gravity.CENTER_VERTICAL);modes.setBaselineAligned(false);c.addView(modes,new LinearLayout.LayoutParams(-1,-2));
+-        String[] names={"Android","Windows","macOS","Switch"};int[] order={0,1,3,2};
+-        for(int i=0;i<names.length;i++){
+-            final int option=order[i];boolean active=session.mode==option;
+-            LinearLayout choice=column();choice.setGravity(Gravity.CENTER);choice.setPadding(dp(3),dp(4),dp(3),dp(4));choice.setSelected(active);choice.setFocusable(true);choice.setTag(R.id.navigation_key,"mode:"+option);
+-            TextView name=text(names[i],active?14:13,active?accent():MUTED);name.setTypeface(Typeface.create("sans-serif",active?Typeface.BOLD:Typeface.NORMAL));name.setGravity(Gravity.CENTER);name.setPadding(0,0,0,0);name.setSingleLine(true);name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);choice.addView(name,new LinearLayout.LayoutParams(-1,-2));
+-            TextView combo=text(ConnectionGuide.shortKey(option),10,active?accent():MUTED);combo.setGravity(Gravity.CENTER);combo.setPadding(0,0,0,0);combo.setSingleLine(true);combo.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);choice.addView(combo,new LinearLayout.LayoutParams(-1,-2));
+-            ModeLedsView leds=new ModeLedsView(this,option);leds.setAccent(accent());choice.addView(leds,new LinearLayout.LayoutParams(-1,dp(16)));
+-            GradientDrawable background=shape(active?0xff2d2b22:Color.TRANSPARENT,12);if(active)background.setStroke(dp(1.5f),accent());choice.setBackground(background);
+-            choice.setContentDescription(modeNames[option]+(active?", выбран":", выбрать")+". "+modeKeys[option]+". При включении: "+ConnectionGuide.ledDescription(option));choice.setOnClickListener(v->{if(session.mode!=option)selectMode(option);});name.setOnClickListener(v->choice.performClick());name.setFocusable(false);
+-            choice.setMinimumHeight(dp(66));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);lp.gravity=Gravity.CENTER_VERTICAL;if(i>0)lp.leftMargin=dp(4);modes.addView(choice,lp);
+-        }
+-        TextView ledCaption=text("Огоньки при включении · до PAIR",12,MUTED);ledCaption.setGravity(Gravity.CENTER);ledCaption.setPadding(0,dp(6),0,dp(6));c.addView(ledCaption,new LinearLayout.LayoutParams(-1,-2));
+-        for(String step:ConnectionGuide.compactSteps(session.mode)){TextView instruction=text(step,14,TEXT);instruction.setIncludeFontPadding(false);instruction.setPadding(0,dp(4),0,dp(4));c.addView(instruction);}
+-        TextView connectedLeds=text(ConnectionGuide.connectedLeds(),13,MUTED);connectedLeds.setPadding(0,dp(8),0,0);c.addView(connectedLeds,new LinearLayout.LayoutParams(-1,-2));
+-        bindHint=text("",13,accent());content.addView(bindHint);
+-    }
+-    private Button headerAction(String label,String key,Runnable action,int width,int height){
+-        Button b=button(label,action,false);b.setBackground(shape(CARD,8));b.setTextColor(headerAccent());b.setTag(R.id.navigation_key,key);b.setPadding(dp(6),dp(3),dp(6),dp(3));b.setLayoutParams(new LinearLayout.LayoutParams(width,height));return b;
+-    }
++        connectionCard=new ConnectionCardView(this,session.mode,slotAccent(),"",mode->{if(session.mode!=mode)selectMode(mode);},this::showLedGuide);content.addView(connectionCard,new LinearLayout.LayoutParams(-1,-2));bindHint=text("",13,accent());bindHint.setPadding(0,0,0,0);content.addView(bindHint);
++    }
++    private Button headerAction(String label,String key,Runnable action,int width,int height){return headerAction(label,key,action,width,height,0);}
++    private Button headerAction(String label,String key,Runnable action,int width,int height,int image){Button b=new Button(this);b.setAllCaps(false);b.setText(label);b.setTextSize(12);b.setTextColor(headerAccent());b.setMinHeight(0);b.setMinimumHeight(0);b.setMinWidth(0);b.setMinimumWidth(0);b.setBackground(shape(CARD,9));b.setPadding(dp(5),dp(3),dp(5),dp(3));b.setTag(R.id.navigation_key,key);b.setGravity(Gravity.CENTER_VERTICAL|Gravity.START);b.setOnClickListener(v->action.run());b.setLayoutParams(new LinearLayout.LayoutParams(width,height));if(image!=0){android.graphics.drawable.Drawable icon=getDrawable(image).mutate();icon.setTint(headerAccent());icon.setBounds(0,0,dp(13),dp(13));b.setCompoundDrawablesRelative(icon,null,null,null);b.setCompoundDrawablePadding(dp(4));}return b;}
+     private ButtonGuideCard buttonGuideContent(){
+         ButtonGuideCard c=new ButtonGuideCard(this,wholePageScroll?Math.max(1,guideViewportHeight()-dp(120)):0);c.setPadding(dp(14),dp(12),dp(14),dp(12));
+         TextView heading=title("Кнопки в Android",18);heading.setGravity(Gravity.CENTER);c.addView(heading,new LinearLayout.LayoutParams(-1,-2));
+@@ -353,7 +264,7 @@
+     }
+     private void showOptions(){
+         if(optionsDialog!=null)return;LinearLayout body=column();body.setPadding(dp(16),0,dp(16),dp(12));ScrollView scroll=new ScrollView(this);scroll.addView(body);
+-        AlertDialog dialog=new FocusDialogBuilder(dialogContext()).setTitle("Options").setView(scroll).setNegativeButton("Закрыть",null).create();optionsDialog=dialog;
++        AlertDialog dialog=new FocusDialogBuilder(dialogContext()).setTitle("Опции").setView(scroll).setNegativeButton("Закрыть",null).create();optionsDialog=dialog;
+         body.addView(button("Дополнительно",()->{dialog.dismiss();showExtraActions();},false));firmwareSection(body);
+         dialog.setOnDismissListener(d->{if(optionsDialog!=dialog)return;optionsDialog=null;firmwareEntry=null;firmwareCableHint=null;});dialog.show();FocusNavigation.prepare(dialog.getWindow().getDecorView());lastUsbStateCheck=0;refreshFirmwareEntry();
+     }
+@@ -385,7 +296,7 @@
+         new FocusDialogBuilder(dialogContext()).setTitle("Что означают огоньки M30").setView(scroll).setPositiveButton("Закрыть",null).setNeutralButton("Инструкция 8BitDo",(dialog,which)->{try{startActivity(new Intent(Intent.ACTION_VIEW,android.net.Uri.parse("https://download.8bitdo.com/Manual/Controller/M30/M30_Manual.pdf")));}catch(ActivityNotFoundException error){toast("Нет приложения для открытия инструкции");}}).show();
+     }
+     private void testPage(){
+-        LinearLayout c=card("Кнопки · все устройства");
++        LinearLayout c=card("Тест кнопок · все устройства");
+         c.addView(text("Нажмите клавишу на клавиатуре, пульте или геймпаде. Видны события, которые Android передаёт этому экрану.",12,MUTED));
+         inputSourceView=text("",14,TEXT);inputSourceView.setMinLines(2);c.addView(inputSourceView);
+         lastCodeView=title("—",40);lastCodeView.setTextColor(accent());lastCodeView.setTypeface(Typeface.MONOSPACE);c.addView(lastCodeView);
+@@ -440,7 +351,7 @@
+         }).setNegativeButton("Закрыть",null).show();
+     }
+     private void showAutoFollowSetting(){
+-        new FocusDialogBuilder(dialogContext()).setTitle("Автопереход по нажатию").setMessage("На страницах джойстиков новое нажатие кнопки или отклонение крестовины открывает страницу того геймпада, от которого пришёл ввод. Отпускание, нейтраль осей и повтор удержания не переключают вкладку. В Keyboard, меню, диагностике и во время назначения кнопки автопереход не действует.")
++        new FocusDialogBuilder(dialogContext()).setTitle("Автопереход по нажатию").setMessage("На страницах джойстиков новое нажатие кнопки или отклонение крестовины открывает страницу того геймпада, от которого пришёл ввод. Отпускание, нейтраль осей и повтор удержания не переключают вкладку. Во вкладке «Тест кнопок», меню, диагностике и во время назначения кнопки автопереход не действует.")
+             .setPositiveButton(autoFollowControllers?"Выключить":"Включить",(d,w)->{autoFollowControllers=!autoFollowControllers;getPreferences(0).edit().putBoolean("follow_controller_input",autoFollowControllers).apply();toast(autoFollowControllers?"Автопереход включён":"Автопереход выключен");}).setNegativeButton("Отмена",null).show();
+     }
+     private boolean followControllerInput(ControllerSession target,boolean physicalGamepad,boolean freshActivity){
+@@ -538,7 +449,7 @@
+         new FocusDialogBuilder(dialogContext()).setTitle("Устройства Android").setMessage(String.join("\n\n",rows)+"\n\nВстроенные кнопки и сенсоры телефона тоже являются источниками ввода. Здесь они только перечислены; тест M30 не переключается на них.").setPositiveButton("Закрыть",null).show();
+     }
+     private void showHelp(){
+-        new FocusDialogBuilder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Кнопки».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.37 · неофициальное приложение."))
++        new FocusDialogBuilder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Тест кнопок».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.37 · неофициальное приложение."))
+             .setPositiveButton("Закрыть",null).setNeutralButton("Официальный PDF",(d,w)->{try{startActivity(new Intent(Intent.ACTION_VIEW,android.net.Uri.parse("https://download.8bitdo.com/Manual/Controller/M30/M30_Manual.pdf")));}catch(ActivityNotFoundException e){toast("Нет приложения для открытия ссылки");}}).show();
+     }
+     private ArrayList<ControllerTelemetry.Source> telemetrySources(boolean readBattery){return telemetrySources(session,readBattery);}
+@@ -794,12 +705,12 @@
+             if(!code.contentEquals(headerInputLine.getText()))headerInputLine.setText(code);
+             if(!action.contentEquals(headerInputAction.getText()))headerInputAction.setText(action);
+         }
+-        if(headerConnection!=null){boolean connected=device!=null;headerConnection.setText(connected?"Connect":"No Connect");headerConnection.setTextColor(page==1?headerAccent():connected?headerAccent():0xfff36b65);headerBluetooth.setImageResource(connected?R.drawable.ic_bluetooth:R.drawable.ic_bluetooth_off);headerBluetooth.setImageTintList(android.content.res.ColorStateList.valueOf(page==1?headerAccent():connected?headerAccent():0xfff36b65));headerBluetooth.setContentDescription(connected?"M30 подключён. Bluetooth":"M30 не подключён. Bluetooth перечёркнут");headerConnection.setContentDescription("Геймпад "+(activeSlot+1)+". "+(connected?device.getName()+" · ID "+device.getId():"Не подключён"));}
++        if(headerConnection!=null){boolean connected=device!=null;headerConnection.setText("Подключение");headerConnection.setTextColor(page==1?headerAccent():connected?headerAccent():0xfff36b65);headerBluetooth.setImageResource(connected?R.drawable.ic_bluetooth:R.drawable.ic_bluetooth_off);headerBluetooth.setImageTintList(android.content.res.ColorStateList.valueOf(page==1?headerAccent():connected?headerAccent():0xfff36b65));headerBluetooth.setContentDescription(connected?"M30 подключён. Bluetooth":"M30 не подключён. Bluetooth перечёркнут");headerConnection.setContentDescription("Геймпад "+(activeSlot+1)+". "+(connected?device.getName()+" · ID "+device.getId():"Не подключён"));}
+         if(headerBattery!=null){float capacity=batteryCapacity();headerBattery.setCapacity(capacity);headerPercent.setText(capacity<0?"—":Math.round(capacity*100)+"%");headerPercent.setContentDescription(batteryText());}
+         if(modeResultView!=null){modeResultView.setVisibility(page!=1||device!=null?View.VISIBLE:View.GONE);modeResultView.setText(page!=1?modeSummaryText():modeStatusText());modeResultView.setTextColor(page!=1?(modeResult().candidate>=0?accent():MUTED):session.confirmation.current()==session.mode?GREEN:MUTED);}
+         if(sourceHintView!=null){InputDevice pending=pendingSourceId<0?null:InputDevice.getDevice(pendingSourceId);
+             sourceHintView.setVisibility(discoveringSource||pending!=null?View.VISIBLE:View.GONE);
+-            sourceHintView.setText(discoveringSource?"Нажмите A или B на M30. Внешнюю клавиатуру пока не нажимайте.":pending!=null?"Нажатие от «"+pending.getName()+"» · ID "+pending.getId()+". Выбрать его для проверки?":"Подключите M30 и выберите его кнопкой Choose или найдите нажатием.");
++            sourceHintView.setText(discoveringSource?"Нажмите A или B на M30. Внешнюю клавиатуру пока не нажимайте.":pending!=null?"Нажатие от «"+pending.getName()+"» · ID "+pending.getId()+". Выбрать его для проверки?":"Подключите M30 и выберите его кнопкой «Выбрать» или найдите нажатием.");
+             useSourceButton.setVisibility(!discoveringSource&&pending!=null?View.VISIBLE:View.GONE);
+         }
+         if(page!=1&&lastCodeView!=null){InputMonitor.Key k=session.monitor.lastSelected;
+@@ -848,36 +759,18 @@
+         new FocusDialogBuilder(dialogContext()).setTitle("Заряд M30").setMessage(InstructionText.format(info)).setPositiveButton("Закрыть",null).show();
+     }
+     private String batteryText(){float capacity=batteryCapacity();return capacity<0?(device==null?"M30 не подключён":"Батарея геймпада: нет данных от Android"):"Батарея геймпада: "+Math.round(capacity*100)+"%";}
+-    private void positionBluetoothButton(){
+-        if(page==1||bluetoothPlaceholder==null||bluetoothButton==null||topRegion==null)return;
+-        android.graphics.Rect bounds=new android.graphics.Rect();bluetoothPlaceholder.getDrawingRect(bounds);topRegion.offsetDescendantRectToMyCoords(bluetoothPlaceholder,bounds);
+-        FrameLayout.LayoutParams lp=(FrameLayout.LayoutParams)bluetoothButton.getLayoutParams();
+-        if(lp.leftMargin!=bounds.left||lp.topMargin!=bounds.top){lp.leftMargin=bounds.left;lp.topMargin=bounds.top;bluetoothButton.setLayoutParams(lp);}
+-        if(inlineBluetooth!=null)inlineBluetooth.reserveHeader(bounds.top,bounds.right);
+-    }
+     private void showInlineBluetooth(){
+-        if(widePanels!=null){if(inlineBluetoothOpen)showWideBluetooth();return;}
+-        if(!inlineBluetoothOpen||page==1||topRegion==null)return;
+-        if(topRegion.getHeight()==0){FrameLayout expected=topRegion;topRegion.postOnAnimation(()->{if(topRegion==expected)showInlineBluetooth();});return;}
+-        if(inlineBluetooth==null){inlineBluetooth=new BluetoothSearchController(this,inlineSaved,true,headerAccent(),()->{closeInlineBluetooth();switchPage(1);});inlineSaved=null;if(mainResumed)inlineBluetooth.resume();}
+-        if(inlineHeight==0)inlineHeight=Math.max(dp(280),guideViewportHeight()-tabs.getHeight()-dp(10)-root.getPaddingTop()-root.getPaddingBottom());
+-        if(wholePageScroll)content.setVisibility(View.GONE);else contentScroll.setVisibility(View.GONE);
+-        LinearLayout.LayoutParams region=(LinearLayout.LayoutParams)topRegion.getLayoutParams();if(region.height!=inlineHeight){region.height=inlineHeight;topRegion.setLayoutParams(region);}
+-        if(inlineBluetooth.view().getParent()!=topRegion)topRegion.addView(inlineBluetooth.view(),1,new FrameLayout.LayoutParams(-1,inlineHeight));
+-        topBase.setVisibility(View.INVISIBLE);bluetoothButton.bringToFront();positionBluetoothButton();wireRemoteFocus();
++        if(!inlineBluetoothOpen||page==1)return;if(widePanels!=null){showWideBluetooth();return;}if(pageBody==null||singleBluetoothHost!=null)return;
++        if(inlineBluetooth==null){inlineBluetooth=new BluetoothSearchController(this,inlineSaved,true,slotAccent(),()->{closeInlineBluetooth();switchPage(1);});inlineSaved=null;if(mainResumed)inlineBluetooth.resume();}inlineBluetooth.reserveHeader(0,0);
++        singleBluetoothHost=column();singleBluetoothHost.setTag(R.id.navigation_key,"single:connection");singleBluetoothHost.setPadding(0,dp(5),0,0);LinearLayout heading=new LinearLayout(this);heading.setGravity(Gravity.CENTER_VERTICAL);singleBluetoothHost.addView(heading,new LinearLayout.LayoutParams(-1,-2));TextView title=title("Bluetooth · Джойстик "+(activeSlot+1),14);heading.addView(title,new LinearLayout.LayoutParams(0,-2,1));heading.addView(headerAction("Закрыть","single:connection:close",this::closeInlineBluetooth,dp(78),dp(36)));if(inlineBluetooth.view().getParent() instanceof ViewGroup)((ViewGroup)inlineBluetooth.view().getParent()).removeView(inlineBluetooth.view());singleBluetoothHost.addView(inlineBluetooth.view(),new LinearLayout.LayoutParams(-1,0,1));pageBody.addView(singleBluetoothHost,new LinearLayout.LayoutParams(-1,dp(280),1));FocusNavigation.prepare(singleBluetoothHost);wireRemoteFocus();
+     }
+     private void closeInlineBluetooth(){
+-        int keepY=contentScroll==null?0:contentScroll.getScrollY();
+-        inlineBluetoothOpen=false;inlineSaved=null;inlineHeight=0;
++        int keepY=contentScroll==null?0:contentScroll.getScrollY();inlineBluetoothOpen=false;inlineSaved=null;inlineHeight=0;
+         if(inlineBluetooth!=null){View panel=inlineBluetooth.view();if(panel.getParent() instanceof ViewGroup)((ViewGroup)panel.getParent()).removeView(panel);inlineBluetooth.destroy();inlineBluetooth=null;}
++        if(singleBluetoothHost!=null&&singleBluetoothHost.getParent() instanceof ViewGroup)((ViewGroup)singleBluetoothHost.getParent()).removeView(singleBluetoothHost);singleBluetoothHost=null;
+         if(widePanels!=null){if(wideOverlay!=null&&wideOverlay.getParent() instanceof ViewGroup)((ViewGroup)wideOverlay.getParent()).removeView(wideOverlay);wideOverlay=null;for(ControllerPanelView panel:widePanels)panel.body.setVisibility(View.VISIBLE);}
+-        if(topBase!=null)topBase.setVisibility(View.VISIBLE);
+-        if(widePanels==null){if(wholePageScroll&&content!=null)content.setVisibility(View.VISIBLE);else if(contentScroll!=null)contentScroll.setVisibility(View.VISIBLE);}
+-        if(topRegion!=null){LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)topRegion.getLayoutParams();lp.height=-2;topRegion.setLayoutParams(lp);}
+-        if(root!=null)wireRemoteFocus();
+-        if(widePanels!=null)widePanels[activeSlot].connect.requestFocus();
+-        if(bluetoothButton!=null&&page!=1&&!isFinishing()&&(!wholePageScroll||bluetoothButton.getGlobalVisibleRect(new android.graphics.Rect())))bluetoothButton.requestFocus();
+-        if(wholePageScroll&&contentScroll!=null){ScrollView expected=contentScroll;expected.post(()->{if(contentScroll==expected)expected.scrollTo(0,keepY);});}
++        if(root!=null)wireRemoteFocus();if(mainResumed&&!isFinishing()&&!isDestroyed()){View anchor=widePanels!=null?widePanels[activeSlot].connect:bluetoothButton;if(anchor!=null&&anchor.isShown())anchor.requestFocus();}
++        if(contentScroll!=null){ScrollView expected=contentScroll;expected.post(()->{if(contentScroll==expected)expected.scrollTo(0,keepY);});}
+     }
+     private void toggleInlineBluetooth(){if(inlineBluetoothOpen)closeInlineBluetooth();else{inlineBluetoothOpen=true;showInlineBluetooth();}}
+     private void openBluetoothSearch(){if(page==1)switchPage(connectionPageId());if(!inlineBluetoothOpen){inlineBluetoothOpen=true;showInlineBluetooth();}}
+--- a/app/src/main/java/app/m30/companion/RemoteNavigation.java
++++ b/app/src/main/java/app/m30/companion/RemoteNavigation.java
+@@ -3,7 +3,7 @@
+ /** Only remote/keyboard menu keys bypass the input tester. Gamepad events stay testable. */
+ public final class RemoteNavigation {
+     private RemoteNavigation(){}
+-    public static String pageCaption(int page){return page==0?"Gamepad 1":page==2?"Gamepad 2":"Keyboard";}
++    public static String pageCaption(int page){return page==0?"Джойстик 1":page==2?"Джойстик 2":"Тест кнопок";}
+     public static boolean pagesFrom(String focusedKey,boolean gamepad,boolean horizontalEdge){
+         return !gamepad&&(horizontalEdge||(focusedKey!=null&&focusedKey.startsWith("tab:")));
+     }
+--- a/app/src/main/res/drawable/ic_info_outline.xml
++++ b/app/src/main/res/drawable/ic_info_outline.xml
+@@ -0,0 +1 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="13dp" android:height="13dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.6" android:pathData="M22,12 A10,10 0,1 1,2 12 A10,10 0,1 1,22 12 Z M12,10 L12,17 M12,6 L12,7"/></vector>
+--- a/app/src/main/res/drawable/ic_options_outline.xml
++++ b/app/src/main/res/drawable/ic_options_outline.xml
+@@ -0,0 +1 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="13dp" android:height="13dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.6" android:strokeLineJoin="round" android:pathData="M8.94,4.61 L10.06,4.24 L10.03,1.89 L13.97,1.89 L13.94,4.24 L15.06,4.61 L15.06,4.61 L16.12,5.14 L17.76,3.46 L20.54,6.24 L18.86,7.88 L19.39,8.94 L19.39,8.94 L19.76,10.06 L22.11,10.03 L22.11,13.97 L19.76,13.94 L19.39,15.06 L19.39,15.06 L18.86,16.12 L20.54,17.76 L17.76,20.54 L16.12,18.86 L15.06,19.39 L15.06,19.39 L13.94,19.76 L13.97,22.11 L10.03,22.11 L10.06,19.76 L8.94,19.39 L8.94,19.39 L7.88,18.86 L6.24,20.54 L3.46,17.76 L5.14,16.12 L4.61,15.06 L4.61,15.06 L4.24,13.94 L1.89,13.97 L1.89,10.03 L4.24,10.06 L4.61,8.94 L4.61,8.94 L5.14,7.88 L3.46,6.24 L6.24,3.46 L7.88,5.14 L8.94,4.61 Z"/><path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.6" android:pathData="M15.1,12 A3.1,3.1 0,1 1,8.9 12 A3.1,3.1 0,1 1,15.1 12 Z"/></vector>
+--- a/tests/RemoteNavigationTest.java
++++ b/tests/RemoteNavigationTest.java
+@@ -25,7 +25,7 @@
+             if(RemoteNavigation.pageTarget(pages[n],21,true)!=pages[Math.max(0,n-1)])throw new AssertionError("Left page order");
+             if(RemoteNavigation.pageTarget(pages[n],22,false)!=pages[n])throw new AssertionError("Local horizontal navigation escaped into page switch");
+         }
+-        if(!RemoteNavigation.pageCaption(1).equals("Keyboard")||!RemoteNavigation.pageCaption(2).equals("Gamepad 2"))throw new AssertionError("Page caption mapping");
++        if(!RemoteNavigation.pageCaption(1).equals("Тест кнопок")||!RemoteNavigation.pageCaption(2).equals("Джойстик 2"))throw new AssertionError("Page caption mapping");
+         System.out.println("PASS: remote/keyboard menu keys remain navigable; gamepad input and test keys stay separate");
+     }
+ }

@@ -1,0 +1,441 @@
+--- 1.34/app/src/main/java/app/m30/companion/BluetoothControllerActivity.java
++++ 1.35/app/src/main/java/app/m30/companion/BluetoothControllerActivity.java
+@@ -0,0 +1,167 @@
++package app.m30.companion;
++
++import android.Manifest;
++import android.app.*;
++import android.bluetooth.*;
++import android.content.*;
++import android.content.pm.PackageManager;
++import android.graphics.drawable.GradientDrawable;
++import android.location.LocationManager;
++import android.os.*;
++import android.provider.Settings;
++import android.view.*;
++import android.widget.*;
++import java.util.*;
++
++/** User-started Classic discovery and public createBond; no hidden HID connect API. */
++public final class BluetoothControllerActivity extends Activity {
++    private static final int BG=0xff000000,CARD=0xff181818,TEXT=0xfff6f3e8,MUTED=0xffbbb7a8,ACCENT=0xffb6a45e;
++    private static final int PERMISSIONS=51,ENABLE=52,MAX_RESULTS=64;
++    private BluetoothAdapter adapter;
++    private final Handler handler=new Handler(Looper.getMainLooper());
++    private final Map<String,BluetoothDevice> candidates=new LinkedHashMap<>();
++    private final Map<String,Button> rows=new LinkedHashMap<>();
++    private final BluetoothPairingState pairing=new BluetoothPairingState();
++    private LinearLayout body,results;
++    private TextView status,empty;
++    private Button search,stop;
++    private boolean registered,ownsDiscovery,resumed;
++    private final Runnable scanTimeout=()->finishScan("Поиск завершён. Если M30 не найден, включите PAIR и повторите.");
++    private final Runnable pairTimeout=()->reconcilePair();
++    private final BroadcastReceiver receiver=new BroadcastReceiver(){@Override public void onReceive(Context context,Intent intent){
++        if(!resumed||!hasPermissions())return;
++        String action=intent.getAction();
++        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
++            if(ownsDiscovery){ownsDiscovery=false;handler.removeCallbacks(scanTimeout);status.setText("Поиск завершён. Выберите геймпад или повторите поиск.");updateControls();}return;
++        }
++        if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)){
++            if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR)==BluetoothAdapter.STATE_OFF){finishScan("Bluetooth выключен.");pairing.fail();updateControls();}return;
++        }
++        BluetoothDevice found=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);if(found==null)return;
++        try{
++            if(BluetoothDevice.ACTION_FOUND.equals(action)&&ownsDiscovery){String name=intent.getStringExtra(BluetoothDevice.EXTRA_NAME);offer(found,name);}
++            else if(BluetoothDevice.ACTION_NAME_CHANGED.equals(action)&&(ownsDiscovery||candidates.containsKey(found.getAddress())))offer(found,intent.getStringExtra(BluetoothDevice.EXTRA_NAME));
++            else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)){
++                if(candidates.containsKey(found.getAddress()))offer(found,null);
++                if(pairing.bondEvent(found.getAddress(),intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,BluetoothDevice.ERROR)))showPairState();
++            }
++        }catch(SecurityException error){accessLost();}
++    }};
++    private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
++    private GradientDrawable shape(int color){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(14));return d;}
++    private TextView label(String value,int size,int color){TextView v=new TextView(this);v.setText(value);v.setTextColor(color);v.setTextSize(size);v.setPadding(0,dp(7),0,dp(7));return v;}
++    private Button button(String text,Runnable action){Button b=new Button(this);b.setText(text);b.setAllCaps(false);b.setTextSize(14);b.setTextColor(TEXT);b.setBackground(shape(CARD));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setMinHeight(dp(48));b.setOnClickListener(v->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(7);b.setLayoutParams(lp);return b;}
++    @Override public void onCreate(Bundle saved){
++        super.onCreate(saved);getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
++        BluetoothManager manager=getSystemService(BluetoothManager.class);adapter=manager==null?null:manager.getAdapter();
++        if(saved!=null)pairing.restore(saved.getString("address"),saved.getInt("phase"),saved.getLong("deadline"),saved.getBoolean("sawBonding"),SystemClock.elapsedRealtime());
++        ScrollView scroll=new ScrollView(this);scroll.setBackgroundColor(BG);body=new LinearLayout(this);body.setOrientation(LinearLayout.VERTICAL);body.setPadding(dp(18),dp(12),dp(18),dp(20));scroll.addView(body);setContentView(scroll);
++        if(Build.VERSION.SDK_INT>=30)body.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(dp(18)+i.left,dp(12)+i.top,dp(18)+i.right,dp(20)+i.bottom);return insets;});
++        body.addView(label("Поиск геймпадов",22,TEXT));
++        body.addView(label("Включите нужный режим M30, затем удерживайте PAIR 2 секунды до бегущих огней.",14,ACCENT));
++        body.addView(label("Показаны кандидаты по имени и типу Bluetooth. M30 — первым. Другие геймпады могут иметь общее имя; модель не подтверждена.",12,MUTED));
++        status=label(adapter==null?"На устройстве нет Bluetooth. Подключение по USB доступно на главном экране.":"Нажмите «Искать геймпады». Может понадобиться разрешение на поиск устройств рядом.",14,TEXT);body.addView(status);
++        search=button("Искать геймпады",this::beginSearch);body.addView(search);
++        stop=button("Остановить поиск",()->finishScan("Поиск остановлен. Найденные геймпады остаются в списке."));body.addView(stop);
++        empty=label("Найденных геймпадов пока нет.",14,MUTED);body.addView(empty);
++        results=new LinearLayout(this);results.setOrientation(LinearLayout.VERTICAL);body.addView(results);
++        body.addView(label("Сопряжение и подключение — разные этапы. Android может показать подтверждение, а для подключения геймпада иногда нужны системные настройки.",12,MUTED));
++        body.addView(button("Системные настройки Bluetooth",()->openSettings(Settings.ACTION_BLUETOOTH_SETTINGS)));
++        body.addView(button("Проверить кнопки",()->{setResult(RESULT_OK);finish();}));
++        FocusNavigation.prepare(body);if(pairing.phase()==BluetoothPairingState.PAIRED||pairing.phase()==BluetoothPairingState.ERROR)showPairState();updateControls();
++    }
++    private boolean hasPermissions(){
++        if(Build.VERSION.SDK_INT>=31)return checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)==PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED;
++        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED;
++    }
++    private void beginSearch(){
++        if(adapter==null||pairing.phase()==BluetoothPairingState.PAIRING||ownsDiscovery)return;
++        if(!hasPermissions()){
++            requestPermissions(Build.VERSION.SDK_INT>=31?new String[]{Manifest.permission.BLUETOOTH_SCAN,Manifest.permission.BLUETOOTH_CONNECT}:new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS);return;
++        }
++        try{
++            if(!adapter.isEnabled()){startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),ENABLE);return;}
++            if(Build.VERSION.SDK_INT<=30&&!locationEnabled()){
++                status.setText("На этой версии Android для поиска Bluetooth нужна включённая геолокация. Координаты приложение не получает.");
++                new AlertDialog.Builder(this).setTitle("Включите геолокацию для поиска").setMessage("На Android 8–11 поиск Bluetooth зависит от системной геолокации. Включите её и нажмите «Искать геймпады» снова.").setPositiveButton("Настройки",(d,w)->openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)).setNegativeButton("Закрыть",null).show();return;
++            }
++            registerBluetooth();
++            if(adapter.isDiscovering()){status.setText("Уже идёт другой поиск Bluetooth. Дождитесь его завершения и повторите.");return;}
++            candidates.clear();rows.clear();results.removeAllViews();empty.setVisibility(View.VISIBLE);
++            for(BluetoothDevice bonded:adapter.getBondedDevices())offer(bonded,null);
++            ownsDiscovery=adapter.startDiscovery();
++            if(ownsDiscovery){status.setText("Поиск геймпадов рядом… Сохранённые пары также показаны в списке.");handler.postDelayed(scanTimeout,25_000);}
++            else status.setText("Android не запустил поиск. Проверьте Bluetooth и разрешения или откройте системные настройки.");
++            updateControls();if(ownsDiscovery)stop.requestFocus();
++        }catch(SecurityException error){accessLost();}catch(RuntimeException error){finishScan("Не удалось запустить поиск: "+error.getClass().getSimpleName());}
++    }
++    private boolean locationEnabled(){LocationManager m=(LocationManager)getSystemService(LOCATION_SERVICE);if(m==null)return false;if(Build.VERSION.SDK_INT>=28)return m.isLocationEnabled();return m.isProviderEnabled(LocationManager.GPS_PROVIDER)||m.isProviderEnabled(LocationManager.NETWORK_PROVIDER);}
++    private void registerBluetooth(){
++        if(registered)return;IntentFilter filter=new IntentFilter();
++        filter.addAction(BluetoothDevice.ACTION_FOUND);filter.addAction(BluetoothDevice.ACTION_NAME_CHANGED);filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
++        // These are protected platform actions, delivered by the privileged Bluetooth process.
++        registerReceiver(receiver,filter,Build.VERSION.SDK_INT>=33?Context.RECEIVER_EXPORTED:0);registered=true;
++    }
++    private void offer(BluetoothDevice device,String announcedName){
++        try{
++        String address=device.getAddress();String name=announcedName==null?device.getName():announcedName;
++        BluetoothClass type=device.getBluetoothClass();int kind=BluetoothGamepadFilter.classify(name,type==null?0:type.getDeviceClass());
++        if(kind==BluetoothGamepadFilter.NONE){Button old=rows.remove(address);candidates.remove(address);if(old!=null)results.removeView(old);empty.setVisibility(rows.isEmpty()?View.VISIBLE:View.GONE);return;}
++        if(!rows.containsKey(address)&&rows.size()>=MAX_RESULTS)return;
++        candidates.put(address,device);Button row=rows.get(address);
++        if(row==null){row=button("",()->select(device));row.setTag(R.id.navigation_key,"bt:"+address);rows.put(address,row);if(kind==BluetoothGamepadFilter.M30)results.addView(row,0);else results.addView(row);FocusNavigation.prepare(row);}
++        if(kind==BluetoothGamepadFilter.M30&&!Integer.valueOf(kind).equals(row.getTag())&&results.indexOfChild(row)>0){boolean focused=row.hasFocus();results.removeView(row);results.addView(row,0);if(focused)row.requestFocus();}row.setTag(kind);
++        String clean=BluetoothGamepadFilter.cleanName(name);if(clean.isEmpty())clean="Геймпад без имени";
++        int state=device.getBondState();String bond=state==BluetoothDevice.BOND_BONDED?"Пара сохранена":state==BluetoothDevice.BOND_BONDING?"Сопряжение…":"Новая пара";
++        row.setText(clean+"\n"+(kind==BluetoothGamepadFilter.M30?"M30 по имени":"Геймпад · модель не подтверждена")+" · "+address.substring(Math.max(0,address.length()-8))+"\n"+bond);
++        row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);empty.setVisibility(View.GONE);
++        }catch(SecurityException error){accessLost();}
++    }
++    private void select(BluetoothDevice device){
++        if(pairing.phase()==BluetoothPairingState.PAIRING)return;
++        finishScan(null);
++        try{
++            int state=device.getBondState();
++            if(state==BluetoothDevice.BOND_BONDED||state==BluetoothDevice.BOND_BONDING){pairing.select(device.getAddress(),SystemClock.elapsedRealtime());pairing.poll(device.getAddress(),state);registerBluetooth();showPairState();return;}
++            new AlertDialog.Builder(this).setTitle("Сопрячь геймпад?").setMessage(BluetoothGamepadFilter.cleanName(device.getName())+"\n\nПодтвердите, что это ваш геймпад. Android может показать собственное окно подтверждения.").setPositiveButton("Сопрячь",(dialog,which)->pair(device)).setNegativeButton("Отмена",null).show();
++        }catch(SecurityException error){accessLost();}
++    }
++    private void pair(BluetoothDevice device){
++        if(pairing.phase()==BluetoothPairingState.PAIRING)return;
++        try{
++            registerBluetooth();pairing.select(device.getAddress(),SystemClock.elapsedRealtime());
++            int state=device.getBondState();
++            if(state==BluetoothDevice.BOND_BONDED||state==BluetoothDevice.BOND_BONDING)pairing.poll(device.getAddress(),state);
++            else if(!device.createBond()){pairing.fail();status.setText("Android не начал сопряжение. Повторите PAIR на геймпаде или используйте системные настройки.");updateControls();return;}
++            showPairState();
++        }catch(SecurityException error){accessLost();}catch(RuntimeException error){pairing.fail();status.setText("Сопряжение не началось: "+error.getClass().getSimpleName());updateControls();}
++    }
++    private void reconcilePair(){
++        handler.removeCallbacks(pairTimeout);
++        if(!resumed||pairing.phase()!=BluetoothPairingState.PAIRING)return;
++        if(!hasPermissions()){accessLost();return;}
++        if(adapter==null){pairing.fail();status.setText("Bluetooth недоступен. Результат сопряжения неизвестен.");updateControls();return;}
++        try{pairing.poll(pairing.address(),adapter.getRemoteDevice(pairing.address()).getBondState());if(pairing.expire(SystemClock.elapsedRealtime())){status.setText("Время ожидания истекло. Результат сопряжения не подтверждён. Проверьте системные настройки Bluetooth.");updateControls();return;}showPairState();}catch(SecurityException error){accessLost();}
++    }
++    private void showPairState(){
++        handler.removeCallbacks(pairTimeout);
++        if(pairing.phase()==BluetoothPairingState.PAIRED)status.setText("Пара сохранена. Это ещё не подтверждение подключения. Вернитесь к проверке и нажмите кнопку геймпада; если он не появился — откройте системные настройки Bluetooth.");
++        else if(pairing.phase()==BluetoothPairingState.ERROR)status.setText("Сопряжение не подтверждено или отменено. Включите PAIR снова и повторите, либо откройте системные настройки.");
++        else if(pairing.phase()==BluetoothPairingState.PAIRING){status.setText("Сопряжение… Подтвердите запрос Android, если он появится.");if(resumed)handler.postDelayed(pairTimeout,Math.max(1,Math.min(1000,pairing.deadline()-SystemClock.elapsedRealtime())));}
++        updateControls();
++    }
++    private void finishScan(String message){
++        handler.removeCallbacks(scanTimeout);
++        if(ownsDiscovery){ownsDiscovery=false;try{if(adapter!=null)adapter.cancelDiscovery();}catch(SecurityException ignored){}}
++        if(message!=null&&status!=null)status.setText(message);updateControls();
++    }
++    private void accessLost(){finishScan(null);pairing.fail();candidates.clear();rows.clear();results.removeAllViews();empty.setVisibility(View.VISIBLE);status.setText("Нет разрешения на Bluetooth-поиск. Нажмите «Искать геймпады» и предоставьте доступ, либо используйте системные настройки.");updateControls();}
++    private void updateControls(){if(search==null)return;boolean busy=pairing.phase()==BluetoothPairingState.PAIRING;search.setEnabled(adapter!=null&&!ownsDiscovery&&!busy);stop.setEnabled(ownsDiscovery);for(Button row:rows.values())row.setEnabled(!busy);}
++    private void openSettings(String action){try{startActivity(new Intent(action));}catch(ActivityNotFoundException error){try{startActivity(new Intent(Settings.ACTION_SETTINGS));}catch(ActivityNotFoundException ignored){status.setText("На устройстве нет приложения настроек.");}}}
++    @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] grants){super.onRequestPermissionsResult(request,permissions,grants);if(request!=PERMISSIONS)return;if(hasPermissions())beginSearch();else status.setText("Доступ к поиску не предоставлен. Можно открыть системные настройки Bluetooth; тест кнопок работает без сканирования.");}
++    @Override protected void onActivityResult(int request,int result,Intent data){super.onActivityResult(request,result,data);if(request==ENABLE){if(result==RESULT_OK)beginSearch();else status.setText("Bluetooth не включён. Нажмите «Искать геймпады», чтобы попробовать снова.");}}
++    @Override protected void onResume(){super.onResume();resumed=true;if(pairing.phase()==BluetoothPairingState.PAIRING){if(!hasPermissions()){accessLost();return;}try{registerBluetooth();reconcilePair();}catch(SecurityException error){accessLost();}}}
++    @Override protected void onPause(){resumed=false;boolean active=ownsDiscovery;finishScan(active?"Поиск остановлен при уходе с экрана. Нажмите «Искать геймпады» для повторного поиска.":null);handler.removeCallbacks(pairTimeout);if(registered){unregisterReceiver(receiver);registered=false;}super.onPause();}
++    @Override protected void onDestroy(){handler.removeCallbacksAndMessages(null);super.onDestroy();}
++    @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);out.putString("address",pairing.address());out.putInt("phase",pairing.phase());out.putLong("deadline",pairing.deadline());out.putBoolean("sawBonding",pairing.sawBonding());}
++}
+--- 1.34/app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java
++++ 1.35/app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java
+@@ -0,0 +1,29 @@
++package app.m30.companion;
++
++import java.util.Locale;
++import java.util.regex.Pattern;
++
++/** Discovery hints only: name/class cannot authenticate the physical controller model. */
++public final class BluetoothGamepadFilter {
++    public static final int NONE=0,GAMEPAD=1,M30=2;
++    private static final Pattern MODEL=Pattern.compile("(?i)\\bm30\\b");
++    private static final Pattern OTHER_8BITDO=Pattern.compile("(?i)\\b(sn30|sf30|sfc30|fc30|n30|pro\\s*2|ultimate|lite|micro|zero\\s*2)\\b");
++    private BluetoothGamepadFilter(){}
++    public static int classify(String name,int deviceClass){
++        String n=cleanName(name).toLowerCase(Locale.ROOT);
++        if(n.matches(".*\\b(keyboard|mouse|headphones?|headset|speaker|earbuds?|soundbar|клавиатура|мышь|наушники|колонка)\\b.*"))return NONE;
++        // Preserve the peripheral major class, mask the optional keyboard/pointing flags.
++        boolean peripheral=(deviceClass&0x1f00)==0x0500;
++        int minor=deviceClass&0x003c;
++        boolean controllerClass=peripheral&&(minor==0x04||minor==0x08);
++        if(MODEL.matcher(n).find()&&(n.contains("8bitdo")||n.contains("8bit do")||n.equals("m30")||n.contains("gamepad")))return M30;
++        boolean controllerName=n.contains("gamepad")||n.contains("joystick")||n.contains("xbox")
++            ||n.equals("pro controller")||n.equals("wireless controller")||n.contains("dualsense")||n.contains("dualshock")
++            ||n.contains("8bitdo")&&OTHER_8BITDO.matcher(n).find();
++        return controllerClass||controllerName?GAMEPAD:NONE;
++    }
++    public static String cleanName(String name){
++        if(name==null)return "";String cleaned=name.replaceAll("[\\p{Cntrl}\\s]+"," ").trim();
++        return cleaned.length()>100?cleaned.substring(0,100):cleaned;
++    }
++}
+--- 1.34/app/src/main/java/app/m30/companion/BluetoothPairingState.java
++++ 1.35/app/src/main/java/app/m30/companion/BluetoothPairingState.java
+@@ -0,0 +1,35 @@
++package app.m30.companion;
++
++/** Correlates platform results with the selected address; BOND_BONDED is never HID-ready. */
++public final class BluetoothPairingState {
++    public static final int IDLE=0,PAIRING=1,PAIRED=2,ERROR=3;
++    public static final long TIMEOUT_MS=90_000;
++    private String address="";
++    private int phase;
++    private long deadline;
++    private boolean sawBonding;
++    public String address(){return address;}
++    public int phase(){return phase;}
++    public long deadline(){return deadline;}
++    public boolean sawBonding(){return sawBonding;}
++    public void select(String selected,long now){
++        if(selected==null||!selected.matches("(?i)([0-9a-f]{2}:){5}[0-9a-f]{2}"))throw new IllegalArgumentException("Invalid Bluetooth address");
++        address=selected;phase=PAIRING;deadline=now+TIMEOUT_MS;sawBonding=false;
++    }
++    public boolean bondEvent(String from,int state){return update(from,state,true);}
++    public boolean poll(String from,int state){return update(from,state,false);}
++    private boolean update(String from,int state,boolean event){
++        if(phase!=PAIRING||!address.equalsIgnoreCase(from==null?"":from))return false;
++        if(state==12)phase=PAIRED;
++        else if(state==11)sawBonding=true;
++        else if(state==10&&(event||sawBonding))phase=ERROR;
++        else return false;
++        return true;
++    }
++    public boolean expire(long now){if(phase!=PAIRING||now<deadline)return false;phase=ERROR;return true;}
++    public void fail(){if(phase==PAIRING)phase=ERROR;}
++    public void restore(String selected,int savedPhase,long savedDeadline,boolean seen,long now){
++        if(selected==null||!selected.matches("(?i)([0-9a-f]{2}:){5}[0-9a-f]{2}")||savedPhase<0||savedPhase>ERROR)return;
++        address=selected;phase=savedPhase;deadline=Math.min(savedDeadline,now+TIMEOUT_MS);sawBonding=seen;expire(now);
++    }
++}
+--- 1.34/app/src/main/java/app/m30/companion/MainActivity.java
++++ 1.35/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -118,7 +118,7 @@
+         int headerHeight=152;
+         root.addView(header,new LinearLayout.LayoutParams(-1,dp(headerHeight)));
+         LinearLayout brand=column();header.addView(brand,new LinearLayout.LayoutParams(dp(104),-2));
+-        LinearLayout link=new LinearLayout(this);link.setGravity(Gravity.CENTER_VERTICAL);link.setBackground(shape(CARD,8));link.setPadding(dp(4),0,dp(4),0);link.setOnClickListener(v->bluetoothSettings());link.setContentDescription("Статус M30. Открыть Bluetooth");brand.addView(link,new LinearLayout.LayoutParams(-1,dp(32)));
++        LinearLayout link=new LinearLayout(this);link.setGravity(Gravity.CENTER_VERTICAL);link.setBackground(shape(CARD,8));link.setPadding(dp(4),0,dp(4),0);link.setOnClickListener(v->openBluetoothSearch());link.setContentDescription("Статус M30. Открыть поиск геймпадов Bluetooth");brand.addView(link,new LinearLayout.LayoutParams(-1,dp(32)));
+         headerBluetooth=new ImageView(this);link.addView(headerBluetooth,new LinearLayout.LayoutParams(dp(16),dp(22)));
+         headerConnection=text("",11,MUTED);headerConnection.setSingleLine(true);LinearLayout.LayoutParams statusLabel=new LinearLayout.LayoutParams(-2,-2);statusLabel.leftMargin=dp(3);link.addView(headerConnection,statusLabel);gap(brand,8);
+         LinearLayout charge=new LinearLayout(this);charge.setGravity(Gravity.CENTER_VERTICAL);brand.addView(charge);
+@@ -189,7 +189,7 @@
+     }
+     private void connectionPage(){
+         if(activeSlot==1&&!session.connected()){
+-            LinearLayout c=card(null);c.addView(button("Подключиться",this::bluetoothSettings,true));controllerActions();return;
++            LinearLayout c=card(null);c.addView(button("Подключиться",this::openBluetoothSearch,true));controllerActions();return;
+         }
+         LinearLayout c=card(null);
+         TextView connectionHeading=text("Предположительное Подключение",16,TEXT);connectionHeading.setIncludeFontPadding(false);connectionHeading.setGravity(Gravity.CENTER);c.addView(connectionHeading,new LinearLayout.LayoutParams(-1,-2));
+@@ -291,9 +291,9 @@
+     }
+     private void resetTest(){session.dpad.reset();session.state.reset();session.axes.clear();session.log.clear();session.monitor.clearSelected();session.lastWasAxis=false;session.lastAxisToken=null;session.lastInput=0;refreshLive();}
+     private void showExtraActions(){
+-        String[] items={"Исправить подсветку кнопок","Сбросить проверку","Выбрать M30","Найти M30 по нажатию","Диагностика","Справка M30","Инструкция выбранного режима"};
++        String[] items={"Исправить подсветку кнопок","Сбросить проверку","Выбрать M30","Найти M30 по нажатию","Диагностика","Справка M30","Инструкция выбранного режима","Поиск геймпадов Bluetooth"};
+         new AlertDialog.Builder(dialogContext()).setTitle("Дополнительно").setItems(items,(dialog,n)->{
+-            if(n==0)showBindingPicker();else if(n==1)resetTest();else if(n==2)devicePicker();else if(n==3)beginSourceDiscovery();else if(n==4)showDiagnostics();else if(n==5)showHelp();else if(n==6)showModeInstructions();
++            if(n==0)showBindingPicker();else if(n==1)resetTest();else if(n==2)devicePicker();else if(n==3)beginSourceDiscovery();else if(n==4)showDiagnostics();else if(n==5)showHelp();else if(n==6)showModeInstructions();else if(n==7)openBluetoothSearch();
+         }).setNegativeButton("Закрыть",null).show();
+     }
+     private void queryBootModel(){
+@@ -384,7 +384,7 @@
+         new AlertDialog.Builder(dialogContext()).setTitle("Устройства Android").setMessage(String.join("\n\n",rows)+"\n\nВстроенные кнопки и сенсоры телефона тоже являются источниками ввода. Здесь они только перечислены; тест M30 не переключается на них.").setPositiveButton("Закрыть",null).show();
+     }
+     private void showHelp(){
+-        new AlertDialog.Builder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Кнопки».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.34 · неофициальное приложение."))
++        new AlertDialog.Builder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Кнопки».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.35 · неофициальное приложение."))
+             .setPositiveButton("Закрыть",null).setNeutralButton("Официальный PDF",(d,w)->{try{startActivity(new Intent(Intent.ACTION_VIEW,android.net.Uri.parse("https://download.8bitdo.com/Manual/Controller/M30/M30_Manual.pdf")));}catch(ActivityNotFoundException e){toast("Нет приложения для открытия ссылки");}}).show();
+     }
+     private ArrayList<ControllerTelemetry.Source> telemetrySources(boolean readBattery){
+@@ -477,9 +477,9 @@
+     private void devicePicker(){sourcePicker(false);}
+     private void sourcePicker(boolean all){
+         ArrayList<InputDevice> list=new ArrayList<>();for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null&&id>=0&&(all||SourceSelector.controller(sourceInfo(d))))list.add(d);}
+-        if(list.isEmpty()){new AlertDialog.Builder(dialogContext()).setTitle("Геймпад пока не найден").setMessage(InstructionText.format("Подключите M30 в настройках Bluetooth или через USB OTG, затем вернитесь в приложение.")).setPositiveButton("Bluetooth",(d,w)->bluetoothSettings()).setNegativeButton("Закрыть",null).show();return;}
++        if(list.isEmpty()){new AlertDialog.Builder(dialogContext()).setTitle("Геймпад пока не найден").setMessage(InstructionText.format("Найдите M30 через поиск Bluetooth в приложении или подключите через USB OTG, затем вернитесь.")).setPositiveButton("Найти геймпад",(d,w)->openBluetoothSearch()).setNegativeButton("Закрыть",null).show();return;}
+         String[] names=new String[list.size()];for(int i=0;i<names.length;i++){int slot=controllers.indexOf(list.get(i).getId());names[i]=(slot<0?"":"Джойстик "+(slot+1)+" · ")+list.get(i).getName()+" · ID "+list.get(i).getId();}
+-        new AlertDialog.Builder(dialogContext()).setTitle(all?"Все источники · выбор меняет тестируемое устройство":"Устройство ввода").setItems(names,(d,n)->{useDevice(list.get(n));}).setNegativeButton("Закрыть",null).show();
++        new AlertDialog.Builder(dialogContext()).setTitle(all?"Все источники · выбор меняет тестируемое устройство":"Устройство ввода").setItems(names,(d,n)->{useDevice(list.get(n));}).setNeutralButton("Поиск Bluetooth",(d,w)->openBluetoothSearch()).setNegativeButton("Закрыть",null).show();
+     }
+     private String bindingKey(){return bindingKey(session);}
+     private String bindingKey(ControllerSession target){return "bindings:"+(target.descriptor.isEmpty()?"none":target.descriptor)+":"+target.mode;}
+@@ -664,6 +664,8 @@
+         new AlertDialog.Builder(dialogContext()).setTitle("Заряд M30").setMessage(InstructionText.format(info)).setPositiveButton("Закрыть",null).show();
+     }
+     private String batteryText(){float capacity=batteryCapacity();return capacity<0?(device==null?"M30 не подключён":"Батарея геймпада: нет данных от Android"):"Батарея геймпада: "+Math.round(capacity*100)+"%";}
++    private void openBluetoothSearch(){startActivityForResult(new Intent(this,BluetoothControllerActivity.class),61);}
++    @Override protected void onActivityResult(int request,int result,Intent data){super.onActivityResult(request,result,data);if(request==61&&result==RESULT_OK)switchPage(1);}
+     private void bluetoothSettings(){try{startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));}catch(ActivityNotFoundException e){startActivity(new Intent(Settings.ACTION_SETTINGS));}}
+     private void bonded(){
+         if(Build.VERSION.SDK_INT>=31&&checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)!=PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT},7);return;}
+@@ -676,7 +678,7 @@
+     }
+     @Override public void onRequestPermissionsResult(int r,String[] p,int[] results){super.onRequestPermissionsResult(r,p,results);if(r==7){if(results.length>0&&results[0]==PackageManager.PERMISSION_GRANTED)bonded();else toast("Список пар недоступен. Тест кнопок и системные настройки работают без разрешения.");}}
+     private void shareReport(){
+-        try{JSONObject out=new JSONObject();out.put("app","M30 Companion 1.34");out.put("time",new Date().toString());out.put("android",Build.VERSION.RELEASE);out.put("device",device==null?JSONObject.NULL:device.getName());out.put("controller_slot",activeSlot+1);out.put("profile_manually_selected",modeNames[session.mode]);out.put("mode_estimate",modeResult().title);out.put("mode_estimate_evidence",modeResult().evidence);out.put("mode_estimate_is_firmware_readout",false);out.put("mode_user_confirmed",session.confirmation.current()<0?JSONObject.NULL:modeNames[session.confirmation.current()]);out.put("mode_confirmation_source","user_statement_not_firmware_readout");out.put("dpad_observation",session.dpad.kind().name());out.put("dpad_observation_evidence",session.dpad.evidence());out.put("dpad_is_firmware_readout",false);out.put("test_navigation_locked",navigationLocked);out.put("other_device_monitor_enabled",session.monitor.otherEnabled);if(session.lastWasAxis){JSONObject axis=new JSONObject();axis.put("axis",session.lastAxis);axis.put("name",MotionEvent.axisToString(session.lastAxis));axis.put("value",session.lastAxisValue);axis.put("binding",session.lastAxisToken);out.put("last_axis",axis);}out.put("other_device_events",new JSONArray(session.monitor.otherEvents));
++        try{JSONObject out=new JSONObject();out.put("app","M30 Companion 1.35");out.put("time",new Date().toString());out.put("android",Build.VERSION.RELEASE);out.put("device",device==null?JSONObject.NULL:device.getName());out.put("controller_slot",activeSlot+1);out.put("profile_manually_selected",modeNames[session.mode]);out.put("mode_estimate",modeResult().title);out.put("mode_estimate_evidence",modeResult().evidence);out.put("mode_estimate_is_firmware_readout",false);out.put("mode_user_confirmed",session.confirmation.current()<0?JSONObject.NULL:modeNames[session.confirmation.current()]);out.put("mode_confirmation_source","user_statement_not_firmware_readout");out.put("dpad_observation",session.dpad.kind().name());out.put("dpad_observation_evidence",session.dpad.evidence());out.put("dpad_is_firmware_readout",false);out.put("test_navigation_locked",navigationLocked);out.put("other_device_monitor_enabled",session.monitor.otherEnabled);if(session.lastWasAxis){JSONObject axis=new JSONObject();axis.put("axis",session.lastAxis);axis.put("name",MotionEvent.axisToString(session.lastAxis));axis.put("value",session.lastAxisValue);axis.put("binding",session.lastAxisToken);out.put("last_axis",axis);}out.put("other_device_events",new JSONArray(session.monitor.otherEvents));
+             JSONArray available=new JSONArray();for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null){JSONObject src=new JSONObject();src.put("id",id);src.put("name",d.getName());src.put("sources",d.getSources());src.put("vendor_id",d.getVendorId());src.put("product_id",d.getProductId());src.put("controller_candidate",SourceSelector.controller(sourceInfo(d)));available.put(src);}}out.put("available_input_sources",available);
+             JSONArray telemetry=new JSONArray();for(ControllerTelemetry.Source source:telemetrySources(true)){JSONObject row=new JSONObject();row.put("id",source.id);row.put("name",source.name);row.put("vendor_id",source.vendor);row.put("product_id",source.product);row.put("battery_present",source.batteryPresent);row.put("battery_read_error",source.batteryError==null?JSONObject.NULL:source.batteryError);row.put("battery_capacity",Float.isFinite(source.capacity)?source.capacity:JSONObject.NULL);telemetry.put(row);}out.put("selected_controller_sources",telemetry);
+             if(device!=null){out.put("device_id",device.getId());out.put("vendor_id",device.getVendorId());out.put("product_id",device.getProductId());}
+--- 1.34/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ 1.35/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.34 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.35 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- 1.34/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ 1.35/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.34 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.35 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- 1.34/app/src/main/AndroidManifest.xml
++++ 1.35/app/src/main/AndroidManifest.xml
+@@ -1,6 +1,9 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
++    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
++    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
++    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+     <uses-permission android:name="android.permission.WAKE_LOCK" />
+@@ -10,6 +13,7 @@
+     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+     <uses-feature android:name="android.software.leanback" android:required="false" />
+     <application android:banner="@drawable/tv_banner" android:label="M30 Companion" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
++        <activity android:name=".BluetoothControllerActivity" android:exported="false" />
+         <activity android:name=".M30FirmwareActivity" android:exported="false" />
+         <service android:name=".M30UpdateService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+         <activity android:name=".MainActivity" android:exported="true" android:icon="@mipmap/ic_m30_launcher">
+--- 1.34/app/build.gradle
++++ 1.35/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 35
+-        versionName '1.34'
++        versionCode 36
++        versionName '1.35'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- 1.34/tests/BluetoothSearchTest.java
++++ 1.35/tests/BluetoothSearchTest.java
+@@ -0,0 +1,42 @@
++import app.m30.companion.BluetoothGamepadFilter;
++import app.m30.companion.BluetoothPairingState;
++
++public final class BluetoothSearchTest {
++    private static void check(boolean ok,String message){if(!ok)throw new AssertionError(message);}
++    private static void filter(String name,int cls,int expected){check(BluetoothGamepadFilter.classify(name,cls)==expected,"Filter: "+name+" class "+cls);}
++    public static void main(String[] args){
++        filter("8BitDo M30 gamepad",0,BluetoothGamepadFilter.M30);
++        filter("M30",0x0508,BluetoothGamepadFilter.M30);
++        filter("8bitdo m30",0x0500,BluetoothGamepadFilter.M30);
++        filter("Pro Controller",0,BluetoothGamepadFilter.GAMEPAD);
++        filter("Xbox Wireless Controller",0,BluetoothGamepadFilter.GAMEPAD);
++        filter("Wireless Controller",0,BluetoothGamepadFilter.GAMEPAD);
++        filter("8BitDo Ultimate",0,BluetoothGamepadFilter.GAMEPAD);
++        filter(null,0x0508,BluetoothGamepadFilter.GAMEPAD);
++        filter("Без имени",0x0504,BluetoothGamepadFilter.GAMEPAD);
++        filter("Hybrid",0x05c8,BluetoothGamepadFilter.GAMEPAD);
++        filter("8BitDo Retro Keyboard",0x0540,BluetoothGamepadFilter.NONE);
++        filter("8BitDo mouse",0x0580,BluetoothGamepadFilter.NONE);
++        filter("Xbox Headset",0x0404,BluetoothGamepadFilter.NONE);
++        filter("M30 Speaker",0x0414,BluetoothGamepadFilter.NONE);
++        filter("My Phone",0x020c,BluetoothGamepadFilter.NONE);
++        filter("Laptop",0x010c,BluetoothGamepadFilter.NONE);
++        filter("Samsung TV",0x043c,BluetoothGamepadFilter.NONE);
++        filter("Remote",0x050c,BluetoothGamepadFilter.NONE);
++        filter("8BitDo",0x0500,BluetoothGamepadFilter.NONE);
++        filter(null,0,BluetoothGamepadFilter.NONE);
++        check(BluetoothGamepadFilter.cleanName("\nM30\tgamepad\u0000").equals("M30 gamepad"),"Control chars sanitized");
++        check(BluetoothGamepadFilter.cleanName("x".repeat(200)).length()==100,"Bounded display name");
++        BluetoothPairingState p=new BluetoothPairingState();String a="11:22:33:44:55:66",b="11:22:33:44:55:77";
++        p.select(a,1000);check(!p.bondEvent(b,12)&&p.phase()==1,"Another device cannot complete selected pairing");
++        check(!p.poll(a,10)&&p.phase()==1,"Async createBond does not fail from initial NONE poll");
++        check(p.bondEvent(a,11)&&p.sawBonding(),"Observed pairing");check(p.bondEvent(a,12)&&p.phase()==2,"Bonded is paired only");
++        check(!p.expire(200000)&&!p.bondEvent(a,10)&&p.phase()==2,"Old timeout/broadcast cannot overwrite completion");
++        p.select(a,0);check(p.bondEvent(a,10)&&p.phase()==3,"Cancellation reported even after missed BONDING event");
++        p.select(a,0);p.poll(a,11);check(p.poll(a,10)&&p.phase()==3,"Resume notices cancellation after known bonding");
++        p.select(a,500);check(!p.expire(90499)&&p.expire(90500),"Bounded pairing timeout");
++        p.restore(a,1,1000000,false,100);check(p.deadline()==90100,"Restored timeout bounded");p.expire(90100);check(p.phase()==3,"Expired resume is unknown, not success");
++        p.select(a,0);p.fail();check(p.phase()==3,"Permission loss releases pending state");
++        System.out.println("PASS: gamepad-only discovery hints, explicit M30, generic candidates, keyboard/audio/phone exclusion, sanitized names, pairing correlation/cancel/resume/timeout; bonding never claims HID ready");
++    }
++}
+--- 1.34/test-core.sh
++++ 1.35/test-core.sh
+@@ -3,7 +3,7 @@
+ cd "$(dirname "$0")"
+ out=$(mktemp -d)
+ trap 'rm -rf "$out"' EXIT
+-javac -d "$out" app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
++javac -d "$out" app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
+ java -cp "$out" PadStateTest
+ java -cp "$out" DiagnosticsTest
+ java -cp "$out" ReconnectionTest
+@@ -35,3 +35,5 @@
+ java -cp "$out" DpadDetectorTest
+ 
+ java -cp "$out" RemoteNavigationTest
++
++java -cp "$out" BluetoothSearchTest
+--- 1.34/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ 1.35/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -162,6 +162,10 @@
+             }else report.putString("virtual_input","SKIPPED: M30 Virtual Test input source not present");
+         });
+         checkRemoteNavigation();
++        Activity beforeSearch=activity;activity=startActivitySync(new Intent(getTargetContext(),BluetoothControllerActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
++        runOnMainSync(()->{check("Поиск геймпадов");check("Искать геймпады");check("Системные настройки Bluetooth");check("Проверить кнопки");
++            try{java.lang.reflect.Field field=BluetoothControllerActivity.class.getDeclaredField("ownsDiscovery");field.setAccessible(true);if(field.getBoolean(activity))throw new AssertionError("Opening the screen must not start discovery");}catch(ReflectiveOperationException error){throw new AssertionError(error);}
++            activity.finish();});activity=beforeSearch;
+         Activity main=activity;activity=startActivitySync(new Intent(getTargetContext(),M30FirmwareActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+         runOnMainSync(()->{check("Прошивка M30");check("Проверить M30");check("Выбрать официальный DAT");View install=find(activity.getWindow().getDecorView(),"Установить",true);if(install==null||install.isEnabled())throw new AssertionError("Update must be disabled before current USB model/version and exact file checks");if(M30UpdateService.running)throw new AssertionError("Opening firmware screen must never start an update");activity.finish();});activity=main;
+         report.putString("stream","PASS: launch, fixed header, atomic instruction combinations, missing/zero battery, left/right swipes, profile selection\n"+report.getString("virtual_input"));finish(Activity.RESULT_OK,report);

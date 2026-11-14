@@ -1,0 +1,53 @@
+{
+  "scope": "HTML prototype only, not native Android device verification",
+  "results": [
+    {
+      "width": 360,
+      "height": 800,
+      "wide": false,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    },
+    {
+      "width": 412,
+      "height": 850,
+      "wide": false,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    },
+    {
+      "width": 800,
+      "height": 1280,
+      "wide": false,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    },
+    {
+      "width": 960,
+      "height": 540,
+      "wide": false,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "wide": true,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "wide": true,
+      "noHorizontalOverflow": true,
+      "uniformTabs": true,
+      "interactions": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+M30 Companion 1.40 — установка
+Установите APK поверх текущей версии без удаления приложения. Package app.m30.companion, Android8+/TV, прежняя подпись.
+Изменения: Android/Windows/Xbox и другие названия режима в имени Bluetooth выделены жирным. Верхняя кнопка — «Системные настройки Bluetooth» полностью. Системные имена и текущие пары не изменяются.
+Под крестовиной белая жирная подпись на тёмной плашке ниже кольца; нажатие открывает прежнее меню комбинаций. Проверьте читаемость на своём телефоне/TV, на жёлтом/оранжевом оформлении.
+Новая геометрия панели1.39, два списка и Start/Stop сохранены. Прямое HID-подключение/автоматические нажатия вAndroid этим выпуском не добавлены.
+Сборка/lint и компиляция экранных тестов прошли; физический рендер здесь не проверен.
+APK: https://drive.google.com/file/d/10uExwjnoehO26ZqqFhNPeanLJv6opxmG/view?usp=drivesdk
+Папка1.40: https://drive.google.com/drive/folders/1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY

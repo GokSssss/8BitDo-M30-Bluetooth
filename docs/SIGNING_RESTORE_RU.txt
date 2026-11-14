@@ -1,0 +1,10 @@
+Восстановление сборки1.48 (подготовлено, без устанавливаемой публикации)
+Полное название: M30 Companion, собственное приложение без чужойосновы.
+Полный оригинальный SOURCE1.47 был восстановлен сDrive и проверен SHA256. Изменения1.48: docs/changes/1.48.patch.
+Сборка: JDK17+, Gradle8.11.1, AGP8.9.2, AndroidSDK35/build-tools35.0.0; local.properties sdk.dir. ./test-core.sh, ./gradlew assembleDebug lintDebug assembleDebugAndroidTest.
+В OpenJDK17RI этойсреды требуется JVM -XX:-UseContainerSupport (cgroupNPE lint): ./gradlew --no-daemon '-Dorg.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8 -XX:-UseContainerSupport' assembleDebug lintDebug assembleDebugAndroidTest.
+Без M30_SIGNING_STORE debugнамеренноunsigned. Дляоригинальнойподписи нужныфактические M30_SIGNING_STORE/M30_STORE_PASSWORD/M30_KEY_ALIAS/M30_KEY_PASSWORD, всеизреальногостарогохранилища. Ключизпрошлойсреды не сохранён, изAPK не восстанавливается. Не генерироватьновый взаменподвидомсовместимогообновления. Сверитьcert с1.47 передпубликацией.
+Комплект/статус/инструкция: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+https://drive.google.com/file/d/1nLcJLdvV_cOMT3uZzTj83BL1fh-cE7n1/view
+ОжидаемыйcertSHA256 e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272. Сейчасфайлключа/проверенныеalias/пароли отсутствуют.
+Опубликованные1.47/1.46 остаютсянаместе, SOURCE1.48 — только подготовленнаяразработка. ПодписанныйAPKнеприлагается. Физическийtablet/TV не проверялись, UItests скомпилированы, неисполнены.

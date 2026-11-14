@@ -1,0 +1,317 @@
+--- 1.33/app/src/main/java/app/m30/companion/MainActivity.java
++++ 1.34/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -108,6 +108,7 @@
+     private LinearLayout card(String heading){LinearLayout c=column();c.setPadding(dp(14),dp(12),dp(14),dp(12));c.setBackground(shape(CARD,22));
+         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(14);content.addView(c,lp);if(heading!=null){TextView label=title(heading,18);int slotName=heading.indexOf("Джойстик 2");if(slotName>=0){android.text.SpannableString caption=new android.text.SpannableString(label.getText());caption.setSpan(new android.text.style.ForegroundColorSpan(ORANGE),slotName,slotName+"Джойстик 2".length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);label.setText(caption);}c.addView(label);}return c;}
+     private void render(){
++        String focusedKey=FocusNavigation.key(getCurrentFocus());
+         firmwareEntry=null;firmwareCableHint=null;lastUsbStateCheck=0;buttonGrid=null;buttonCells.clear();
+         status=null;details=null;live=null;progress=null;batteryView=null;bindHint=null;pad=null;headerBattery=null;headerBluetooth=null;headerPercent=null;headerConnection=null;headerVersions=null;headerInputLine=null;headerInputAction=null;lastCodeView=null;lastNameView=null;lastDetailsView=null;modeResultView=null;sourceHintView=null;useSourceButton=null;inputSourceView=null;
+         root=column();root.setBackgroundColor(BG);root.setPadding(dp(16),0,dp(16),0);setContentView(root);
+@@ -143,12 +144,24 @@
+             if(tab==2)fill=CARD;
+             TextView t=text(names[n],tab!=1?12:14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(8),dp(3),dp(8));t.setSingleLine(true);
+             if(tab!=1)t.setAutoSizeTextTypeUniformWithConfiguration(10,12,1,android.util.TypedValue.COMPLEX_UNIT_SP);
+-            GradientDrawable tabBackground=shape(fill,12);if(tab==2&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:ORANGE);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
++            GradientDrawable tabBackground=shape(fill,12);if(tab==2&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:ORANGE);t.setTag(R.id.navigation_key,"tab:"+tab);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
+             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(44),tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
+         }
+         gap(root,7);View divider=new View(this);divider.setBackgroundColor(0xff454545);divider.setContentDescription("Разделитель шапки и прокрутки");root.addView(divider,new LinearLayout.LayoutParams(-1,dp(1)));gap(root,8);contentScroll=new ScrollView(this);contentScroll.setFillViewport(false);root.addView(contentScroll,new LinearLayout.LayoutParams(-1,0,1));content=column();contentScroll.addView(content);
+         if(page!=1)connectionPage();else testPage();
+         refreshLive();
++        FocusNavigation.prepare(root);
++        // Mode labels delegate touch to their parent, but only the whole choice is a focus stop.
++        disableModeLabelFocus(root);
++        boolean television=(getResources().getConfiguration().uiMode&android.content.res.Configuration.UI_MODE_TYPE_MASK)==android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
++        if(focusedKey!=null||television){
++            View restored=FocusNavigation.find(root,focusedKey);if(restored==null)restored=FocusNavigation.find(root,"tab:"+page);
++            if(restored!=null)restored.requestFocus();
++        }
++    }
++    private void disableModeLabelFocus(View view){
++        if(FocusNavigation.key(view)!=null&&FocusNavigation.key(view).startsWith("mode:")&&view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)group.getChildAt(i).setFocusable(false);return;}
++        if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)disableModeLabelFocus(group.getChildAt(i));}
+     }
+     private int connectionPageId(){return activeSlot==0?0:2;}
+     private InputDevice controllerDevice(ControllerSession target){return target.connected()?InputDevice.getDevice(target.deviceId):null;}
+@@ -185,14 +198,15 @@
+         String[] names={"Android","Windows","macOS","Switch"};int[] order={0,1,3,2};
+         for(int i=0;i<names.length;i++){
+             final int option=order[i];boolean active=session.mode==option;
+-            LinearLayout choice=column();choice.setGravity(Gravity.CENTER);choice.setPadding(dp(3),dp(4),dp(3),dp(4));choice.setSelected(active);choice.setFocusable(true);
++            LinearLayout choice=column();choice.setGravity(Gravity.CENTER);choice.setPadding(dp(3),dp(4),dp(3),dp(4));choice.setSelected(active);choice.setFocusable(true);choice.setTag(R.id.navigation_key,"mode:"+option);
+             TextView name=text(names[i],active?15:12,active?accent():MUTED);name.setTypeface(Typeface.create("sans-serif",active?Typeface.BOLD:Typeface.NORMAL));name.setGravity(Gravity.CENTER);name.setPadding(0,0,0,0);name.setSingleLine(true);name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);choice.addView(name,new LinearLayout.LayoutParams(-1,dp(30)));
+             ModeLedsView leds=new ModeLedsView(this,option);leds.setAccent(accent());choice.addView(leds,new LinearLayout.LayoutParams(-1,dp(16)));
+             GradientDrawable background=shape(active?0xff2d2b22:Color.TRANSPARENT,12);if(active)background.setStroke(dp(1.5f),accent());choice.setBackground(background);
+-            choice.setContentDescription(modeNames[option]+(active?", выбран":", выбрать")+". "+modeKeys[option]+". При включении: "+ConnectionGuide.ledDescription(option));choice.setOnClickListener(v->{if(session.mode!=option)selectMode(option);});name.setOnClickListener(v->choice.performClick());
++            choice.setContentDescription(modeNames[option]+(active?", выбран":", выбрать")+". "+modeKeys[option]+". При включении: "+ConnectionGuide.ledDescription(option));choice.setOnClickListener(v->{if(session.mode!=option)selectMode(option);});name.setOnClickListener(v->choice.performClick());name.setFocusable(false);
+             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(active?68:56),active?1.25f:1);lp.gravity=Gravity.CENTER_VERTICAL;if(i>0)lp.leftMargin=dp(4);modes.addView(choice,lp);
+         }
+-        TextView ledCaption=text("Огоньки при включении · до PAIR  ⓘ",11,accent());ledCaption.setGravity(Gravity.CENTER);ledCaption.setMinHeight(dp(48));ledCaption.setFocusable(true);ledCaption.setContentDescription("Огоньки при включении до PAIR. Открыть справку об индикаторах");ledCaption.setOnClickListener(v->showLedGuide());ledCaption.setPadding(0,dp(12),0,dp(12));c.addView(ledCaption,new LinearLayout.LayoutParams(-1,-2));
++        TextView ledCaption=text("Огоньки при подключении · до PAIR — режим  ⓘ",11,accent());ledCaption.setGravity(Gravity.CENTER);ledCaption.setMinHeight(dp(48));ledCaption.setFocusable(true);ledCaption.setContentDescription("Огоньки при подключении. До PAIR — режим; после PAIR постоянный огонёк — статус подключения. Открыть справку");ledCaption.setOnClickListener(v->showLedGuide());ledCaption.setPadding(0,dp(12),0,dp(12));c.addView(ledCaption,new LinearLayout.LayoutParams(-1,-2));
++        TextView connectedLeds=text(ConnectionGuide.connectedLeds(),12,MUTED);connectedLeds.setGravity(Gravity.CENTER);c.addView(connectedLeds,new LinearLayout.LayoutParams(-1,-2));
+         TextView selectedMode=text(modeNames[session.mode]+" · "+modeKeys[session.mode],14,accent());selectedMode.setPadding(0,dp(4),0,dp(8));c.addView(selectedMode);
+         TextView description=text(ConnectionGuide.description(session.mode),13,MUTED);description.setIncludeFontPadding(false);description.setLineSpacing(dp(3),1);description.setPadding(0,dp(4),0,dp(8));c.addView(description);
+         for(String step:ConnectionGuide.steps(session.mode)){TextView instruction=text(step,14,TEXT);instruction.setIncludeFontPadding(false);instruction.setLineSpacing(dp(3),1);instruction.setPadding(0,dp(8),0,dp(8));c.addView(instruction);}
+@@ -215,7 +229,7 @@
+             TextView label=text(modeNames[mode]+" · "+modeKeys[mode]+"\n"+ConnectionGuide.ledDescription(mode),13,TEXT);label.setLineSpacing(dp(2),1);row.addView(label,new LinearLayout.LayoutParams(0,-2,1));
+         }
+         String[][] sections={
+-            {"Сопряжение и подключение","PAIR — держите 2 секунды. Индикаторы ненадолго гаснут, затем бегут: поиск новой пары. Бегущие огни в этот момент не определяют режим.\n\nПостоянный свет после подключения означает успешное соединение. На Switch нижние LED также показывают номер игрока; количество огней после подключения не стоит читать как режим включения."},
++            {"Сопряжение и подключение","PAIR — держите 2 секунды. Индикаторы ненадолго гаснут, затем бегут: поиск новой пары. Бегущие огни в этот момент не определяют режим.\n\nПосле PAIR один постоянно горящий огонёк означает статус подключения, а не переход в Android. Например, при X + START до PAIR мигают два, после подключения может гореть один — Windows / X-input сохраняется. На Switch нижние LED также показывают номер игрока; количество огней после подключения не определяет режим включения."},
+             {"Красный индикатор и зарядка","Мигает красным — низкий заряд. Постоянно красный при зарядке — аккумулятор заряжается. Погас после зарядки — зарядка завершена. Нижние огоньки не являются шкалой процентов батареи."},
+             {"После сочетаний кнопок","SELECT + ↑ / ← / → — держите 5 секунд для выбора D-pad / левого / правого стика. Краткое красное мигание подтверждает настройку. SELECT + ↓ — обмен A/B и X/Y только в Switch.\n\nL + R + START на выключенном M30 — режим загрузчика для обновления; верхний красный индикатор мигает. Это отдельное состояние."}
+         };
+@@ -328,7 +342,7 @@
+         showOverlay(dialog,480);refreshLive();
+     }
+     private void showOverlay(Dialog dialog,int maxHeight){
+-        dialog.show();Window window=dialog.getWindow();if(window!=null){
++        dialog.show();FocusNavigation.prepare(dialog.getWindow().getDecorView());Window window=dialog.getWindow();if(window!=null){
+             window.setBackgroundDrawableResource(android.R.color.transparent);window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);window.setDimAmount(.65f);
+             int available=root.getHeight()>0?root.getHeight():getResources().getDisplayMetrics().heightPixels;
+             window.setLayout(getResources().getDisplayMetrics().widthPixels-dp(32),Math.min(dp(maxHeight),Math.round(available*.85f)));
+@@ -370,7 +384,7 @@
+         new AlertDialog.Builder(dialogContext()).setTitle("Устройства Android").setMessage(String.join("\n\n",rows)+"\n\nВстроенные кнопки и сенсоры телефона тоже являются источниками ввода. Здесь они только перечислены; тест M30 не переключается на них.").setPositiveButton("Закрыть",null).show();
+     }
+     private void showHelp(){
+-        new AlertDialog.Builder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Кнопки».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.33 · неофициальное приложение."))
++        new AlertDialog.Builder(dialogContext()).setTitle("Справка M30").setMessage(InstructionText.format("Крестовина: SELECT + ↑ — D-pad, SELECT + ← — левый стик, SELECT + → — правый. Держать 5 секунд, до красного мигания LED.\n\n"+session.dpad.summary()+". "+session.dpad.evidence()+". Определяется по сигналам Android после нажатия, не чтением настройки прошивки.\n\n★ управляет Turbo в режимах Android, Windows · X-input и macOS; в Switch это снимок экрана. HOME может обрабатываться Android до приложения. Если событие доходит, его код виден во вкладке «Кнопки».\n\nTurbo: держите игровую кнопку и нажмите ★. Повтор отключает Turbo; в Switch Turbo нет.\n\nКрасный мигающий LED — низкий заряд, постоянный — зарядка, погас — зарядка завершена. Процент доступен только если Android его передаёт.\n\nДля Sega назначайте физические A/B/C, X/Y/Z, START и SELECT (Mode) в самом эмуляторе. Companion не перенастраивает игры.\n\nM30 Companion 1.34 · неофициальное приложение."))
+             .setPositiveButton("Закрыть",null).setNeutralButton("Официальный PDF",(d,w)->{try{startActivity(new Intent(Intent.ACTION_VIEW,android.net.Uri.parse("https://download.8bitdo.com/Manual/Controller/M30/M30_Manual.pdf")));}catch(ActivityNotFoundException e){toast("Нет приложения для открытия ссылки");}}).show();
+     }
+     private ArrayList<ControllerTelemetry.Source> telemetrySources(boolean readBattery){
+@@ -508,6 +522,19 @@
+     private boolean suppressNavigation(InputDevice d,int source){return SourceSelector.blockNavigation(d==null?null:sourceInfo(d),controllerEvent(source),navigationLocked);}
+     @Override public boolean dispatchKeyEvent(KeyEvent e){return handleKeyInput(e)||super.dispatchKeyEvent(e);}
+     private boolean handleKeyInput(KeyEvent e){
++        // A TV remote can report SOURCE_DPAD: this is menu navigation, not a gamepad lock.
++        boolean fromGamepad=(e.getSource()&InputDevice.SOURCE_GAMEPAD)==InputDevice.SOURCE_GAMEPAD
++            ||(e.getSource()&InputDevice.SOURCE_JOYSTICK)==InputDevice.SOURCE_JOYSTICK
++            ||(e.getDevice()!=null&&SourceSelector.controller(sourceInfo(e.getDevice())));
++        if(RemoteNavigation.routesToUi(e.getKeyCode(),fromGamepad)){
++            if(e.getAction()==KeyEvent.ACTION_DOWN||e.getAction()==KeyEvent.ACTION_UP){
++                InputMonitor.Key key=diagnosticKey(e);
++                if(page==1)inputTest.record(key);
++                if(session.monitor.otherEnabled)session.monitor.record(key,session.deviceId);
++                if(page==1||session.monitor.otherEnabled)refreshLive();
++            }
++            return false; // Activity/Dialog handles arrows, OK, Back and Tab using standard focus.
++        }
+         boolean keyAction=e.getAction()==KeyEvent.ACTION_DOWN||e.getAction()==KeyEvent.ACTION_UP;
+         if(keyAction){
+             if(page==1&&discoveringSource)observeIncomingSource(e.getDevice(),e.getAction()==KeyEvent.ACTION_DOWN&&e.getRepeatCount()==0);
+@@ -649,7 +676,7 @@
+     }
+     @Override public void onRequestPermissionsResult(int r,String[] p,int[] results){super.onRequestPermissionsResult(r,p,results);if(r==7){if(results.length>0&&results[0]==PackageManager.PERMISSION_GRANTED)bonded();else toast("Список пар недоступен. Тест кнопок и системные настройки работают без разрешения.");}}
+     private void shareReport(){
+-        try{JSONObject out=new JSONObject();out.put("app","M30 Companion 1.33");out.put("time",new Date().toString());out.put("android",Build.VERSION.RELEASE);out.put("device",device==null?JSONObject.NULL:device.getName());out.put("controller_slot",activeSlot+1);out.put("profile_manually_selected",modeNames[session.mode]);out.put("mode_estimate",modeResult().title);out.put("mode_estimate_evidence",modeResult().evidence);out.put("mode_estimate_is_firmware_readout",false);out.put("mode_user_confirmed",session.confirmation.current()<0?JSONObject.NULL:modeNames[session.confirmation.current()]);out.put("mode_confirmation_source","user_statement_not_firmware_readout");out.put("dpad_observation",session.dpad.kind().name());out.put("dpad_observation_evidence",session.dpad.evidence());out.put("dpad_is_firmware_readout",false);out.put("test_navigation_locked",navigationLocked);out.put("other_device_monitor_enabled",session.monitor.otherEnabled);if(session.lastWasAxis){JSONObject axis=new JSONObject();axis.put("axis",session.lastAxis);axis.put("name",MotionEvent.axisToString(session.lastAxis));axis.put("value",session.lastAxisValue);axis.put("binding",session.lastAxisToken);out.put("last_axis",axis);}out.put("other_device_events",new JSONArray(session.monitor.otherEvents));
++        try{JSONObject out=new JSONObject();out.put("app","M30 Companion 1.34");out.put("time",new Date().toString());out.put("android",Build.VERSION.RELEASE);out.put("device",device==null?JSONObject.NULL:device.getName());out.put("controller_slot",activeSlot+1);out.put("profile_manually_selected",modeNames[session.mode]);out.put("mode_estimate",modeResult().title);out.put("mode_estimate_evidence",modeResult().evidence);out.put("mode_estimate_is_firmware_readout",false);out.put("mode_user_confirmed",session.confirmation.current()<0?JSONObject.NULL:modeNames[session.confirmation.current()]);out.put("mode_confirmation_source","user_statement_not_firmware_readout");out.put("dpad_observation",session.dpad.kind().name());out.put("dpad_observation_evidence",session.dpad.evidence());out.put("dpad_is_firmware_readout",false);out.put("test_navigation_locked",navigationLocked);out.put("other_device_monitor_enabled",session.monitor.otherEnabled);if(session.lastWasAxis){JSONObject axis=new JSONObject();axis.put("axis",session.lastAxis);axis.put("name",MotionEvent.axisToString(session.lastAxis));axis.put("value",session.lastAxisValue);axis.put("binding",session.lastAxisToken);out.put("last_axis",axis);}out.put("other_device_events",new JSONArray(session.monitor.otherEvents));
+             JSONArray available=new JSONArray();for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null){JSONObject src=new JSONObject();src.put("id",id);src.put("name",d.getName());src.put("sources",d.getSources());src.put("vendor_id",d.getVendorId());src.put("product_id",d.getProductId());src.put("controller_candidate",SourceSelector.controller(sourceInfo(d)));available.put(src);}}out.put("available_input_sources",available);
+             JSONArray telemetry=new JSONArray();for(ControllerTelemetry.Source source:telemetrySources(true)){JSONObject row=new JSONObject();row.put("id",source.id);row.put("name",source.name);row.put("vendor_id",source.vendor);row.put("product_id",source.product);row.put("battery_present",source.batteryPresent);row.put("battery_read_error",source.batteryError==null?JSONObject.NULL:source.batteryError);row.put("battery_capacity",Float.isFinite(source.capacity)?source.capacity:JSONObject.NULL);telemetry.put(row);}out.put("selected_controller_sources",telemetry);
+             if(device!=null){out.put("device_id",device.getId());out.put("vendor_id",device.getVendorId());out.put("product_id",device.getProductId());}
+--- 1.33/app/src/main/java/app/m30/companion/ConnectionGuide.java
++++ 1.34/app/src/main/java/app/m30/companion/ConnectionGuide.java
+@@ -15,5 +15,6 @@
+         validate(mode);
+         return new String[]{"1. START — 3 секунды, до погасания LED.","2. На выключенном M30 держите "+KEYS[mode]+" до включения и "+SIGNAL[mode]+". Отпустите обе кнопки.","3. PAIR — 2 секунды, до бегущей индикации. Отпустите и выберите M30 в Bluetooth."};
+     }
+-    public static String full(int mode){return String.join("\n\n",steps(mode))+"\n\n4. Откройте «Кнопки» и нажмите A или B. Если M30 не выбран — «Найти M30 нажатием».";}
++    public static String connectedLeds(){return "После PAIR: один постоянный огонёк — статус подключения, не режим.";}
++    public static String full(int mode){return String.join("\n\n",steps(mode))+"\n\n"+connectedLeds()+"\n\n4. Откройте «Кнопки» и нажмите A или B. Если M30 не выбран — «Найти M30 нажатием».";}
+ }
+--- 1.33/app/src/main/java/app/m30/companion/FocusNavigation.java
++++ 1.34/app/src/main/java/app/m30/companion/FocusNavigation.java
+@@ -0,0 +1,32 @@
++package app.m30.companion;
++
++import android.graphics.Color;
++import android.graphics.drawable.GradientDrawable;
++import android.graphics.drawable.StateListDrawable;
++import android.view.*;
++
++/** A foreground ring keeps focus visible without replacing selected/pressed/live backgrounds. */
++final class FocusNavigation {
++    private FocusNavigation(){}
++    static String key(View view){Object key=view==null?null:view.getTag(R.id.navigation_key);return key instanceof String?(String)key:null;}
++    static void prepare(View view){prepare(view,"root");}
++    private static void prepare(View view,String path){
++        if(view.isClickable()){
++            view.setFocusable(true);
++            if(key(view)==null)view.setTag(R.id.navigation_key,path);
++            GradientDrawable ring=new GradientDrawable();ring.setColor(0x185fffff);
++            float density=view.getResources().getDisplayMetrics().density;
++            ring.setStroke(Math.max(2,Math.round(2*density)),Color.WHITE);ring.setCornerRadius(10*density);
++            StateListDrawable states=new StateListDrawable();
++            states.addState(new int[]{android.R.attr.state_focused,android.R.attr.state_enabled},ring);
++            states.addState(new int[]{},new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
++            view.setForeground(states);
++        }
++        if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)prepare(group.getChildAt(i),path+":"+i);}
++    }
++    static View find(View root,String key){
++        if(key==null)return null;if(key.equals(key(root)))return root;
++        if(root instanceof ViewGroup){ViewGroup group=(ViewGroup)root;for(int i=0;i<group.getChildCount();i++){View found=find(group.getChildAt(i),key);if(found!=null)return found;}}
++        return null;
++    }
++}
+--- 1.33/app/src/main/java/app/m30/companion/RemoteNavigation.java
++++ 1.34/app/src/main/java/app/m30/companion/RemoteNavigation.java
+@@ -0,0 +1,11 @@
++package app.m30.companion;
++
++/** Only remote/keyboard menu keys bypass the input tester. Gamepad events stay testable. */
++public final class RemoteNavigation {
++    private RemoteNavigation(){}
++    public static boolean routesToUi(int keycode,boolean gamepad){
++        if(gamepad)return false;
++        return keycode==19||keycode==20||keycode==21||keycode==22||keycode==23
++            ||keycode==66||keycode==160||keycode==4||keycode==111||keycode==61;
++    }
++}
+--- 1.33/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ 1.34/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -49,7 +49,7 @@
+         share=button("Поделиться отчётом",this::shareReport);button("Назад",this::finish);
+         IntentFilter filter=new IntentFilter(USB_ACTION);int receiverFlags=Build.VERSION.SDK_INT>=33?Context.RECEIVER_NOT_EXPORTED:0;registerReceiver(permission,filter,receiverFlags);
+         File stored=new File(getFilesDir(),"m30-official.dat");if(stored.isFile())try(InputStream in=new FileInputStream(stored)){image=M30Firmware.parse(readBounded(in));}catch(Exception ignored){}
+-        probeReport=getSharedPreferences("firmware",0).getString("report","");refresh();
++        probeReport=getSharedPreferences("firmware",0).getString("report","");refresh();FocusNavigation.prepare(scroll);
+     }
+     @Override protected void onResume(){super.onResume();handler.removeCallbacks(ticker);handler.post(ticker);}
+     @Override protected void onPause(){handler.removeCallbacks(ticker);super.onPause();}
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.33 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.34 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- 1.33/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ 1.34/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.33 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.34 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- 1.33/app/src/main/AndroidManifest.xml
++++ 1.34/app/src/main/AndroidManifest.xml
+@@ -7,13 +7,16 @@
+     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+     <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+-    <application android:label="M30 Companion" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
++    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
++    <uses-feature android:name="android.software.leanback" android:required="false" />
++    <application android:banner="@drawable/tv_banner" android:label="M30 Companion" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
+         <activity android:name=".M30FirmwareActivity" android:exported="false" />
+         <service android:name=".M30UpdateService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+         <activity android:name=".MainActivity" android:exported="true" android:icon="@mipmap/ic_m30_launcher">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                 <category android:name="android.intent.category.LAUNCHER" />
++                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+             </intent-filter>
+         </activity>
+     </application>
+--- 1.33/app/src/main/res/values/ids.xml
++++ 1.34/app/src/main/res/values/ids.xml
+@@ -0,0 +1 @@
++<resources><item name="navigation_key" type="id" /></resources>
+--- 1.33/app/src/main/res/drawable/tv_banner.xml
++++ 1.34/app/src/main/res/drawable/tv_banner.xml
+@@ -0,0 +1,4 @@
++<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
++    <item><shape><size android:width="320dp" android:height="180dp" /><solid android:color="#000000" /></shape></item>
++    <item android:left="70dp" android:right="70dp"><bitmap android:src="@drawable/ic_launcher_art" android:gravity="fill" android:filter="true" /></item>
++</layer-list>
+--- 1.33/app/build.gradle
++++ 1.34/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 34
+-        versionName '1.33'
++        versionCode 35
++        versionName '1.34'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- 1.33/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ 1.34/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -93,6 +93,30 @@
+             diagnostics.dismiss();if(field.get(activity)!=null)throw new AssertionError("Dismiss must release the diagnostic window");
+         }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+     }
++    private void remoteKey(int code){sendKeyDownUpSync(code);waitForIdleSync();}
++    private void checkRemoteNavigation(){
++        runOnMainSync(()->{
++            click("Кнопки");View tab=FocusNavigation.find(activity.getWindow().getDecorView(),"tab:0");
++            if(tab==null||!tab.isFocusable()||tab.getForeground()==null)throw new AssertionError("Tab missing TV focus treatment");
++            tab.requestFocusFromTouch();
++        });waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_CENTER);
++        runOnMainSync(()->{check("Предположительное Подключение");FocusNavigation.find(activity.getWindow().getDecorView(),"mode:1").requestFocusFromTouch();});
++        waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_CENTER);
++        runOnMainSync(()->{
++            check("Windows · X-input");if(!"mode:1".equals(FocusNavigation.key(activity.getCurrentFocus())))throw new AssertionError("Mode change lost remote focus");
++            click("Кнопки");key(-42,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_F1);checkLargeCode(KeyEvent.KEYCODE_F1);key(-42,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_F1);
++        });waitForIdleSync();remoteKey(KeyEvent.KEYCODE_DPAD_LEFT);
++        runOnMainSync(()->{
++            checkLargeCode(KeyEvent.KEYCODE_DPAD_LEFT);click("Джойстик 1");check("После PAIR: один постоянный огонёк");
++            try{
++                java.lang.reflect.Method open=MainActivity.class.getDeclaredMethod("showDpadMenu");open.setAccessible(true);open.invoke(activity);
++                java.lang.reflect.Field field=MainActivity.class.getDeclaredField("dpadDialog");field.setAccessible(true);Dialog dialog=(Dialog)field.get(activity);
++                View close=find(dialog.getWindow().getDecorView(),"Закрыть",true);close.requestFocusFromTouch();long now=SystemClock.uptimeMillis();
++                for(int action:new int[]{KeyEvent.ACTION_DOWN,KeyEvent.ACTION_UP})dialog.dispatchKeyEvent(new KeyEvent(now,now,action,KeyEvent.KEYCODE_DPAD_CENTER,0,0,-42,0,0,InputDevice.SOURCE_DPAD));
++            }catch(ReflectiveOperationException error){throw new AssertionError(error);}
++        });waitForIdleSync();
++        runOnMainSync(()->{try{java.lang.reflect.Field field=MainActivity.class.getDeclaredField("dpadDialog");field.setAccessible(true);if(field.get(activity)!=null)throw new AssertionError("Remote OK could not close popup");chooseMode(0);}catch(ReflectiveOperationException error){throw new AssertionError(error);}});
++    }
+     private boolean largeCode(View view,int code){
+         if(view instanceof TextView&&((TextView)view).getText().toString().equals(String.valueOf(code))&&((TextView)view).getTextSize()>=40*getTargetContext().getResources().getDisplayMetrics().scaledDensity)return true;
+         if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)if(largeCode(group.getChildAt(i),code))return true;}return false;
+@@ -137,6 +161,7 @@
+                 report.putString("virtual_input","PASS: controller header on joystick pages, independent button panel, live keys across swipes, universal foreign key display with controller counter isolation, retained codes, HAT diagonals");
+             }else report.putString("virtual_input","SKIPPED: M30 Virtual Test input source not present");
+         });
++        checkRemoteNavigation();
+         Activity main=activity;activity=startActivitySync(new Intent(getTargetContext(),M30FirmwareActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+         runOnMainSync(()->{check("Прошивка M30");check("Проверить M30");check("Выбрать официальный DAT");View install=find(activity.getWindow().getDecorView(),"Установить",true);if(install==null||install.isEnabled())throw new AssertionError("Update must be disabled before current USB model/version and exact file checks");if(M30UpdateService.running)throw new AssertionError("Opening firmware screen must never start an update");activity.finish();});activity=main;
+         report.putString("stream","PASS: launch, fixed header, atomic instruction combinations, missing/zero battery, left/right swipes, profile selection\n"+report.getString("virtual_input"));finish(Activity.RESULT_OK,report);
+--- 1.33/tests/RemoteNavigationTest.java
++++ 1.34/tests/RemoteNavigationTest.java
+@@ -0,0 +1,11 @@
++import app.m30.companion.RemoteNavigation;
++public final class RemoteNavigationTest {
++    public static void main(String[] args){
++        for(int code:new int[]{19,20,21,22,23,66,160,4,111,61}){
++            if(!RemoteNavigation.routesToUi(code,false))throw new AssertionError("Remote key trapped: "+code);
++            if(RemoteNavigation.routesToUi(code,true))throw new AssertionError("Gamepad escaped tester: "+code);
++        }
++        for(int code:new int[]{96,97,98,99,24,25,131,29,108,110})if(RemoteNavigation.routesToUi(code,false))throw new AssertionError("Non-menu input escaped tester: "+code);
++        System.out.println("PASS: remote/keyboard menu keys remain navigable; gamepad input and test keys stay separate");
++    }
++}
+--- 1.33/test-core.sh
++++ 1.34/test-core.sh
+@@ -3,7 +3,7 @@
+ cd "$(dirname "$0")"
+ out=$(mktemp -d)
+ trap 'rm -rf "$out"' EXIT
+-javac -d "$out" app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
++javac -d "$out" app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
+ java -cp "$out" PadStateTest
+ java -cp "$out" DiagnosticsTest
+ java -cp "$out" ReconnectionTest
+@@ -33,3 +33,5 @@
+ java -cp "$out" ControllerTelemetryTest
+ 
+ java -cp "$out" DpadDetectorTest
++
++java -cp "$out" RemoteNavigationTest

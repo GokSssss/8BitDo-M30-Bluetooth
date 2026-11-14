@@ -1,0 +1,17 @@
+{
+  "reason": "Own intermediate source stage replaced before APK delivery by verified1.50 preserving manual profile/first press. Diffs/history retained. No published installer removed.",
+  "files": [
+    {
+      "id": "1YmX5itKxuicMNGsw186iY60usM3pjAnz",
+      "size": 1393518,
+      "parent_before": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+    },
+    {
+      "id": "1qD4Rh-nFGPZzJmoKiSkf3Ok2Nw35z2ss",
+      "size": 3582,
+      "parent_before": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+    }
+  ],
+  "bytes_removed": 1397100,
+  "history": "docs/changes/1.49.patch +1.50.patch, technical journal, docs/drafts, immutable SOURCE1.50"
+}

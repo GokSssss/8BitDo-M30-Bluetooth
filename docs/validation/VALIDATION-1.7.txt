@@ -1,0 +1,13 @@
+M30 Companion 1.7 — статус проверки
+
+ПРОЙДЕНО
+- assembleDebug, assembleDebugAndroidTest, lintDebug: BUILD SUCCESSFUL.
+- Подпись APK проверена; сертификат совпадает с предыдущими версиями. versionName 1.7, versionCode 8, applicationId app.m30.companion.
+- Изменение интерфейса: вместо Spinner три постоянно видимые кнопки Android / Windows / Switch, выбранная крупнее с жёлтой рамкой и фоном. Инструкции по-прежнему берутся из ConnectionGuide.
+- Android SmokeInstrumentation обновлён под прямое нажатие кнопок вместо выбора в Spinner и собран.
+
+НЕ ПОДТВЕРЖДЕНО
+- Выполнение SmokeInstrumentation и вид на конкретном телефоне не проверены: доступного Android-устройства в среде нет.
+- При выборе macOS через дополнительные действия основная тройка остаётся без выделения, активный macOS явно указан отдельной строкой. Настройки старого профиля не теряются.
+
+APK SHA-256: 07d32ae91237c4368ec3538edabe9125334b5bf507f46e897d10c71988cea40e

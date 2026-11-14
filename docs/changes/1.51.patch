@@ -1,0 +1,166 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -1,25 +1,27 @@
+ plugins { id 'com.android.application' }
++def previewMode = project.findProperty('m30Preview') == 'true'
+ android {
+     namespace 'app.m30.companion'
+     compileSdk 35
+     defaultConfig {
+-        applicationId 'app.m30.companion'
++        applicationId (previewMode ? 'app.m30.companion.preview' : 'app.m30.companion')
+         minSdk 26
+         targetSdk 35
+-        versionCode 51
+-        versionName '1.50'
++        versionCode 52
++        versionName (previewMode ? '1.51-preview' : '1.51')
++        manifestPlaceholders = [m30AppLabel: previewMode ? 'M30 Проверка' : 'M30 Companion']
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+     // Never silently replace the original signing key with a newly generated debug key.
+-    def m30Store = System.getenv('M30_SIGNING_STORE')
++    def m30Store = System.getenv(previewMode ? 'M30_PREVIEW_SIGNING_STORE' : 'M30_SIGNING_STORE')
+     signingConfigs {
+         original {
+             if (m30Store) {
+                 storeFile file(m30Store)
+-                storePassword System.getenv('M30_STORE_PASSWORD')
+-                keyAlias System.getenv('M30_KEY_ALIAS')
+-                keyPassword System.getenv('M30_KEY_PASSWORD')
++                storePassword System.getenv(previewMode ? 'M30_PREVIEW_STORE_PASSWORD' : 'M30_STORE_PASSWORD')
++                keyAlias System.getenv(previewMode ? 'M30_PREVIEW_KEY_ALIAS' : 'M30_KEY_ALIAS')
++                keyPassword System.getenv(previewMode ? 'M30_PREVIEW_KEY_PASSWORD' : 'M30_KEY_PASSWORD')
+             }
+         }
+     }
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -249,6 +249,7 @@
+         runOnMainSync(()->{
+             unchangedOverlayGeometry();check("Старт поиска");check("Системные настройки Bluetooth");check("Ранее подключённые");check("Найдены рядом");
+             originalBluetooth=(BluetoothSearchController)field(activity,"inlineBluetooth");
++            android.content.SharedPreferences mainPrefs=activity.getPreferences(0),linkedPrefs=(android.content.SharedPreferences)field(field(originalBluetooth,"controllerNames"),"slots");String probe="instrumentation.preview.prefs";mainPrefs.edit().putString(probe,"same-main-store").commit();if(!linkedPrefs.getString(probe,"").equals("same-main-store"))throw new AssertionError("Controller labels must use the actual MainActivity preferences in either package");mainPrefs.edit().remove(probe).commit();
+             TextView btStatus=(TextView)FocusNavigation.find(originalBluetooth.view(),"bt:status");if(btStatus.getEllipsize()!=null||btStatus.getMaxLines()<=2||btStatus.getTextSize()<14*activity.getResources().getDisplayMetrics().scaledDensity)throw new AssertionError("Bluetooth status must wrap without clipping or tiny text");
+             if(originalBluetooth==null||originalBluetooth.searching())throw new AssertionError("Overlay must open without automatic discovery");
+             if(!(originalBluetooth.view().getParent() instanceof FrameLayout)||header(activity.getWindow().getDecorView()).isShown())throw new AssertionError("Panel must cover fixed header, with base hidden from focus");
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -12,7 +12,7 @@
+     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+     <uses-feature android:name="android.software.leanback" android:required="false" />
+-    <application android:banner="@drawable/tv_banner" android:label="M30 Companion" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
++    <application android:banner="@drawable/tv_banner" android:label="${m30AppLabel}" android:theme="@style/AppTheme" android:icon="@mipmap/ic_m30_launcher" android:roundIcon="@mipmap/ic_m30_launcher" android:allowBackup="false" android:supportsRtl="true">
+         <activity android:name=".BluetoothControllerActivity" android:exported="false" />
+         <activity android:name=".M30FirmwareActivity" android:exported="false" />
+         <service android:name=".M30UpdateService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+--- a/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
++++ b/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
+@@ -23,7 +23,7 @@
+         if(d!=null){if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction()))disconnected.add(d.getAddress());else if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(intent.getAction()))disconnected.remove(d.getAddress());}
+         reload();changed.run();
+     }};
+-    BluetoothControllerNames(Context context,Runnable changed){this.context=context;this.changed=changed;preferences=context.getSharedPreferences("bluetooth_controller_links",0);slots=context.getSharedPreferences("MainActivity",0);labels=context.getSharedPreferences("bluetooth_device_labels",0);legacyModes=context.getSharedPreferences("bluetooth_modes",0);reload();}
++    BluetoothControllerNames(Context context,Runnable changed){this.context=context;this.changed=changed;preferences=context.getSharedPreferences("bluetooth_controller_links",0);String mainClass=new ComponentName(context,MainActivity.class).getShortClassName();slots=context.getSharedPreferences(mainClass.startsWith(".")?mainClass.substring(1):mainClass,0);labels=context.getSharedPreferences("bluetooth_device_labels",0);legacyModes=context.getSharedPreferences("bluetooth_modes",0);reload();}
+     BluetoothDeviceLabel label(String address){
+         String title=labels.getString("title:"+address,null);int old=legacyModes.getInt(address,-1);
+         if(title==null)title=old>=0&&old<4?new String[]{"Android","Windows","macOS","Switch"}[old]:"";
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -65,6 +65,13 @@
+     private GradientDrawable shape(int color){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(14));return d;}
+     private TextView label(String value,int size,int color){TextView v=new TextView(activity);v.setText(value);v.setTextColor(color);v.setTextSize(size);v.setPadding(0,dp(7),0,dp(7));return v;}
+     private Button button(String text,Runnable action){Button b=new Button(activity);b.setText(text);b.setAllCaps(false);b.setTextSize(14);b.setTextColor(TEXT);b.setBackground(shape(CARD));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setMinHeight(dp(48));b.setOnClickListener(v->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(7);b.setLayoutParams(lp);return b;}
++    private Button menuButton(String text,Runnable action){
++        Button b=button(text,action);android.graphics.drawable.StateListDrawable states=new android.graphics.drawable.StateListDrawable();
++        GradientDrawable disabled=shape(0xff222222);disabled.setStroke(dp(1),0xff41413d);states.addState(new int[]{-android.R.attr.state_enabled},disabled);
++        GradientDrawable pressed=shape(0xff454545);pressed.setStroke(dp(1),0xffa6a69c);states.addState(new int[]{android.R.attr.state_pressed},pressed);
++        GradientDrawable normal=shape(0xff303030);normal.setStroke(dp(1),0xff686861);states.addState(new int[]{},normal);b.setBackground(states);
++        b.setTextColor(new android.content.res.ColorStateList(new int[][]{new int[]{-android.R.attr.state_enabled},new int[]{}},new int[]{0xff9a9a91,TEXT}));return b;
++    }
+     BluetoothSearchController(Activity activity,Bundle saved,boolean compact,int accent,Runnable checkButtons){
+         this.activity=activity;this.compact=compact;this.accent=accent;this.checkButtons=checkButtons;
+         controllerNames=new BluetoothControllerNames(activity,()->{if(savedResults!=null)refreshRows();});
+@@ -251,19 +258,19 @@
+         ScrollView scroll=new ScrollView(activity);LinearLayout menu=new LinearLayout(activity);menu.setOrientation(LinearLayout.VERTICAL);menu.setPadding(dp(18),0,dp(18),dp(12));scroll.addView(menu);
+         menu.addView(label(entry.address,12,MUTED));
+         menu.addView(label("Имя в Android: "+entry.displayName(),13,MUTED));
+-        Button localLabel=button("Метка в приложении",()->showLabelEditor(entry));localLabel.setTag(R.id.navigation_key,"bt:local-label");menu.addView(localLabel);
++        Button localLabel=menuButton("Метка в приложении",()->showLabelEditor(entry));localLabel.setTag(R.id.navigation_key,"bt:local-label");menu.addView(localLabel);
+         menu.addView(label(saved?"Выберите действие. Подключение, переименование, отключение и удаление пары выполняются в системных настройках Android.":"Для подключения Android может запросить сопряжение. Подтвердите запрос, если он появится.",13,MUTED));
+         String[] commands=saved?new String[]{"Подключить устройство","Переименовать","Отключить","Забыть устройство"}:new String[]{"Подключить устройство","Системные настройки Bluetooth"};
+         for(int n=0;n<commands.length;n++){
+-            final int index=n;String command=commands[n];Button action=button(command,()->{
++            final int index=n;String command=commands[n];Button action=menuButton(command,()->{
+                 closeDeviceMenu();
+                 if(!saved&&index==0)pair(device);else deviceActionInSettings(entry,command);
+             });action.setTag(R.id.navigation_key,"bt:device-action:"+n);menu.addView(action);
+         }
+         if(saved){
+             menu.addView(label("Если Android не сообщает Bluetooth-адрес источника ввода, укажите его один раз. Выберите слот, в котором проверяются кнопки именно этого геймпада. Имя и подсветка будут следовать этой привязке при подключении источника.",13,MUTED));
+-            for(int n=0;n<2;n++){final int slot=n;android.view.InputDevice source=controllerNames.source(slot);Button link=button("Это Джойстик "+(slot+1)+(source==null?" — не подключён":" · "+source.getName()),()->{if(controllerNames.bind(entry.address,slot)){closeDeviceMenu();status.setText("Имя связано с Джойстиком "+(slot+1)+". Привязка задана вами.");refreshRows();}});link.setEnabled(source!=null);link.setTag(R.id.navigation_key,"bt:link:"+slot);menu.addView(link);}
+-            if(controllerNames.linked(entry.address)){Button unlink=button("Убрать привязку к джойстику",()->{controllerNames.unlink(entry.address);closeDeviceMenu();refreshRows();});unlink.setTag(R.id.navigation_key,"bt:unlink");menu.addView(unlink);}
++            for(int n=0;n<2;n++){final int slot=n;android.view.InputDevice source=controllerNames.source(slot);Button link=menuButton("Это Джойстик "+(slot+1)+(source==null?" — не подключён":" · "+source.getName()),()->{if(controllerNames.bind(entry.address,slot)){closeDeviceMenu();status.setText("Имя связано с Джойстиком "+(slot+1)+". Привязка задана вами.");refreshRows();}});link.setEnabled(source!=null);link.setTag(R.id.navigation_key,"bt:link:"+slot);menu.addView(link);}
++            if(controllerNames.linked(entry.address)){Button unlink=menuButton("Убрать привязку к джойстику",()->{controllerNames.unlink(entry.address);closeDeviceMenu();refreshRows();});unlink.setTag(R.id.navigation_key,"bt:unlink");menu.addView(unlink);}
+         }
+         AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(controllerNames.label(entry.address).displayName(entry.displayName())).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;
+         dialog.setOnDismissListener(d->{if(deviceMenu==dialog)deviceMenu=null;});
+@@ -273,11 +280,11 @@
+         ScrollView scroll=new ScrollView(activity);LinearLayout form=new LinearLayout(activity);form.setOrientation(LinearLayout.VERTICAL);form.setPadding(dp(18),0,dp(18),dp(12));scroll.addView(form);
+         form.addView(label("Метка и номер видны только в этом приложении. Имя Android и режим геймпада не меняются.",14,MUTED));
+         EditText title=new EditText(activity);title.setSingleLine(true);title.setTextSize(16);title.setHint("Например: Android TV или Windows");title.setText(current.title);title.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(64)});title.setTag(R.id.navigation_key,"bt:label-title");form.addView(title,new LinearLayout.LayoutParams(-1,-2));
+-        Button preset=button("Выбрать подпись режима",()->{AlertDialog choices=new FocusDialogBuilder(activity).setTitle("Метка, заданная вами").setItems(new String[]{"Android","Windows","macOS","Switch"},(d,n)->title.setText(new String[]{"Android","Windows","macOS","Switch"}[n])).setNegativeButton("Отмена",null).show();labelPresets=choices;choices.setOnDismissListener(d->{if(labelPresets==choices)labelPresets=null;});});form.addView(preset);
++        Button preset=menuButton("Выбрать подпись режима",()->{AlertDialog choices=new FocusDialogBuilder(activity).setTitle("Метка, заданная вами").setItems(new String[]{"Android","Windows","macOS","Switch"},(d,n)->title.setText(new String[]{"Android","Windows","macOS","Switch"}[n])).setNegativeButton("Отмена",null).show();labelPresets=choices;choices.setOnDismissListener(d->{if(labelPresets==choices)labelPresets=null;});});form.addView(preset);
+         form.addView(label("Номер 1–99 для различения устройств (необязательно)",14,MUTED));
+         EditText number=new EditText(activity);number.setTextSize(16);number.setSingleLine(true);number.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);number.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(2)});number.setHint("Без номера");number.setText(current.badge==0?"":String.valueOf(current.badge));number.setTag(R.id.navigation_key,"bt:label-number");form.addView(number,new LinearLayout.LayoutParams(-1,-2));
+-        for(int row=0;row<2;row++){LinearLayout choices=new LinearLayout(activity);choices.setBaselineAligned(false);form.addView(choices);for(int col=0;col<4;col++){final int badge=row*4+col+1;Button choice=button(String.valueOf(badge),()->number.setText(String.valueOf(badge)));choice.setContentDescription("Номер "+badge);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(col==0?0:dp(4),dp(4),0,0);choices.addView(choice,lp);}}
+-        form.addView(button("Без номера",()->number.setText("")));
++        for(int row=0;row<2;row++){LinearLayout choices=new LinearLayout(activity);choices.setBaselineAligned(false);form.addView(choices);for(int col=0;col<4;col++){final int badge=row*4+col+1;Button choice=menuButton(String.valueOf(badge),()->number.setText(String.valueOf(badge)));choice.setContentDescription("Номер "+badge);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(col==0?0:dp(4),dp(4),0,0);choices.addView(choice,lp);}}
++        form.addView(menuButton("Без номера",()->number.setText("")));
+         AlertDialog editor=new FocusDialogBuilder(activity).setTitle("Метка в приложении").setView(scroll).setPositiveButton("Сохранить",(d,w)->{controllerNames.saveLabel(entry.address,title.getText().toString(),BluetoothDeviceLabel.number(number.getText().toString()));status.setText("Метка сохранена в приложении.");refreshRows();}).setNeutralButton("Убрать метку",(d,w)->{controllerNames.saveLabel(entry.address,"",0);refreshRows();}).setNegativeButton("Отмена",null).show();labelEditor=editor;
+         editor.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);editor.setOnDismissListener(d->{if(labelEditor==editor)labelEditor=null;});
+     }
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.50 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.51 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.50 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.51 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -102,7 +102,7 @@
+         android.graphics.drawable.Drawable icon=getDrawable(R.mipmap.ic_m30_launcher);
+         android.graphics.Bitmap bitmap=android.graphics.Bitmap.createBitmap(192,192,android.graphics.Bitmap.Config.ARGB_8888);
+         android.graphics.Canvas canvas=new android.graphics.Canvas(bitmap);icon.setBounds(0,0,192,192);icon.draw(canvas);
+-        setTaskDescription(new ActivityManager.TaskDescription("M30 Companion",bitmap,BG));
++        setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().loadLabel(getPackageManager()).toString(),bitmap,BG));
+     }
+     private int slotAccent(){return activeSlot==1?ORANGE:YELLOW;}
+     private int headerAccent(){return page==1?0xffbfbfbf:slotAccent();}
+@@ -179,7 +179,7 @@
+             int foreground=tab!=1?tabAccent:selected?TEXT:MUTED;
+             TextView t=text(names[n],tab!=1?12:14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(3),dp(3),dp(3));t.setMaxLines(tab==1?1:2);t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+             GradientDrawable tabBackground=shape(fill,12);if(tab!=1&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:tabAccent);t.setTag(R.id.navigation_key,"tab:"+tab);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
+-            t.setMinimumHeight(dp(48));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
++            t.setMinimumHeight(dp(48));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
+         }
+         gap(root,7);View divider=new View(this);divider.setBackgroundColor(0xff454545);divider.setContentDescription("Разделитель шапки и прокрутки");root.addView(divider,new LinearLayout.LayoutParams(-1,dp(1)));gap(root,8);
+         content=column();

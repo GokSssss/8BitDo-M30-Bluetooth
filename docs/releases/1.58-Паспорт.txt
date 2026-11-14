@@ -1,0 +1,19 @@
+M30 Companion 1.58 · versionCode59 · app.m30.companion
+Сборка 13.11.2026 UTC. Проверочный выпуск по фотографиям владельца.
+
+Исправлено: ширина кнопки «Подключение», форма рамок фокуса, непрозрачный фон окон, переход фокуса на «Продолжить» после флажка. Джойстик поднят и отделён от более широкого столбца кнопок. Две справочные кнопки под рисунком доступны пультом; на узком экране — значки i.
+На старом Android с выключенной геолокацией встроенный поиск предлагает сохраняемый внешний способ через Bluetooth Android. Сохранённые пары доступны без геолокации. Служебный virtual-search и другие TV-источники не занимают слоты M30. Ограничения Bluetooth прошивки не обходятся; USB-прошивка и public API37 helper не менялись.
+
+Установка поверх1.57 без удаления. Тот же стабильный ключ12Nov свежо восстановлен с Google Диска и использован; новый ключ не создавался.
+26 чистых host-наборов PASS.5 headless Android View-тестов Robolectric4.14.1/API28/NATIVE Skia PASS: TV1280x720, телефон360x780, fontScale1.3. Снимки/исходники тестов в SOURCE. Это выполнение Android UI-кода без физического TV; Bluetooth-радио/пульт устройства ещё не проверены. Instrumentation только скомпилирована. Signed build/lint PASS:0 ошибок/62 предупреждения.
+
+APK: https://drive.google.com/file/d/1nxnjW0FBX69DFtkJV88RfTLZYLvHo0lq/view
+Размер: 1013401 bytes
+SHA256: 2cfe3c758ed42b865a7d0c2703ef0a668b406e67fe269dad010e44672fee9105
+SOURCE: окончательные ID/размер/SHA256 добавляются во внешний паспорт после загрузки. Опубликованный ZIP не перепаковывается.
+Сертификат SHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+Папка: https://drive.google.com/drive/folders/1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Резерв ключа/фактических паролей/alias: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+SDK35/JDK17/Gradle8.11.1 плюс официальный SDK37 android.jar для отдельного public helper, см. README. В SOURCE нет ключей/паролей/SDKstubs.
+GitHub Release явно отложен владельцем до предоставления репозитория.

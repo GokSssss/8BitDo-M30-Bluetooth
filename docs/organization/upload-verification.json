@@ -1,0 +1,98 @@
+[
+  {
+    "id": "1E-mNUOnTzln8FZ0N9MqioYlT59UbSw8C",
+    "name": "20База!",
+    "size": 19983,
+    "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "sha256_local": "6c44db1c58dd8a423b086d03f5ec2a9052d3e414575ac83db6f0c4cb317de0a0",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1mgP15_VNkJh95RenxRY3NKa3fdGuXj5T",
+    "name": "Журнал улучшений M30.txt",
+    "size": 13904,
+    "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "sha256_local": "84a4d03335850ad699f659607e44f6b9514906359380f10950005411600a1cbd",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1cH-aRi-HoBMHLTfpo1bQwL6wX4tJmIDf",
+    "name": "20_DEVELOPMENT_LOG_RU.txt",
+    "size": 105692,
+    "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "sha256_local": "536c81c711c8f00195327855717ae8970ead2fab46281675d5d9ce385ffe3d13",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1HzCCOxxQ3nj8Vn5vyfxXLtnjNWc8Lw8g",
+    "name": "Паспорт 1.33.txt",
+    "size": 1354,
+    "parent": "133C1EBmct755HoauShJo7hzxQhQdZ4Ba",
+    "sha256_local": "8a3d727797dacdffc9fa825a737ab4468a8c4f630367bd1575241267f66050c8",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1wtubV_r9OKc97hRYATr-X4v17HrbcGF7",
+    "name": "Паспорт 1.32.txt",
+    "size": 1861,
+    "parent": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+    "sha256_local": "45970e4bacfa9e4e1d4edbc98cf35e4bdf170944fc685fb04f123d97e60a36e3",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1qJPUT27OhZZQc8XmH8ooQJoEiHT-r3YB",
+    "name": "Паспорт 1.29.txt",
+    "size": 1493,
+    "parent": "14fEYUU_xlu52E9276hOdtDvTy4sxtguv",
+    "sha256_local": "0650249c9a63d55272df8507fec655a3ac3011c72305452d97e89a2f4e707f83",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1LISjP3h34ncu_WbGu4P6wHBzokxcRdDe",
+    "name": "Паспорт 1.27.txt",
+    "size": 1547,
+    "parent": "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA",
+    "sha256_local": "8668e07c198d1415b133fdccd6433e1a6789914a195466669a63090c358fa74b",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1yJEQL-j2313RD9b1zzj94TTGtorVj9sj",
+    "name": "Реестр ключевых версий.txt",
+    "size": 3372,
+    "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+    "sha256_local": "e9ea0d9107f2101782e079331240725aa788141fc030d21100259e2dee321f27",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1kdqYHf9v2VKvBuIkKH2AgxmhQVinT3GP",
+    "name": "AGENTS.md",
+    "size": 1953,
+    "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+    "sha256_local": "becf203702233d60024a1f52b117a557164cae10c1fa893d9479972e3851158b",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1K5mijWZWzgoYTDug4vdNNK14rHHy0pYZ",
+    "name": "PROJECT_DRIVE_INDEX.json",
+    "size": 10929,
+    "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+    "sha256_local": "0ffd832ac5fc5bdedbdf8095778689004c5580fe8c6916da2dba70c0c933ea43",
+    "text_readback_equal": true
+  },
+  {
+    "id": "1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh",
+    "name": "M30-Companion-1.32-SOURCE.zip",
+    "size": 931514,
+    "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+    "sha256_local": "4719fb67b06c805397adee706d89e5095011d9fa720c867f77511e039f6f89ec",
+    "text_readback_equal": false
+  },
+  {
+    "id": "1SPDLE0m7Tcw9_6rZgIyxteHdPoa1RAUd",
+    "name": "M30-design-assets-2026-10-27.zip",
+    "size": 707429,
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "sha256_local": "546afe8c852a51db5af88862cc7692319cb5a83764742cbdf411cd7bfe8c06c4",
+    "text_readback_equal": false
+  }
+]

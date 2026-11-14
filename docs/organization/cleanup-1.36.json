@@ -1,0 +1,29 @@
+{
+  "version": "1.36",
+  "date": "2026-10-28",
+  "reason": "Two latest 1.36/1.35 verified; remove obsolete non-key 1.34 APK+SOURCE+docs. Text history retained, protected/revision-container sources unaffected.",
+  "deleted": [
+    {
+      "id": "1LsHVi4vUg4mn6JTR-dZpjqz_j3iHzmS6",
+      "name": "M30-Companion-1.34.apk",
+      "size": 946373
+    },
+    {
+      "id": "1KPXKVNUAapCx17mhPPpFbMoQx2N5aokl",
+      "name": "Паспорт 1.34.txt",
+      "size": 2908
+    },
+    {
+      "id": "1hs32Z7604pXRZJNZJbl1nPf0FTpVmA0t",
+      "name": "Как установить M30 Companion 1.34.txt",
+      "size": 2129
+    },
+    {
+      "id": "1uh1Uib7I50Xd4CguO41z7RAUEZKAmxl9",
+      "name": "M30-Companion-1.34-SOURCE.zip",
+      "size": 1030018
+    }
+  ],
+  "deletedFolder": "1FFOAY96Z0z3snBZpe12ldPWYsvP5CGs6",
+  "bytesDeleted": 1981428
+}

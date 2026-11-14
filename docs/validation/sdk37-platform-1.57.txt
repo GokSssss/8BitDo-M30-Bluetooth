@@ -1,0 +1,8 @@
+Official Android17/API37.0 public SDK, used only to compile one guarded helper.
+URL https://dl.google.com/android/repository/platform-37.0_r02.zip
+Repository package platforms;android-37.0, revision2
+Archive size67281901; SHA1 ed8ebf7f8822a4de5686d427f237d2fa30ff7410 verified before extraction.
+android.jar SHA256 bf1b4387cc7ca94fc6ef684f040d9d16fbf16248e181819f020736ea2053f177
+Main target/compileSdk35/min26 unchanged. app/src/api37/java compiled by JavaCompile --release8 against this official jar; helper JAR contains only our BluetoothConnect37 class, not Android stubs. No hidden API/reflection. Set M30_ANDROID37_JAR to the official android.jar when building.
+Reference https://developer.android.com/reference/android/bluetooth/BluetoothDevice#connect()
+Public connect addedAPI37; BLUETOOTH_CONNECT and exact CompanionDeviceManager association required. Return SUCCESS only means request initiated, never confirms InputDevice. Actual API37/physical controller not run here.

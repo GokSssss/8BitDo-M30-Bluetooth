@@ -1,0 +1,355 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,9 +6,22 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 48
+-        versionName '1.47'
++        versionCode 49
++        versionName '1.48'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
++    // Never silently replace the original signing key with a newly generated debug key.
++    def m30Store = System.getenv('M30_SIGNING_STORE')
++    signingConfigs {
++        original {
++            if (m30Store) {
++                storeFile file(m30Store)
++                storePassword System.getenv('M30_STORE_PASSWORD')
++                keyAlias System.getenv('M30_KEY_ALIAS')
++                keyPassword System.getenv('M30_KEY_PASSWORD')
++            }
++        }
++    }
++    buildTypes { debug { signingConfig m30Store ? signingConfigs.original : null } }
+ }
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -44,7 +44,8 @@
+         View scroller=FocusNavigation.find(decor,"page:scroll-all");
+         if(landscape){if(!(scroller instanceof ScrollView)||FocusNavigation.find(scroller,"header:pad")==null||FocusNavigation.find(scroller,"tab:0")==null)throw new AssertionError("Landscape header and tabs must share full-page scroll");}
+         else if(scroller!=null)throw new AssertionError("Portrait header must remain fixed");
+-        TextView caption=(TextView)FocusNavigation.find(decor,"page-caption");if(caption==null||caption.getLayoutParams().height<=0)throw new AssertionError("Missing reserved page caption");
++        TextView caption=(TextView)FocusNavigation.find(decor,"page-caption");if(caption==null||caption.getMinimumHeight()<=0)throw new AssertionError("Missing reserved page caption");
++        if(caption.getHeight()>0&&caption.getHeight()<caption.getLineHeight()+caption.getPaddingTop()+caption.getPaddingBottom())throw new AssertionError("Page caption clips its text");
+     }
+     private void checkControllerPageAlignment(){
+         if(activity.getResources().getConfiguration().orientation!=android.content.res.Configuration.ORIENTATION_LANDSCAPE)return;
+@@ -58,6 +59,7 @@
+         runOnMainSync(()->{
+             ScrollView scroll=(ScrollView)field(activity,"contentScroll");View root=activity.getWindow().getDecorView();TextView caption=(TextView)FocusNavigation.find(root,"page-caption");
+             if(scroll.getScrollY()!=0||!caption.getText().toString().equals("Gamepad 1")||screenBounds(caption).top!=captionTop[0])throw new AssertionError("Controller headers must share top position after focus restoration");
++            ViewGroup tabRow=(ViewGroup)field(activity,"tabs");for(int n=0;n<tabRow.getChildCount();n++){View child=tabRow.getChildAt(n);if(child.getTop()<0||child.getBottom()>tabRow.getHeight())throw new AssertionError("Controller tab is clipped by its row");}
+             TextView tab=(TextView)FocusNavigation.find(root,"tab:0");android.graphics.drawable.GradientDrawable background=(android.graphics.drawable.GradientDrawable)tab.getBackground();
+             if(!tab.isSelected()||background.getColor()==null||background.getColor().getDefaultColor()!=0xff181818||tab.getCurrentTextColor()!=0xffb6a45e)throw new AssertionError("First selected tab must keep gray fill and yellow text/outline style");
+         });
+@@ -193,7 +195,7 @@
+             java.lang.reflect.Method show=BluetoothSearchController.class.getDeclaredMethod("showDeviceMenu",BluetoothDeviceList.Entry.class,android.bluetooth.BluetoothDevice.class,boolean.class);show.setAccessible(true);
+             for(String command:new String[]{"Переименовать","Отключить","Забыть устройство"}){
+                 show.invoke(originalBluetooth,entry,null,true);AlertDialog dialog=(AlertDialog)field(originalBluetooth,"deviceMenu");View menu=dialog.getWindow().getDecorView();
+-                for(String label:new String[]{"Подключить","Переименовать","Отключить","Забыть устройство"}){
++                for(String label:new String[]{"Подключить устройство","Переименовать","Отключить","Забыть устройство"}){
+                     View action=find(menu,label,true);if(action==null||!action.isFocusable()||action.getForeground()==null)throw new AssertionError("Missing framed device action: "+label);
+                 }
+                 int before=monitor.getHits();find(menu,command,true).performClick();
+@@ -201,6 +203,13 @@
+                 TextView status=(TextView)FocusNavigation.find(originalBluetooth.view(),"bt:status");
+                 if(!entry.saved()||!status.getText().toString().contains(command))throw new AssertionError("Delegated action cannot pretend the system pair was removed/disconnected");
+             }
++            show.invoke(originalBluetooth,entry,null,true);
++            AlertDialog menu=(AlertDialog)field(originalBluetooth,"deviceMenu");String systemName=entry.displayName();
++            find(menu.getWindow().getDecorView(),"Метка в приложении",true).performClick();AlertDialog editor=(AlertDialog)field(originalBluetooth,"labelEditor");
++            ((EditText)FocusNavigation.find(editor.getWindow().getDecorView(),"bt:label-title")).setText("Windows TV");find(editor.getWindow().getDecorView(),"3",true).performClick();find(editor.getWindow().getDecorView(),"Сохранить",true).performClick();
++            TextView row=(TextView)FocusNavigation.find(originalBluetooth.view(),"bt:saved|"+entry.address);
++            if(!row.getText().toString().startsWith("[3] Windows TV")||!entry.displayName().equals(systemName))throw new AssertionError("App label must update row without changing Android alias");
++            ((BluetoothControllerNames)field(originalBluetooth,"controllerNames")).saveLabel(entry.address,"",0);
+             show.invoke(originalBluetooth,entry,null,true);
+         }catch(ReflectiveOperationException error){throw new AssertionError(error);}
+         finally{removeMonitor(monitor);}
+--- a/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
++++ b/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
+@@ -13,7 +13,7 @@
+ final class BluetoothControllerNames implements InputManager.InputDeviceListener,SharedPreferences.OnSharedPreferenceChangeListener {
+     private final Context context;
+     private final Runnable changed;
+-    private final SharedPreferences preferences,slots;
++    private final SharedPreferences preferences,slots,labels,legacyModes;
+     private final BluetoothSlotLinks links=new BluetoothSlotLinks();
+     private final Map<String,String> names=new HashMap<>();
+     private final Set<String> disconnected=new HashSet<>();
+@@ -23,7 +23,16 @@
+         if(d!=null){if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction()))disconnected.add(d.getAddress());else if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(intent.getAction()))disconnected.remove(d.getAddress());}
+         reload();changed.run();
+     }};
+-    BluetoothControllerNames(Context context,Runnable changed){this.context=context;this.changed=changed;preferences=context.getSharedPreferences("bluetooth_controller_links",0);slots=context.getSharedPreferences("MainActivity",0);reload();}
++    BluetoothControllerNames(Context context,Runnable changed){this.context=context;this.changed=changed;preferences=context.getSharedPreferences("bluetooth_controller_links",0);slots=context.getSharedPreferences("MainActivity",0);labels=context.getSharedPreferences("bluetooth_device_labels",0);legacyModes=context.getSharedPreferences("bluetooth_modes",0);reload();}
++    BluetoothDeviceLabel label(String address){
++        String title=labels.getString("title:"+address,null);int old=legacyModes.getInt(address,-1);
++        if(title==null)title=old>=0&&old<4?new String[]{"Android","Windows","macOS","Switch"}[old]:"";
++        return new BluetoothDeviceLabel(title,labels.getInt("badge:"+address,0));
++    }
++    void saveLabel(String address,String title,int badge){
++        BluetoothDeviceLabel value=new BluetoothDeviceLabel(title,badge);legacyModes.edit().remove(address).apply();
++        labels.edit().putString("title:"+address,value.title).putInt("badge:"+address,value.badge).apply();changed.run();
++    }
+     private boolean allowed(){return Build.VERSION.SDK_INT<31||context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED;}
+     private void reload(){
+         for(String a:new ArrayList<>(links.snapshot().keySet()))links.remove(a);
+@@ -37,7 +46,7 @@
+         String descriptor=slots.getString("controller."+slot,slot==0?slots.getString("device",""):"");if(descriptor.isEmpty())return null;
+         for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null&&id>=0&&descriptor.equals(d.getDescriptor()))return d;}return null;
+     }
+-    String slotName(int slot){InputDevice d=source(slot);if(d==null)return "Не подключён";String a=links.linkedAddress(d.getDescriptor());return a!=null&&activeSlot(a)==slot?names.get(a):BluetoothGamepadFilter.cleanName(d.getName());}
++    String slotName(int slot){InputDevice d=source(slot);if(d==null)return "Не подключён";String a=links.linkedAddress(d.getDescriptor());return a!=null&&activeSlot(a)==slot?label(a).displayName(names.get(a)):BluetoothGamepadFilter.cleanName(d.getName());}
+     int activeSlot(String address){
+         if(!allowed()||!names.containsKey(address)||disconnected.contains(address))return -1;
+         String[] active={"",""};for(int n=0;n<2;n++){InputDevice d=source(n);if(d!=null)active[n]=d.getDescriptor();}return links.activeSlot(address,active);
+@@ -48,12 +57,12 @@
+         SharedPreferences.Editor editor=preferences.edit();for(String old:preferences.getAll().keySet())editor.remove(old);for(Map.Entry<String,String> e:links.snapshot().entrySet())editor.putString(e.getKey(),e.getValue());editor.apply();changed.run();return true;
+     }
+     void unlink(String address){preferences.edit().remove(address).apply();}
+-    void start(){if(started)return;started=true;disconnected.clear();preferences.registerOnSharedPreferenceChangeListener(this);slots.registerOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.registerInputDeviceListener(this,new Handler(Looper.getMainLooper()));
++    void start(){if(started)return;started=true;disconnected.clear();preferences.registerOnSharedPreferenceChangeListener(this);slots.registerOnSharedPreferenceChangeListener(this);labels.registerOnSharedPreferenceChangeListener(this);legacyModes.registerOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.registerInputDeviceListener(this,new Handler(Looper.getMainLooper()));
+         IntentFilter f=new IntentFilter();f.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);f.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);f.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);f.addAction(BluetoothDevice.ACTION_NAME_CHANGED);f.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+         if(allowed())try{context.registerReceiver(receiver,f,Build.VERSION.SDK_INT>=33?Context.RECEIVER_EXPORTED:0);receiverRegistered=true;}catch(SecurityException ignored){}
+         reload();changed.run();
+     }
+-    void stop(){if(!started)return;started=false;preferences.unregisterOnSharedPreferenceChangeListener(this);slots.unregisterOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.unregisterInputDeviceListener(this);if(receiverRegistered){context.unregisterReceiver(receiver);receiverRegistered=false;}}
++    void stop(){if(!started)return;started=false;preferences.unregisterOnSharedPreferenceChangeListener(this);slots.unregisterOnSharedPreferenceChangeListener(this);labels.unregisterOnSharedPreferenceChangeListener(this);legacyModes.unregisterOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.unregisterInputDeviceListener(this);if(receiverRegistered){context.unregisterReceiver(receiver);receiverRegistered=false;}}
+     @Override public void onSharedPreferenceChanged(SharedPreferences p,String key){if(p==slots&&key!=null&&!key.startsWith("controller.")&&!key.equals("device"))return;reload();changed.run();}
+     @Override public void onInputDeviceAdded(int id){changed.run();}
+     @Override public void onInputDeviceRemoved(int id){changed.run();}
+--- a/app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java
++++ b/app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java
+@@ -0,0 +1,14 @@
++package app.m30.companion;
++
++/** App-only labels do not rename Android devices, merge identities or change modes. */
++public final class BluetoothDeviceLabel {
++    public final String title;
++    public final int badge;
++    public BluetoothDeviceLabel(String title,int badge){
++        String clean=BluetoothGamepadFilter.cleanName(title);
++        this.title=clean.substring(0,clean.offsetByCodePoints(0,Math.min(32,clean.codePointCount(0,clean.length()))));
++        this.badge=badge>=1&&badge<=3?badge:0;
++    }
++    public String displayName(String systemName){return (badge==0?"":"["+badge+"] ")+(title.isEmpty()?BluetoothGamepadFilter.cleanName(systemName):title);}
++    public boolean empty(){return title.isEmpty()&&badge==0;}
++}
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -34,7 +34,7 @@
+     private View topBoundary,bottomBoundary;
+     private Button search,settings;
+     private Space headerReserve;
+-    private AlertDialog deviceMenu;
++    private AlertDialog deviceMenu,labelEditor,labelPresets;
+     private final BluetoothControllerNames controllerNames;
+     private boolean registered,ownsDiscovery,resumed;
+     private final Runnable scanTimeout=()->finishScan("Поиск завершён. Если M30 не найден, включите PAIR и повторите.");
+@@ -228,8 +228,9 @@
+                 if(row.getParent()!=group||group.indexOfChild(row)!=n){boolean focused=row.hasFocus();if(row.getParent() instanceof ViewGroup)((ViewGroup)row.getParent()).removeView(row);group.addView(row,Math.min(n,group.getChildCount()));if(focused)row.requestFocus();}
+                 boolean match=e.saved()&&e.found;int slot=controllerNames.activeSlot(e.address);boolean connected=slot>=0;GradientDrawable bg=shape(connected?0xff18363c:match?0xff203125:0xff242424);if(connected||match)bg.setStroke(dp(connected?2:1),connected?0xff77dce5:0xff73d39b);row.setBackground(bg);
+                 String detail=connected?"Подключён · Джойстик "+(slot+1):e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
+-                row.setText(deviceRowText(e.displayName(),detail,e.address.substring(9)));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
+-                row.setContentDescription(e.displayName()+". "+detail+". "+e.address+(connected?". По вашей привязке к активному источнику ввода":""));
++                String displayName=controllerNames.label(e.address).displayName(e.displayName());
++                row.setText(deviceRowText(displayName,detail,e.address.substring(9)));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
++                row.setContentDescription(displayName+". Имя в Android: "+e.displayName()+". "+detail+". "+e.address+(connected?". По вашей привязке к активному источнику ввода":""));
+             }
+             (saved?savedEmpty:foundEmpty).setVisibility(entries.isEmpty()?View.VISIBLE:View.GONE);
+         }
+@@ -249,12 +250,14 @@
+         closeDeviceMenu();
+         ScrollView scroll=new ScrollView(activity);LinearLayout menu=new LinearLayout(activity);menu.setOrientation(LinearLayout.VERTICAL);menu.setPadding(dp(18),0,dp(18),dp(12));scroll.addView(menu);
+         menu.addView(label(entry.address,12,MUTED));
+-        menu.addView(label(saved?"Выберите действие. Подключение, переименование, отключение и удаление пары выполняются в системных настройках Android.":"Сопрягите геймпад и подтвердите запрос Android, если он появится.",13,MUTED));
+-        String[] commands=saved?new String[]{"Подключить","Переименовать","Отключить","Забыть устройство"}:new String[]{"Сопрячь","Системные настройки Bluetooth"};
++        menu.addView(label("Имя в Android: "+entry.displayName(),13,MUTED));
++        Button localLabel=button("Метка в приложении",()->showLabelEditor(entry));localLabel.setTag(R.id.navigation_key,"bt:local-label");menu.addView(localLabel);
++        menu.addView(label(saved?"Выберите действие. Подключение, переименование, отключение и удаление пары выполняются в системных настройках Android.":"Для подключения Android может запросить сопряжение. Подтвердите запрос, если он появится.",13,MUTED));
++        String[] commands=saved?new String[]{"Подключить устройство","Переименовать","Отключить","Забыть устройство"}:new String[]{"Подключить устройство","Системные настройки Bluetooth"};
+         for(int n=0;n<commands.length;n++){
+-            String command=commands[n];Button action=button(command,()->{
++            final int index=n;String command=commands[n];Button action=button(command,()->{
+                 closeDeviceMenu();
+-                if(!saved&&command.equals("Сопрячь"))pair(device);else deviceActionInSettings(entry,command);
++                if(!saved&&index==0)pair(device);else deviceActionInSettings(entry,command);
+             });action.setTag(R.id.navigation_key,"bt:device-action:"+n);menu.addView(action);
+         }
+         if(saved){
+@@ -262,13 +265,25 @@
+             for(int n=0;n<2;n++){final int slot=n;android.view.InputDevice source=controllerNames.source(slot);Button link=button("Это Джойстик "+(slot+1)+(source==null?" — не подключён":" · "+source.getName()),()->{if(controllerNames.bind(entry.address,slot)){closeDeviceMenu();status.setText("Имя связано с Джойстиком "+(slot+1)+". Привязка задана вами.");refreshRows();}});link.setEnabled(source!=null);link.setTag(R.id.navigation_key,"bt:link:"+slot);menu.addView(link);}
+             if(controllerNames.linked(entry.address)){Button unlink=button("Убрать привязку к джойстику",()->{controllerNames.unlink(entry.address);closeDeviceMenu();refreshRows();});unlink.setTag(R.id.navigation_key,"bt:unlink");menu.addView(unlink);}
+         }
+-        AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(entry.displayName()).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;
++        AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(controllerNames.label(entry.address).displayName(entry.displayName())).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;
+         dialog.setOnDismissListener(d->{if(deviceMenu==dialog)deviceMenu=null;});
+     }
++    private void showLabelEditor(BluetoothDeviceList.Entry entry){
++        closeDeviceMenu();closeLabelEditor();BluetoothDeviceLabel current=controllerNames.label(entry.address);
++        ScrollView scroll=new ScrollView(activity);LinearLayout form=new LinearLayout(activity);form.setOrientation(LinearLayout.VERTICAL);form.setPadding(dp(18),0,dp(18),dp(12));scroll.addView(form);
++        form.addView(label("Метка и номер видны только в этом приложении. Имя Android и режим геймпада не меняются.",14,MUTED));
++        EditText title=new EditText(activity);title.setSingleLine(true);title.setTextSize(16);title.setHint("Например: Android TV или Windows");title.setText(current.title);title.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(64)});title.setTag(R.id.navigation_key,"bt:label-title");form.addView(title,new LinearLayout.LayoutParams(-1,-2));
++        Button preset=button("Выбрать подпись режима",()->{AlertDialog choices=new FocusDialogBuilder(activity).setTitle("Метка, заданная вами").setItems(new String[]{"Android","Windows","macOS","Switch"},(d,n)->title.setText(new String[]{"Android","Windows","macOS","Switch"}[n])).setNegativeButton("Отмена",null).show();labelPresets=choices;choices.setOnDismissListener(d->{if(labelPresets==choices)labelPresets=null;});});form.addView(preset);
++        form.addView(label("Номер для различения одинаковых устройств",14,MUTED));RadioGroup badges=new RadioGroup(activity);badges.setOrientation(LinearLayout.HORIZONTAL);badges.setBaselineAligned(false);form.addView(badges);
++        for(int n=0;n<4;n++){RadioButton badge=new RadioButton(activity);badge.setId(View.generateViewId());badge.setText(n==0?"Нет":String.valueOf(n));badge.setContentDescription(n==0?"Без номера":"Номер "+n);badge.setTag(n);badge.setMinHeight(dp(48));badges.addView(badge,new RadioGroup.LayoutParams(0,-2,1));if(n==current.badge)badges.check(badge.getId());}
++        AlertDialog editor=new FocusDialogBuilder(activity).setTitle("Метка в приложении").setView(scroll).setPositiveButton("Сохранить",(d,w)->{View checked=badges.findViewById(badges.getCheckedRadioButtonId());controllerNames.saveLabel(entry.address,title.getText().toString(),checked==null?0:(Integer)checked.getTag());status.setText("Метка сохранена в приложении.");refreshRows();}).setNeutralButton("Убрать метку",(d,w)->{controllerNames.saveLabel(entry.address,"",0);refreshRows();}).setNegativeButton("Отмена",null).show();labelEditor=editor;
++        editor.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);editor.setOnDismissListener(d->{if(labelEditor==editor)labelEditor=null;});
++    }
++    private void closeLabelEditor(){if(labelPresets!=null){AlertDialog previous=labelPresets;labelPresets=null;previous.dismiss();}if(labelEditor!=null){AlertDialog previous=labelEditor;labelEditor=null;previous.dismiss();}}
+     private void closeDeviceMenu(){if(deviceMenu!=null){AlertDialog previous=deviceMenu;deviceMenu=null;previous.dismiss();}}
+     private void deviceActionInSettings(BluetoothDeviceList.Entry entry,String command){
+         String instruction="В настройках Bluetooth выберите «"+entry.displayName()+"» ("+entry.address.substring(9)+")";
+-        if(!command.equals("Системные настройки Bluetooth"))instruction+=" → «"+command+"»";
++        if(!command.equals("Системные настройки Bluetooth"))instruction+=" → «"+(command.equals("Подключить устройство")?"Подключить":command)+"»";
+         instruction+=".";status.setText(instruction);Toast.makeText(activity,instruction,Toast.LENGTH_LONG).show();openSettings(Settings.ACTION_BLUETOOTH_SETTINGS);
+     }
+     private void pair(BluetoothDevice device){
+@@ -313,7 +328,7 @@
+     }
+     void activityResult(int request,int result){if(request==ENABLE){if(result==Activity.RESULT_OK)beginSearch();else status.setText("Bluetooth не включён. Повторите поиск, чтобы попробовать снова.");}}
+     void resume(){resumed=true;controllerNames.start();if(canReadSaved()&&pairing.phase()!=BluetoothPairingState.PAIRING)loadSaved(false);if(pairing.phase()==BluetoothPairingState.PAIRING){if(!canReadSaved()){accessLost();return;}try{registerBluetooth();reconcilePair();}catch(SecurityException error){accessLost();}}}
+-    void pause(){resumed=false;controllerNames.stop();closeDeviceMenu();boolean active=ownsDiscovery;finishScan(active?"Поиск остановлен при уходе с экрана.":null);handler.removeCallbacks(pairTimeout);if(registered){activity.unregisterReceiver(receiver);registered=false;}}
++    void pause(){resumed=false;controllerNames.stop();closeDeviceMenu();closeLabelEditor();boolean active=ownsDiscovery;finishScan(active?"Поиск остановлен при уходе с экрана.":null);handler.removeCallbacks(pairTimeout);if(registered){activity.unregisterReceiver(receiver);registered=false;}}
+     void destroy(){pause();handler.removeCallbacksAndMessages(null);}
+     Bundle save(){Bundle out=new Bundle();out.putString("address",pairing.address());out.putInt("phase",pairing.phase());out.putLong("deadline",pairing.deadline());out.putBoolean("sawBonding",pairing.sawBonding());return out;}
+ }
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.47 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.48 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.47 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.48 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -130,41 +130,44 @@
+         wholePageScroll=getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+         root=column();root.setBackgroundColor(BG);root.setPadding(dp(16),0,dp(16),0);
+         if(wholePageScroll){
+-            ScrollView scroller=new ScrollView(this);scroller.setBackgroundColor(BG);scroller.setFillViewport(true);scroller.setTag(R.id.navigation_key,"page:scroll-all");scroller.addView(root,new ScrollView.LayoutParams(-1,-2));contentScroll=scroller;setContentView(scroller);
++            ScrollView scroller=new ScrollView(this);scroller.setBackgroundColor(BG);scroller.setFillViewport(true);scroller.setSmoothScrollingEnabled(false);scroller.setTag(R.id.navigation_key,"page:scroll-all");scroller.addView(root,new ScrollView.LayoutParams(-1,-2));contentScroll=scroller;setContentView(scroller);
+             if(Build.VERSION.SDK_INT>=30)scroller.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(i.left,i.top,i.right,i.bottom);return insets;});
+         }else{
+             setContentView(root);
+             if(Build.VERSION.SDK_INT>=30)root.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(dp(16)+i.left,i.top,dp(16)+i.right,i.bottom);return insets;});
+         }
+-        TextView pageCaption=title(RemoteNavigation.pageCaption(page),14);pageCaption.setTextColor(headerAccent());pageCaption.setTag(R.id.navigation_key,"page-caption");root.addView(pageCaption,new LinearLayout.LayoutParams(-1,dp(24)));
++        TextView pageCaption=title(RemoteNavigation.pageCaption(page),14);pageCaption.setPadding(0,dp(2),0,dp(2));pageCaption.setMinimumHeight(dp(28));pageCaption.setTextColor(headerAccent());pageCaption.setTag(R.id.navigation_key,"page-caption");root.addView(pageCaption,new LinearLayout.LayoutParams(-1,-2));
+         topRegion=new FrameLayout(this);root.addView(topRegion,new LinearLayout.LayoutParams(-1,-2));topBase=column();if(page!=1)topBase.setMinimumHeight(dp(320));topRegion.addView(topBase,new FrameLayout.LayoutParams(-1,-2));
+         if(page!=1){
+         LinearLayout header=new LinearLayout(this);header.setGravity(Gravity.CENTER_VERTICAL);
+         int headerHeight=152;
+-        topBase.addView(header,new LinearLayout.LayoutParams(-1,dp(headerHeight)));
+-        LinearLayout brand=column();header.addView(brand,new LinearLayout.LayoutParams(dp(104),-2));
++        LinearLayout.LayoutParams headerLayout=new LinearLayout.LayoutParams(-1,dp(headerHeight));topBase.addView(header,headerLayout);
++        LinearLayout brand=column();LinearLayout.LayoutParams brandLayout=new LinearLayout.LayoutParams(dp(120),-2);header.addView(brand,brandLayout);
+         LinearLayout link=new LinearLayout(this);link.setGravity(Gravity.CENTER_VERTICAL);link.setBackground(shape(CARD,8));link.setPadding(dp(4),0,dp(4),0);link.setTag(R.id.navigation_key,"bluetooth:toggle");link.setOnClickListener(v->toggleInlineBluetooth());link.setContentDescription("Статус M30. Открыть поиск геймпадов Bluetooth");bluetoothButton=link;bluetoothPlaceholder=new View(this);brand.addView(bluetoothPlaceholder,new LinearLayout.LayoutParams(-1,dp(32)));
+         headerBluetooth=new ImageView(this);link.addView(headerBluetooth,new LinearLayout.LayoutParams(dp(16),dp(22)));
+-        headerConnection=text("",13,MUTED);headerConnection.setSingleLine(true);LinearLayout.LayoutParams statusLabel=new LinearLayout.LayoutParams(-2,-2);statusLabel.leftMargin=dp(3);link.addView(headerConnection,statusLabel);gap(brand,8);
++        headerConnection=text("",13,MUTED);headerConnection.setPadding(0,0,0,0);headerConnection.setSingleLine(true);LinearLayout.LayoutParams statusLabel=new LinearLayout.LayoutParams(-2,-2);statusLabel.leftMargin=dp(3);link.addView(headerConnection,statusLabel);
++        int controlHeight=Math.max(dp(40),headerConnection.getLineHeight()+dp(12)),controlWidth=Math.max(dp(120),(int)Math.ceil(headerConnection.getPaint().measureText("No Connect"))+dp(40));
++        bluetoothPlaceholder.setLayoutParams(new LinearLayout.LayoutParams(controlWidth,controlHeight));brandLayout.width=controlWidth;link.setMinimumHeight(controlHeight);gap(brand,8);
+         LinearLayout charge=new LinearLayout(this);charge.setGravity(Gravity.CENTER_VERTICAL);brand.addView(charge);
+         headerBattery=new BatteryIndicator(this);headerBattery.setAccent(headerAccent());headerBattery.setNeutral(page==1);charge.addView(headerBattery,new LinearLayout.LayoutParams(dp(24),dp(15)));
+         headerPercent=text("—",13,headerAccent());LinearLayout.LayoutParams percentLayout=new LinearLayout.LayoutParams(-2,-2);percentLayout.leftMargin=dp(5);charge.addView(headerPercent,percentLayout);charge.setOnClickListener(v->showBatteryInfo());charge.setTag(R.id.navigation_key,"header:battery");charge.setMinimumHeight(dp(28));
+         gap(brand,8);LinearLayout actions=new LinearLayout(this);brand.addView(actions);
+-        Button choose=new Button(this);choose.setText("Choose");choose.setTextSize(13);choose.setAllCaps(false);choose.setTextColor(headerAccent());choose.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(headerAccent()));choose.setPadding(dp(4),0,dp(4),0);choose.setMinWidth(0);choose.setMinimumWidth(0);choose.setMinHeight(0);choose.setMinimumHeight(0);choose.setBackground(shape(CARD,8));choose.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_gamepad,0,0,0);choose.setCompoundDrawablePadding(dp(2));choose.setTag(R.id.navigation_key,"header:choose");choose.setContentDescription("Выбрать M30");choose.setOnClickListener(v->devicePicker());LinearLayout.LayoutParams chooserLayout=new LinearLayout.LayoutParams(dp(104),dp(32));actions.addView(choose,chooserLayout);
++        Button choose=new Button(this);choose.setText("Choose");choose.setTextSize(13);choose.setAllCaps(false);choose.setTextColor(headerAccent());choose.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(headerAccent()));choose.setPadding(dp(4),0,dp(4),0);choose.setMinWidth(0);choose.setMinimumWidth(0);choose.setMinHeight(0);choose.setMinimumHeight(0);choose.setBackground(shape(CARD,8));choose.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_gamepad,0,0,0);choose.setCompoundDrawablePadding(dp(2));choose.setTag(R.id.navigation_key,"header:choose");choose.setContentDescription("Выбрать M30");choose.setOnClickListener(v->devicePicker());LinearLayout.LayoutParams chooserLayout=new LinearLayout.LayoutParams(controlWidth,controlHeight);actions.addView(choose,chooserLayout);
++        headerLayout.height=Math.max(dp(headerHeight),2*controlHeight+Math.max(dp(28),headerPercent.getLineHeight()+dp(8))+dp(16));
+         FrameLayout padArea=new FrameLayout(this);header.addView(padArea,new LinearLayout.LayoutParams(0,-1,1));
+-        pad=new PadView(this,session.state,null);pad.setTag(R.id.navigation_key,"header:pad");pad.setDisplayStyle(activeSlot,page==1);pad.waiting=session.waiting;padArea.addView(pad,new FrameLayout.LayoutParams(-1,-1));
+-        headerVersions=text("App "+appVersion+" · FW —",10,MUTED);headerVersions.setGravity(Gravity.CENTER);headerVersions.setPadding(0,0,0,0);headerVersions.setSingleLine(true);headerVersions.setContentDescription("Версия приложения "+appVersion+". Версия прошивки геймпада не получена.");padArea.addView(headerVersions,new FrameLayout.LayoutParams(-1,dp(18),Gravity.BOTTOM));
++        pad=new PadView(this,session.state,null);pad.setTag(R.id.navigation_key,"header:pad");pad.setDisplayStyle(activeSlot,page==1);pad.waiting=session.waiting;FrameLayout.LayoutParams padLayout=new FrameLayout.LayoutParams(-1,-1);padLayout.topMargin=dp(4);padLayout.bottomMargin=dp(18);padArea.addView(pad,padLayout);
++        headerVersions=text("App "+appVersion+" · FW —",10,MUTED);headerVersions.setGravity(Gravity.CENTER);headerVersions.setPadding(0,0,0,0);headerVersions.setSingleLine(true);headerVersions.setContentDescription("Версия приложения "+appVersion+". Версия прошивки геймпада не получена.");int versionsHeight=Math.max(dp(18),headerVersions.getLineHeight()+dp(2));padLayout.bottomMargin=versionsHeight;padArea.addView(headerVersions,new FrameLayout.LayoutParams(-1,versionsHeight,Gravity.BOTTOM));
+         }
+         gap(topBase,6);inputSummary=column();inputSummary.setBackground(shape(CARD,10));inputSummary.setPadding(dp(10),dp(4),dp(10),dp(4));inputSummary.setMinimumHeight(dp(54));topBase.addView(inputSummary,new LinearLayout.LayoutParams(-1,-2,page!=1?1:0));
+         headerInputLine=text("",14,TEXT);headerInputLine.setTypeface(Typeface.MONOSPACE);headerInputLine.setSingleLine(true);headerInputLine.setAutoSizeTextTypeUniformWithConfiguration(11,14,1,android.util.TypedValue.COMPLEX_UNIT_SP);headerInputLine.setEllipsize(android.text.TextUtils.TruncateAt.END);inputSummary.addView(headerInputLine,new LinearLayout.LayoutParams(-1,dp(23)));
+         headerInputAction=text("",14,accent());headerInputAction.setMinLines(3);headerInputAction.setGravity(Gravity.TOP);headerInputAction.setLineSpacing(dp(2),1);inputSummary.addView(headerInputAction,new LinearLayout.LayoutParams(-1,-2));
+         if(page!=1){
+-            topRegion.addView(bluetoothButton,new FrameLayout.LayoutParams(dp(104),dp(32)));
++            topRegion.addView(bluetoothButton,new FrameLayout.LayoutParams(bluetoothPlaceholder.getLayoutParams().width,bluetoothPlaceholder.getLayoutParams().height));
+             topBase.addOnLayoutChangeListener((v,l,t,r,b,ol,ot,or,ob)->positionBluetoothButton());
+             FrameLayout expected=topRegion;topRegion.post(()->{if(topRegion!=expected)return;positionBluetoothButton();if(inlineBluetoothOpen)showInlineBluetooth();});
+         }
+         gap(root,8);
+-        tabs=new LinearLayout(this);root.addView(tabs);
++        tabs=new LinearLayout(this);tabs.setBaselineAligned(false);tabs.setGravity(Gravity.CENTER_VERTICAL);root.addView(tabs);
+         int[] pages=SwipeNavigation.order(true);String[] names={"Джойстик 1","Джойстик 2","Кнопки"};
+         for(int n=0;n<pages.length;n++){
+             final int tab=pages[n];boolean selected=page==tab;
+@@ -174,7 +177,7 @@
+             int foreground=tab!=1?tabAccent:selected?TEXT:MUTED;
+             TextView t=text(names[n],tab!=1?12:14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(3),dp(3),dp(3));t.setMaxLines(tab==1?1:2);t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+             GradientDrawable tabBackground=shape(fill,12);if(tab!=1&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:tabAccent);t.setTag(R.id.navigation_key,"tab:"+tab);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
+-            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(44),tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
++            t.setMinimumHeight(dp(48));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
+         }
+         gap(root,7);View divider=new View(this);divider.setBackgroundColor(0xff454545);divider.setContentDescription("Разделитель шапки и прокрутки");root.addView(divider,new LinearLayout.LayoutParams(-1,dp(1)));gap(root,8);
+         content=column();
+@@ -263,9 +266,6 @@
+         return super.dispatchTouchEvent(e);
+     }
+     private void connectionPage(){
+-        if(activeSlot==1&&!session.connected()){
+-            LinearLayout c=card(null);c.addView(button("Подключиться",this::openBluetoothSearch,true));controllerActions();return;
+-        }
+         LinearLayout c=card(null);
+         TextView connectionHeading=text("Предположительное Подключение",16,TEXT);connectionHeading.setIncludeFontPadding(false);connectionHeading.setGravity(Gravity.CENTER);c.addView(connectionHeading,new LinearLayout.LayoutParams(-1,-2));
+         modeResultView=text("—",16,accent());modeResultView.setIncludeFontPadding(false);modeResultView.setGravity(Gravity.CENTER);c.addView(modeResultView,new LinearLayout.LayoutParams(-1,-2));modeResultView.setOnClickListener(v->new FocusDialogBuilder(dialogContext()).setTitle("Определение режима").setMessage(modeResult().evidence+"\n\nВыделенный пункт ниже выбирает инструкцию и схему. Он не переключает режим джойстика.").setPositiveButton("Закрыть",null).show());gap(c,8);
+--- a/test-core.sh
++++ b/test-core.sh
+@@ -3,7 +3,7 @@
+ cd "$(dirname "$0")"
+ out=$(mktemp -d)
+ trap 'rm -rf "$out"' EXIT
+-javac -d "$out" app/src/main/java/app/m30/companion/BluetoothSlotLinks.java tests/BluetoothSlotLinksTest.java app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
++javac -d "$out" app/src/main/java/app/m30/companion/BluetoothDeviceLabel.java tests/BluetoothDeviceLabelTest.java app/src/main/java/app/m30/companion/BluetoothSlotLinks.java tests/BluetoothSlotLinksTest.java app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
+ java -cp "$out" PadStateTest
+ java -cp "$out" DiagnosticsTest
+ java -cp "$out" ReconnectionTest
+@@ -41,3 +41,5 @@
+ java -cp "$out" BluetoothDeviceListTest
+ 
+ java -cp "$out" BluetoothSlotLinksTest
++
++java -cp "$out" BluetoothDeviceLabelTest
+--- a/tests/BluetoothDeviceLabelTest.java
++++ b/tests/BluetoothDeviceLabelTest.java
+@@ -0,0 +1,18 @@
++import app.m30.companion.BluetoothDeviceLabel;
++
++public final class BluetoothDeviceLabelTest {
++    static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
++    public static void main(String[] args){
++        String system="8BitDo M30 gamepad";
++        BluetoothDeviceLabel label=new BluetoothDeviceLabel("  Android\nTV\t ",2);
++        check(label.title.equals("Android TV")&&label.displayName(system).equals("[2] Android TV"),"Local label must clean whitespace without changing device identity");
++        check(system.equals("8BitDo M30 gamepad"),"Android's name remains separate");
++        check(new BluetoothDeviceLabel("",1).displayName(system).equals("[1] "+system),"Number-only label retains system name");
++        check(new BluetoothDeviceLabel("",0).displayName(system).equals(system),"Removing label restores system name");
++        check(new BluetoothDeviceLabel(null,99).empty(),"Invalid badge and missing label are harmless");
++        String emoji="😀".repeat(40);BluetoothDeviceLabel longName=new BluetoothDeviceLabel(emoji,3);
++        check(longName.title.codePointCount(0,longName.title.length())==32&&!Character.isHighSurrogate(longName.title.charAt(longName.title.length()-1)),"Length limit cannot split Unicode characters");
++        check(new BluetoothDeviceLabel("Windows",0).displayName(system).equals("Windows"),"A mode label is user text, not a new system name or firmware readout");
++        System.out.println("PASS: app-only label/number formatting, reset, unknown values and Unicode limits");
++    }
++}

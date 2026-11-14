@@ -1,0 +1,297 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 47
+-        versionName '1.46'
++        versionCode 48
++        versionName '1.47'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- a/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
++++ b/app/src/main/java/app/m30/companion/BluetoothControllerNames.java
+@@ -0,0 +1,61 @@
++package app.m30.companion;
++
++import android.Manifest;
++import android.bluetooth.*;
++import android.content.*;
++import android.content.pm.PackageManager;
++import android.hardware.input.InputManager;
++import android.os.*;
++import android.view.InputDevice;
++import java.util.*;
++
++/** Foreground identity labels; no HID control, polling, name matching or inferred MACs. */
++final class BluetoothControllerNames implements InputManager.InputDeviceListener,SharedPreferences.OnSharedPreferenceChangeListener {
++    private final Context context;
++    private final Runnable changed;
++    private final SharedPreferences preferences,slots;
++    private final BluetoothSlotLinks links=new BluetoothSlotLinks();
++    private final Map<String,String> names=new HashMap<>();
++    private final Set<String> disconnected=new HashSet<>();
++    private boolean started,receiverRegistered;
++    private final BroadcastReceiver receiver=new BroadcastReceiver(){@Override public void onReceive(Context c,Intent intent){
++        BluetoothDevice d=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
++        if(d!=null){if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction()))disconnected.add(d.getAddress());else if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(intent.getAction()))disconnected.remove(d.getAddress());}
++        reload();changed.run();
++    }};
++    BluetoothControllerNames(Context context,Runnable changed){this.context=context;this.changed=changed;preferences=context.getSharedPreferences("bluetooth_controller_links",0);slots=context.getSharedPreferences("MainActivity",0);reload();}
++    private boolean allowed(){return Build.VERSION.SDK_INT<31||context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED;}
++    private void reload(){
++        for(String a:new ArrayList<>(links.snapshot().keySet()))links.remove(a);
++        for(Map.Entry<String,?> e:preferences.getAll().entrySet())if(e.getValue() instanceof String)links.restore(e.getKey(),(String)e.getValue());
++        names.clear();if(!allowed())return;
++        try{BluetoothManager m=context.getSystemService(BluetoothManager.class);BluetoothAdapter a=m==null?null:m.getAdapter();if(a==null||!a.isEnabled())return;
++            for(BluetoothDevice d:a.getBondedDevices()){String name=Build.VERSION.SDK_INT>=30?d.getAlias():null;if(name==null||name.isEmpty())name=d.getName();names.put(d.getAddress(),BluetoothGamepadFilter.cleanName(name==null?"Геймпад":name));}
++        }catch(SecurityException ignored){names.clear();}
++    }
++    InputDevice source(int slot){
++        String descriptor=slots.getString("controller."+slot,slot==0?slots.getString("device",""):"");if(descriptor.isEmpty())return null;
++        for(int id:InputDevice.getDeviceIds()){InputDevice d=InputDevice.getDevice(id);if(d!=null&&id>=0&&descriptor.equals(d.getDescriptor()))return d;}return null;
++    }
++    String slotName(int slot){InputDevice d=source(slot);if(d==null)return "Не подключён";String a=links.linkedAddress(d.getDescriptor());return a!=null&&activeSlot(a)==slot?names.get(a):BluetoothGamepadFilter.cleanName(d.getName());}
++    int activeSlot(String address){
++        if(!allowed()||!names.containsKey(address)||disconnected.contains(address))return -1;
++        String[] active={"",""};for(int n=0;n<2;n++){InputDevice d=source(n);if(d!=null)active[n]=d.getDescriptor();}return links.activeSlot(address,active);
++    }
++    boolean linked(String address){return links.snapshot().containsKey(address);}
++    boolean bind(String address,int slot){
++        InputDevice d=source(slot);if(d==null||!names.containsKey(address)||!links.bind(address,d.getDescriptor()))return false;
++        SharedPreferences.Editor editor=preferences.edit();for(String old:preferences.getAll().keySet())editor.remove(old);for(Map.Entry<String,String> e:links.snapshot().entrySet())editor.putString(e.getKey(),e.getValue());editor.apply();changed.run();return true;
++    }
++    void unlink(String address){preferences.edit().remove(address).apply();}
++    void start(){if(started)return;started=true;disconnected.clear();preferences.registerOnSharedPreferenceChangeListener(this);slots.registerOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.registerInputDeviceListener(this,new Handler(Looper.getMainLooper()));
++        IntentFilter f=new IntentFilter();f.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);f.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);f.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);f.addAction(BluetoothDevice.ACTION_NAME_CHANGED);f.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
++        if(allowed())try{context.registerReceiver(receiver,f,Build.VERSION.SDK_INT>=33?Context.RECEIVER_EXPORTED:0);receiverRegistered=true;}catch(SecurityException ignored){}
++        reload();changed.run();
++    }
++    void stop(){if(!started)return;started=false;preferences.unregisterOnSharedPreferenceChangeListener(this);slots.unregisterOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.unregisterInputDeviceListener(this);if(receiverRegistered){context.unregisterReceiver(receiver);receiverRegistered=false;}}
++    @Override public void onSharedPreferenceChanged(SharedPreferences p,String key){if(p==slots&&key!=null&&!key.startsWith("controller.")&&!key.equals("device"))return;reload();changed.run();}
++    @Override public void onInputDeviceAdded(int id){changed.run();}
++    @Override public void onInputDeviceRemoved(int id){changed.run();}
++    @Override public void onInputDeviceChanged(int id){changed.run();}
++}
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -35,6 +35,7 @@
+     private Button search,settings;
+     private Space headerReserve;
+     private AlertDialog deviceMenu;
++    private final BluetoothControllerNames controllerNames;
+     private boolean registered,ownsDiscovery,resumed;
+     private final Runnable scanTimeout=()->finishScan("Поиск завершён. Если M30 не найден, включите PAIR и повторите.");
+     private final Runnable pairTimeout=()->reconcilePair();
+@@ -66,6 +67,7 @@
+     private Button button(String text,Runnable action){Button b=new Button(activity);b.setText(text);b.setAllCaps(false);b.setTextSize(14);b.setTextColor(TEXT);b.setBackground(shape(CARD));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setMinHeight(dp(48));b.setOnClickListener(v->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(7);b.setLayoutParams(lp);return b;}
+     BluetoothSearchController(Activity activity,Bundle saved,boolean compact,int accent,Runnable checkButtons){
+         this.activity=activity;this.compact=compact;this.accent=accent;this.checkButtons=checkButtons;
++        controllerNames=new BluetoothControllerNames(activity,()->{if(savedResults!=null)refreshRows();});
+         BluetoothManager manager=activity.getSystemService(BluetoothManager.class);adapter=manager==null?null:manager.getAdapter();
+         if(saved!=null)pairing.restore(saved.getString("address"),saved.getInt("phase"),saved.getLong("deadline"),saved.getBoolean("sawBonding"),SystemClock.elapsedRealtime());
+         if(compact)buildCompact();else buildFull();
+@@ -112,7 +114,6 @@
+         LinearLayout heading=new LinearLayout(activity);heading.setGravity(Gravity.CENTER_VERTICAL);heading.setMinimumHeight(dp(40));column.addView(heading,new LinearLayout.LayoutParams(-1,-2));
+         TextView caption=label(saved?"Ранее подключённые (0)":"Найдены рядом",14,accent);caption.setPadding(dp(2),dp(2),dp(4),dp(2));caption.setGravity(Gravity.CENTER_VERTICAL);heading.addView(caption,new LinearLayout.LayoutParams(0,-2,1));if(saved)savedHeading=caption;
+         if(saved){savedButton=button("↻",()->loadSaved(true));savedButton.setTextSize(18);savedButton.setPadding(0,0,0,0);savedButton.setMinHeight(0);savedButton.setMinimumHeight(0);savedButton.setContentDescription("Обновить сохранённые пары Android");savedButton.setTag(R.id.navigation_key,"bt:saved");heading.addView(savedButton,new LinearLayout.LayoutParams(dp(40),dp(40)));}
+-        if(saved){TextView hint=label("Одинаковые джойстики советуем переименовать в настройках Bluetooth.",12,MUTED);hint.setPadding(dp(2),0,dp(2),dp(5));hint.setTag(R.id.navigation_key,"bt:rename-hint");column.addView(hint,new LinearLayout.LayoutParams(-1,-2));}
+         ScrollView scroll=new ScrollView(activity);scroll.setFocusable(false);
+         if(saved){scroll.setTag(R.id.navigation_key,"bt:saved-scroll");scroll.setVerticalScrollBarEnabled(true);scroll.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);scroll.setScrollbarFadingEnabled(false);scroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);scroll.setScrollBarSize(dp(4));
+             if(Build.VERSION.SDK_INT>=29){GradientDrawable thumb=shape(MUTED);scroll.setVerticalScrollbarThumbDrawable(thumb);scroll.setVerticalScrollbarTrackDrawable(shape(0xff333333));}
+@@ -124,6 +125,7 @@
+     private void buildLists(LinearLayout target,int height){
+         results=new LinearLayout(activity);results.setOrientation(LinearLayout.HORIZONTAL);results.setTag(R.id.navigation_key,"bt:columns");target.addView(results,new LinearLayout.LayoutParams(-1,height,height==0?1:0));
+         savedResults=listColumn(results,true);foundResults=listColumn(results,false);
++        TextView hint=label("Одинаковые джойстики лучше переименовать в Bluetooth.",12,MUTED);hint.setPadding(dp(2),dp(4),dp(2),0);hint.setTag(R.id.navigation_key,"bt:rename-hint");target.addView(hint,new LinearLayout.LayoutParams(-1,-2));
+     }
+     private View firstRow(LinearLayout group){return group.getChildCount()>0?group.getChildAt(0):null;}
+     private void wireFocus(){
+@@ -224,9 +226,10 @@
+                 BluetoothDeviceList.Entry e=entries.get(n);String key=(saved?"saved|":"found|")+e.address;Button row=rows.get(key);
+                 if(row==null){row=button("",()->select(candidates.get(e.address)));row.setOnLongClickListener(v->{select(candidates.get(e.address));return true;});row.setTag(R.id.navigation_key,"bt:"+key);row.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);rows.put(key,row);row.setTextSize(14);row.setPadding(dp(7),dp(4),dp(7),dp(4));LinearLayout.LayoutParams rp=(LinearLayout.LayoutParams)row.getLayoutParams();rp.topMargin=dp(4);FocusNavigation.prepare(row);}
+                 if(row.getParent()!=group||group.indexOfChild(row)!=n){boolean focused=row.hasFocus();if(row.getParent() instanceof ViewGroup)((ViewGroup)row.getParent()).removeView(row);group.addView(row,Math.min(n,group.getChildCount()));if(focused)row.requestFocus();}
+-                boolean match=e.saved()&&e.found;GradientDrawable bg=shape(match?0xff203125:0xff242424);if(match)bg.setStroke(dp(1),0xff73d39b);row.setBackground(bg);
+-                String detail=e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
++                boolean match=e.saved()&&e.found;int slot=controllerNames.activeSlot(e.address);boolean connected=slot>=0;GradientDrawable bg=shape(connected?0xff18363c:match?0xff203125:0xff242424);if(connected||match)bg.setStroke(dp(connected?2:1),connected?0xff77dce5:0xff73d39b);row.setBackground(bg);
++                String detail=connected?"Подключён · Джойстик "+(slot+1):e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
+                 row.setText(deviceRowText(e.displayName(),detail,e.address.substring(9)));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
++                row.setContentDescription(e.displayName()+". "+detail+". "+e.address+(connected?". По вашей привязке к активному источнику ввода":""));
+             }
+             (saved?savedEmpty:foundEmpty).setVisibility(entries.isEmpty()?View.VISIBLE:View.GONE);
+         }
+@@ -254,6 +257,11 @@
+                 if(!saved&&command.equals("Сопрячь"))pair(device);else deviceActionInSettings(entry,command);
+             });action.setTag(R.id.navigation_key,"bt:device-action:"+n);menu.addView(action);
+         }
++        if(saved){
++            menu.addView(label("Если Android не сообщает Bluetooth-адрес источника ввода, укажите его один раз. Выберите слот, в котором проверяются кнопки именно этого геймпада. Имя и подсветка будут следовать этой привязке при подключении источника.",13,MUTED));
++            for(int n=0;n<2;n++){final int slot=n;android.view.InputDevice source=controllerNames.source(slot);Button link=button("Это Джойстик "+(slot+1)+(source==null?" — не подключён":" · "+source.getName()),()->{if(controllerNames.bind(entry.address,slot)){closeDeviceMenu();status.setText("Имя связано с Джойстиком "+(slot+1)+". Привязка задана вами.");refreshRows();}});link.setEnabled(source!=null);link.setTag(R.id.navigation_key,"bt:link:"+slot);menu.addView(link);}
++            if(controllerNames.linked(entry.address)){Button unlink=button("Убрать привязку к джойстику",()->{controllerNames.unlink(entry.address);closeDeviceMenu();refreshRows();});unlink.setTag(R.id.navigation_key,"bt:unlink");menu.addView(unlink);}
++        }
+         AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(entry.displayName()).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;
+         dialog.setOnDismissListener(d->{if(deviceMenu==dialog)deviceMenu=null;});
+     }
+@@ -299,12 +307,13 @@
+     }
+     private void openSettings(String action){try{activity.startActivity(new Intent(action));}catch(ActivityNotFoundException error){try{activity.startActivity(new Intent(Settings.ACTION_SETTINGS));}catch(ActivityNotFoundException ignored){status.setText("На устройстве нет приложения настроек.");}}}
+     void permissionResult(int request){
++        if(resumed&&(request==READ_SAVED||request==PERMISSIONS)){controllerNames.stop();controllerNames.start();}
+         if(request==READ_SAVED){if(canReadSaved())loadSaved(true);else status.setText("Доступ к сохранённым парам не предоставлен. Доступны системные настройки.");return;}
+         if(request!=PERMISSIONS)return;if(hasPermissions())beginSearch();else status.setText("Доступ к поиску не предоставлен. Можно открыть системные настройки Bluetooth; тест кнопок работает без сканирования.");
+     }
+     void activityResult(int request,int result){if(request==ENABLE){if(result==Activity.RESULT_OK)beginSearch();else status.setText("Bluetooth не включён. Повторите поиск, чтобы попробовать снова.");}}
+-    void resume(){resumed=true;if(canReadSaved()&&pairing.phase()!=BluetoothPairingState.PAIRING)loadSaved(false);if(pairing.phase()==BluetoothPairingState.PAIRING){if(!canReadSaved()){accessLost();return;}try{registerBluetooth();reconcilePair();}catch(SecurityException error){accessLost();}}}
+-    void pause(){resumed=false;closeDeviceMenu();boolean active=ownsDiscovery;finishScan(active?"Поиск остановлен при уходе с экрана.":null);handler.removeCallbacks(pairTimeout);if(registered){activity.unregisterReceiver(receiver);registered=false;}}
++    void resume(){resumed=true;controllerNames.start();if(canReadSaved()&&pairing.phase()!=BluetoothPairingState.PAIRING)loadSaved(false);if(pairing.phase()==BluetoothPairingState.PAIRING){if(!canReadSaved()){accessLost();return;}try{registerBluetooth();reconcilePair();}catch(SecurityException error){accessLost();}}}
++    void pause(){resumed=false;controllerNames.stop();closeDeviceMenu();boolean active=ownsDiscovery;finishScan(active?"Поиск остановлен при уходе с экрана.":null);handler.removeCallbacks(pairTimeout);if(registered){activity.unregisterReceiver(receiver);registered=false;}}
+     void destroy(){pause();handler.removeCallbacksAndMessages(null);}
+     Bundle save(){Bundle out=new Bundle();out.putString("address",pairing.address());out.putInt("phase",pairing.phase());out.putLong("deadline",pairing.deadline());out.putBoolean("sawBonding",pairing.sawBonding());return out;}
+ }
+--- a/app/src/main/java/app/m30/companion/BluetoothSlotLinks.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSlotLinks.java
+@@ -0,0 +1,22 @@
++package app.m30.companion;
++
++import java.util.*;
++
++/** Explicit owner links only. A bond, name or discovery result never creates a link. */
++public final class BluetoothSlotLinks {
++    private final Map<String,String> links=new LinkedHashMap<>();
++    public static String address(String value){return value!=null&&value.matches("(?i)([0-9a-f]{2}:){5}[0-9a-f]{2}")?value.toUpperCase(Locale.ROOT):null;}
++    public void restore(String address,String descriptor){String a=address(address);if(a!=null&&descriptor!=null&&!descriptor.isEmpty())links.put(a,descriptor);}
++    public boolean bind(String address,String descriptor){String a=address(address);if(a==null||descriptor==null||descriptor.isEmpty())return false;links.entrySet().removeIf(e->e.getValue().equals(descriptor));links.put(a,descriptor);return true;}
++    public void remove(String address){links.remove(address(address));}
++    public Map<String,String> snapshot(){return new LinkedHashMap<>(links);}
++    public String linkedAddress(String descriptor){
++        String result=null;if(descriptor==null||descriptor.isEmpty())return null;
++        for(Map.Entry<String,String> e:links.entrySet())if(e.getValue().equals(descriptor)){if(result!=null)return null;result=e.getKey();}
++        return result;
++    }
++    public int activeSlot(String address,String[] activeDescriptors){
++        String a=address(address),descriptor=links.get(a);if(descriptor==null||!a.equals(linkedAddress(descriptor)))return -1;
++        int result=-1;for(int n=0;n<activeDescriptors.length;n++)if(descriptor.equals(activeDescriptors[n])){if(result>=0)return -1;result=n;}return result;
++    }
++}
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.46 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.47 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.46 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.47 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -62,6 +62,7 @@
+     private ControllerSession session;
+     private boolean registered,touchSwiping,touchVertical,mainResumed,inlineBluetoothOpen,inlineTouch;
+     private BluetoothSearchController inlineBluetooth;
++    private BluetoothControllerNames bluetoothNames;
+     private Bundle inlineSaved;
+     private LinearLayout inputSummary,topBase;
+     private FrameLayout topRegion;
+@@ -79,6 +80,7 @@
+ 
+     @Override public void onCreate(Bundle saved){
+         super.onCreate(saved);
++        bluetoothNames=new BluetoothControllerNames(this,this::refreshLive);
+         getWindow().setStatusBarColor(BG); getWindow().setNavigationBarColor(BG);
+         try{String version=getPackageManager().getPackageInfo(getPackageName(),0).versionName;if(version!=null&&!version.isEmpty())appVersion=version;}catch(PackageManager.NameNotFoundException ignored){}
+         controllers=new ControllerBank(getPreferences(0).getInt("mode",0));
+@@ -170,8 +172,7 @@
+             int tabAccent=tab==0?YELLOW:tab==2?ORANGE:0xff454545;
+             int fill=tab==1&&selected?tabAccent:CARD;
+             int foreground=tab!=1?tabAccent:selected?TEXT:MUTED;
+-            TextView t=text(names[n],tab!=1?12:14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(8),dp(3),dp(8));t.setSingleLine(true);
+-            if(tab!=1)t.setAutoSizeTextTypeUniformWithConfiguration(10,12,1,android.util.TypedValue.COMPLEX_UNIT_SP);
++            TextView t=text(names[n],tab!=1?12:14,foreground);t.setGravity(Gravity.CENTER);t.setPadding(dp(3),dp(3),dp(3),dp(3));t.setMaxLines(tab==1?1:2);t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+             GradientDrawable tabBackground=shape(fill,12);if(tab!=1&&selected)tabBackground.setStroke(dp(1.5f),offlineSecond?0xff555555:tabAccent);t.setTag(R.id.navigation_key,"tab:"+tab);t.setBackground(tabBackground);t.setOnClickListener(v->switchPage(tab));t.setFocusable(true);t.setSelected(selected);t.setContentDescription(names[n]+(selected?", выбрано":"")+(offlineSecond?", не подключён":""));
+             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(44),tab==1?2:1);lp.setMargins(n==0?0:dp(4),0,0,0);tabs.addView(t,lp);
+         }
+@@ -698,7 +699,17 @@
+         InputMonitor.Key key=session.monitor.lastSelected;
+         return key==null?"—":key.code==0?"Назначение неизвестно: Android не распознал код":ButtonGuide.keyAction(key.code);
+     }
++    private void refreshControllerTabNames(){
++        if(tabs==null||bluetoothNames==null)return;
++        for(int slot=0;slot<2;slot++){
++            View view=FocusNavigation.find(tabs,"tab:"+(slot==0?0:2));if(!(view instanceof TextView))continue;TextView tab=(TextView)view;
++            String title="Джойстик "+(slot+1),name=bluetoothNames.slotName(slot),value=title+"\n"+name;
++            if(!value.contentEquals(tab.getText())){android.text.SpannableString label=new android.text.SpannableString(value);label.setSpan(new android.text.style.RelativeSizeSpan(10f/12f),title.length()+1,label.length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);tab.setText(label);}
++            tab.setContentDescription(title+". "+name+(tab.isSelected()?", выбрано":""));
++        }
++    }
+     private void refreshLive(){
++        refreshControllerTabNames();
+         refreshFirmwareEntry();refreshButtonGrid();if(page==1)refreshInputTest();
+         if(dpadDialogStatus!=null)dpadDialogStatus.setText(session.dpad.summary()+"\n"+session.dpad.evidence());
+         if(diagnosticsDpadView!=null)diagnosticsDpadView.setText(session.dpad.summary()+"\n"+session.dpad.evidence());
+@@ -816,8 +827,8 @@
+     @Override public void onInputDeviceAdded(int id){devicesChanged();}
+     @Override public void onInputDeviceRemoved(int id){inputTest.removeDevice(id);devicesChanged();}
+     @Override public void onInputDeviceChanged(int id){if(selected(id)){session.confirmation.observe(null);device=InputDevice.getDevice(id);}devicesChanged();}
+-    @Override protected void onResume(){super.onResume();mainResumed=true;if(inlineBluetooth!=null)inlineBluetooth.resume();updateTaskIcon();inputs.registerInputDeviceListener(this,handler);registered=true;devicesChanged();handler.removeCallbacks(ticker);handler.post(ticker);}
+-    @Override protected void onPause(){mainResumed=false;pagingKey=-1;if(inlineBluetooth!=null)inlineBluetooth.pause();super.onPause();if(registered)inputs.unregisterInputDeviceListener(this);registered=false;handler.removeCallbacks(ticker);controllers.releaseAll();inputTest.release();}
++    @Override protected void onResume(){super.onResume();mainResumed=true;if(inlineBluetooth!=null)inlineBluetooth.resume();updateTaskIcon();inputs.registerInputDeviceListener(this,handler);registered=true;devicesChanged();bluetoothNames.start();handler.removeCallbacks(ticker);handler.post(ticker);}
++    @Override protected void onPause(){mainResumed=false;pagingKey=-1;bluetoothNames.stop();if(inlineBluetooth!=null)inlineBluetooth.pause();super.onPause();if(registered)inputs.unregisterInputDeviceListener(this);registered=false;handler.removeCallbacks(ticker);controllers.releaseAll();inputTest.release();}
+     @Override public void onWindowFocusChanged(boolean focus){super.onWindowFocusChanged(focus);if(!focus){pagingKey=-1;controllers.releaseAll();inputTest.release();refreshLive();}}
+     @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);out.putBoolean("inline_open",inlineBluetoothOpen);if(inlineBluetooth!=null)out.putBundle("inline_state",inlineBluetooth.save());}
+     @Override public void onBackPressed(){if(inlineBluetoothOpen){closeInlineBluetooth();}else if(session.waiting!=null){session.waiting=null;if(pad!=null)pad.waiting=null;if(bindHint!=null)bindHint.setText("Назначение отменено.");refreshLive();}else if(dpadDialog!=null){closeDpadMenu();}else if(diagnosticsDialog!=null){closeDiagnostics();}else if(page==1){switchPage(connectionPageId());}else if(page==2){switchPage(0);}else super.onBackPressed();}
+--- a/test-core.sh
++++ b/test-core.sh
+@@ -3,7 +3,7 @@
+ cd "$(dirname "$0")"
+ out=$(mktemp -d)
+ trap 'rm -rf "$out"' EXIT
+-javac -d "$out" app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
++javac -d "$out" app/src/main/java/app/m30/companion/BluetoothSlotLinks.java tests/BluetoothSlotLinksTest.java app/src/main/java/app/m30/companion/BluetoothDeviceList.java tests/BluetoothDeviceListTest.java app/src/main/java/app/m30/companion/BluetoothGamepadFilter.java app/src/main/java/app/m30/companion/BluetoothPairingState.java tests/BluetoothSearchTest.java app/src/main/java/app/m30/companion/RemoteNavigation.java tests/RemoteNavigationTest.java app/src/main/java/app/m30/companion/DpadDetector.java tests/DpadDetectorTest.java app/src/main/java/app/m30/companion/ControllerTelemetry.java tests/ControllerTelemetryTest.java app/src/main/java/app/m30/companion/InputTestState.java tests/InputTestStateTest.java app/src/main/java/app/m30/companion/FirmwareUpdateResult.java tests/FirmwareUpdateResultTest.java app/src/main/java/app/m30/companion/OfficialM30Files.java app/src/main/java/app/m30/companion/BootUpdateProtocol.java app/src/main/java/app/m30/companion/M30UpdateEngine.java tests/BootUpdateTest.java app/src/main/java/app/m30/companion/M30Firmware.java tests/M30FirmwareTest.java app/src/main/java/app/m30/companion/RadialGuideGeometry.java tests/RadialGuideTest.java app/src/main/java/app/m30/companion/BootVersionProtocol.java tests/BootVersionTest.java app/src/main/java/app/m30/companion/UsbDeviceIdentity.java tests/UsbDeviceIdentityTest.java app/src/main/java/app/m30/companion/BootModelProtocol.java tests/BootModelTest.java app/src/main/java/app/m30/companion/PadState.java app/src/main/java/app/m30/companion/ModeDetector.java app/src/main/java/app/m30/companion/InputMonitor.java app/src/main/java/app/m30/companion/SourceSelector.java app/src/main/java/app/m30/companion/ModeConfirmation.java app/src/main/java/app/m30/companion/ControllerSession.java app/src/main/java/app/m30/companion/ControllerBank.java app/src/main/java/app/m30/companion/SwipeNavigation.java app/src/main/java/app/m30/companion/ConnectionGuide.java app/src/main/java/app/m30/companion/ButtonGuide.java tests/ConnectionGuideTest.java tests/PadStateTest.java tests/DiagnosticsTest.java tests/ReconnectionTest.java tests/SwipeNavigationTest.java tests/ControllersTest.java tests/ButtonGuideTest.java
+ java -cp "$out" PadStateTest
+ java -cp "$out" DiagnosticsTest
+ java -cp "$out" ReconnectionTest
+@@ -39,3 +39,5 @@
+ java -cp "$out" BluetoothSearchTest
+ 
+ java -cp "$out" BluetoothDeviceListTest
++
++java -cp "$out" BluetoothSlotLinksTest
+--- a/tests/BluetoothSlotLinksTest.java
++++ b/tests/BluetoothSlotLinksTest.java
+@@ -0,0 +1,21 @@
++import app.m30.companion.BluetoothSlotLinks;
++
++public final class BluetoothSlotLinksTest {
++    static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
++    public static void main(String[] args){
++        BluetoothSlotLinks links=new BluetoothSlotLinks();String a="AA:BB:CC:DD:EE:01",b="AA:BB:CC:DD:EE:02";
++        check(links.activeSlot(a,new String[]{"same-name-pad",""})==-1,"Identical names or saved pairs cannot invent a Bluetooth address");
++        check(!links.bind("invalid","pad")&&!links.bind(a,""),"Invalid address or absent source cannot create a link");
++        links.bind(a.toLowerCase(),"descriptor1");check(links.activeSlot(a,new String[]{"descriptor1","descriptor2"})==0,"Explicit source link resolves correct full address and slot");
++        check(links.activeSlot(b,new String[]{"descriptor1","descriptor2"})==-1,"Other same-name controller remains independent");
++        check(links.activeSlot(a,new String[]{"","descriptor2"})==-1,"Disconnect clears connected indication without deleting link");
++        check(links.activeSlot(a,new String[]{"descriptor2","descriptor1"})==1,"Link follows physical source when its slot changes");
++        check(links.activeSlot(a,new String[]{"new-mode-descriptor",""})==-1,"Changed mode/descriptor must not inherit old identity");
++        links.bind(b,"descriptor1");check(links.activeSlot(a,new String[]{"descriptor1",""})==-1&&links.activeSlot(b,new String[]{"descriptor1",""})==0,"Rebinding replaces stale claim rather than lighting two same-name rows");
++        links.bind(a,"descriptor2");check(links.activeSlot(a,new String[]{"descriptor1","descriptor2"})==1,"Two controllers have independent labels");
++        check(links.activeSlot(a,new String[]{"descriptor2","descriptor2"})==-1,"Ambiguous duplicate slots must not be labelled connected");
++        links.restore(b,"descriptor2");check(links.linkedAddress("descriptor2")==null&&links.activeSlot(a,new String[]{"descriptor2",""})==-1,"Conflicting restored mappings cannot choose arbitrary alias");
++        links.remove(b);check(links.linkedAddress("descriptor2").equals(a),"Unlink restores unique mapping");
++        System.out.println("PASS: explicit Bluetooth/slot identity, duplicate names, disconnection, mode changes, rebinding and ambiguous mappings");
++    }
++}

@@ -1,0 +1,338 @@
+[
+  {
+    "id": "1LJzuAZCN1CICgKmbfc-ryzMH-tcnI8OD",
+    "name": "Как установить M30 Companion.txt",
+    "parent": "133C1EBmct755HoauShJo7hzxQhQdZ4Ba",
+    "size": "2413",
+    "target": "current",
+    "url": "https://drive.google.com/file/d/1LJzuAZCN1CICgKmbfc-ryzMH-tcnI8OD/view?usp=drivesdk"
+  },
+  {
+    "id": "1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4",
+    "name": "M30-Companion-1.33-SOURCE.zip",
+    "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+    "size": "939814",
+    "target": "sources",
+    "url": "https://drive.google.com/file/d/1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4/view?usp=drivesdk"
+  },
+  {
+    "id": "1GBQllaRtjisT2fABlxyYvFMplE86jR1w",
+    "name": "M30-Companion-1.33.apk",
+    "parent": "133C1EBmct755HoauShJo7hzxQhQdZ4Ba",
+    "size": "943821",
+    "target": "current",
+    "url": "https://drive.google.com/file/d/1GBQllaRtjisT2fABlxyYvFMplE86jR1w/view?usp=drivesdk"
+  },
+  {
+    "id": "1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS",
+    "name": "M30-Companion-1.32.apk",
+    "parent": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+    "size": "1031818",
+    "target": "previous",
+    "url": "https://drive.google.com/file/d/1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS/view?usp=drivesdk"
+  },
+  {
+    "id": "1sRBuaPZCsdNKkVxULdXBUnGQAtk8H4Iw",
+    "name": "M30-Companion-1.31.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "1025305",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1sRBuaPZCsdNKkVxULdXBUnGQAtk8H4Iw/view?usp=drivesdk"
+  },
+  {
+    "id": "1ES4rmlVmnecsad8NmHwDALrbT_ZH_qvr",
+    "name": "M30-Companion-1.30.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "1019955",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1ES4rmlVmnecsad8NmHwDALrbT_ZH_qvr/view?usp=drivesdk"
+  },
+  {
+    "id": "1xqhVN_cPPOy5JxnIXcp7Fimfcf7tzYGx",
+    "name": "M30-Companion-1.29.apk",
+    "parent": "14fEYUU_xlu52E9276hOdtDvTy4sxtguv",
+    "size": "929921",
+    "target": "checkpoint129",
+    "url": "https://drive.google.com/file/d/1xqhVN_cPPOy5JxnIXcp7Fimfcf7tzYGx/view?usp=drivesdk"
+  },
+  {
+    "id": "1KHnFLfuuAJNzJUrmqhL1zm9gDW7EKWyW",
+    "name": "M30-Companion-1.28.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "1013224",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1KHnFLfuuAJNzJUrmqhL1zm9gDW7EKWyW/view?usp=drivesdk"
+  },
+  {
+    "id": "1yfTZ9cNO646jrucDAMCWwzLfNdh4LKxH",
+    "name": "M30-Companion-1.27.apk",
+    "parent": "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA",
+    "size": "978849",
+    "target": "checkpoint127",
+    "url": "https://drive.google.com/file/d/1yfTZ9cNO646jrucDAMCWwzLfNdh4LKxH/view?usp=drivesdk"
+  },
+  {
+    "id": "1MYEC0wR6OFFipnnPypB4l-ijcUPDjo0G",
+    "name": "M30-Companion-1.26.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "906977",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1MYEC0wR6OFFipnnPypB4l-ijcUPDjo0G/view?usp=drivesdk"
+  },
+  {
+    "id": "1h-BbNja5R4R9sD-mPUAD2RTVinLhnyvk",
+    "name": "M30-Companion-1.25.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "906969",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1h-BbNja5R4R9sD-mPUAD2RTVinLhnyvk/view?usp=drivesdk"
+  },
+  {
+    "id": "1jcPWc4ljahk-QSM3-ZFiP-bQnxKCHmad",
+    "name": "M30-Companion-1.24.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "905701",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1jcPWc4ljahk-QSM3-ZFiP-bQnxKCHmad/view?usp=drivesdk"
+  },
+  {
+    "id": "1YUI8VdhX7pxY3_j_JIY01R3busXP54Zq",
+    "name": "M30-Companion-1.23.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "905777",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1YUI8VdhX7pxY3_j_JIY01R3busXP54Zq/view?usp=drivesdk"
+  },
+  {
+    "id": "1JTmrUlygof-eX0Qp-6CfhrpDqPV98opm",
+    "name": "M30-Companion-1.22.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "966964",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1JTmrUlygof-eX0Qp-6CfhrpDqPV98opm/view?usp=drivesdk"
+  },
+  {
+    "id": "1A_881lgofH8f09OkFGh0OOy2e5xtgXCv",
+    "name": "M30-Companion-1.21.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "956918",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1A_881lgofH8f09OkFGh0OOy2e5xtgXCv/view?usp=drivesdk"
+  },
+  {
+    "id": "1Ea-qSQfNA9zz8YLhesLulObq5ncvOAEt",
+    "name": "M30-Companion-1.20.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "897822",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1Ea-qSQfNA9zz8YLhesLulObq5ncvOAEt/view?usp=drivesdk"
+  },
+  {
+    "id": "1g0t3aQE41LYMSyOtQyzS5HlW4D_LLrzO",
+    "name": "M30-Companion-1.19.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "897870",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1g0t3aQE41LYMSyOtQyzS5HlW4D_LLrzO/view?usp=drivesdk"
+  },
+  {
+    "id": "1KjOraZNWADTzt-U8F-hnM47xb9tIUZb2",
+    "name": "M30-Companion-1.18.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "897251",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1KjOraZNWADTzt-U8F-hnM47xb9tIUZb2/view?usp=drivesdk"
+  },
+  {
+    "id": "1Hx8X2UNfR963kfK8IQhtsXXoWnsSrgaI",
+    "name": "M30-Companion-1.17.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "948591",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1Hx8X2UNfR963kfK8IQhtsXXoWnsSrgaI/view?usp=drivesdk"
+  },
+  {
+    "id": "1ZENCqJ-Gk9CRpf0p36ZBXeTOUNepPtzL",
+    "name": "M30-Companion-1.16.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "890003",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1ZENCqJ-Gk9CRpf0p36ZBXeTOUNepPtzL/view?usp=drivesdk"
+  },
+  {
+    "id": "1eSmxdjIgAmCKg5PH_-gm3yVKn0Zt5jV5",
+    "name": "M30-Companion-1.15.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "888991",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1eSmxdjIgAmCKg5PH_-gm3yVKn0Zt5jV5/view?usp=drivesdk"
+  },
+  {
+    "id": "1icuP3Mp8Gy12Z_N-K_hpaqjbbv9O9AGp",
+    "name": "M30-1.14-предпросмотр-схемы.png",
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "size": "143126",
+    "target": "design",
+    "url": "https://drive.google.com/file/d/1icuP3Mp8Gy12Z_N-K_hpaqjbbv9O9AGp/view?usp=drivesdk"
+  },
+  {
+    "id": "1bQiYe0pd2NwTZR7T1iw2p2gKnqitQ-kw",
+    "name": "M30-Companion-1.14.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "938291",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1bQiYe0pd2NwTZR7T1iw2p2gKnqitQ-kw/view?usp=drivesdk"
+  },
+  {
+    "id": "1pFyknfYtlIZuJ2g6OBrN_sWaRmcaft-V",
+    "name": "M30-Companion-1.13.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "924622",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1pFyknfYtlIZuJ2g6OBrN_sWaRmcaft-V/view?usp=drivesdk"
+  },
+  {
+    "id": "16EU1z9c3v-Cv5kJeFmijoZtAjAF_imKV",
+    "name": "M30-Companion-1.12.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "879875",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/16EU1z9c3v-Cv5kJeFmijoZtAjAF_imKV/view?usp=drivesdk"
+  },
+  {
+    "id": "1xDwLNZ72Z-1HkYWvNSbVXYPv9U3MJp3n",
+    "name": "M30-Companion-1.11.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "879803",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1xDwLNZ72Z-1HkYWvNSbVXYPv9U3MJp3n/view?usp=drivesdk"
+  },
+  {
+    "id": "1GyT_WLYFpRJaaEvvUp5nRAo-w1xkycAM",
+    "name": "M30-Companion-1.10.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "879895",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1GyT_WLYFpRJaaEvvUp5nRAo-w1xkycAM/view?usp=drivesdk"
+  },
+  {
+    "id": "1LXhuF3QpapYD7VeXPgc27fgYb6BtscVA",
+    "name": "M30-1.9-предпросмотр-шапки.png",
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "size": "287063",
+    "target": "design",
+    "url": "https://drive.google.com/file/d/1LXhuF3QpapYD7VeXPgc27fgYb6BtscVA/view?usp=drivesdk"
+  },
+  {
+    "id": "1MahB60yXg8Hn2P9z_PE64FEvTWf5-Yni",
+    "name": "M30-Companion-1.9.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "918776",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1MahB60yXg8Hn2P9z_PE64FEvTWf5-Yni/view?usp=drivesdk"
+  },
+  {
+    "id": "1knrN9Zmy4GP2D9lw4bayo1di-N1U0okc",
+    "name": "M30-logo-1.8.png",
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "size": "827474",
+    "target": "design",
+    "url": "https://drive.google.com/file/d/1knrN9Zmy4GP2D9lw4bayo1di-N1U0okc/view?usp=drivesdk"
+  },
+  {
+    "id": "1pTr4i8gpLO2N928_sfRscvbFRx27kLjd",
+    "name": "M30-Companion-1.8.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "878519",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1pTr4i8gpLO2N928_sfRscvbFRx27kLjd/view?usp=drivesdk"
+  },
+  {
+    "id": "1XAnwvOXp1xyn5hRKtaHgQivzurjjWn-q",
+    "name": "M30-Companion-1.7.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "50162",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1XAnwvOXp1xyn5hRKtaHgQivzurjjWn-q/view?usp=drivesdk"
+  },
+  {
+    "id": "1dw__rxNbz3zpJ-GikN3JZgymwsaL-F_6",
+    "name": "M30-1.6-предпросмотр-шапки.png",
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "size": "66444",
+    "target": "design",
+    "url": "https://drive.google.com/file/d/1dw__rxNbz3zpJ-GikN3JZgymwsaL-F_6/view?usp=drivesdk"
+  },
+  {
+    "id": "18ZkUwjhGWFARiP6qBYUMEB4dNhwg5FL-",
+    "name": "M30-Companion-1.6.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "50986",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/18ZkUwjhGWFARiP6qBYUMEB4dNhwg5FL-/view?usp=drivesdk"
+  },
+  {
+    "id": "1M6K6JNZ73uksvt0KVRGDuJV6ZfI2B6j8",
+    "name": "M30-1.5-предпросмотр-шапки.png",
+    "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+    "size": "76608",
+    "target": "design",
+    "url": "https://drive.google.com/file/d/1M6K6JNZ73uksvt0KVRGDuJV6ZfI2B6j8/view?usp=drivesdk"
+  },
+  {
+    "id": "1ZVUHdG7T0PGaBCGHU6cpyqZ71UZyNXBJ",
+    "name": "M30-Companion-1.5.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "90342",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1ZVUHdG7T0PGaBCGHU6cpyqZ71UZyNXBJ/view?usp=drivesdk"
+  },
+  {
+    "id": "1l9P_w18y4n7u1-cfnnbw4CJutZ_-vTQ_",
+    "name": "M30-Companion-1.4.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "46375",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1l9P_w18y4n7u1-cfnnbw4CJutZ_-vTQ_/view?usp=drivesdk"
+  },
+  {
+    "id": "1XNo76-hDmYRrfUhrb9bviV3lSdjf2rLD",
+    "name": "M30-Companion-1.2.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "82549",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1XNo76-hDmYRrfUhrb9bviV3lSdjf2rLD/view?usp=drivesdk"
+  },
+  {
+    "id": "1QKDMKLDpNzFlnU-8KaTRskmokElot8JP",
+    "name": "M30-Companion-1.1.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "70777",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/1QKDMKLDpNzFlnU-8KaTRskmokElot8JP/view?usp=drivesdk"
+  },
+  {
+    "id": "15dyUCPaEl33mjoMmVTuQzfTefz-0yYPA",
+    "name": "M30-Companion-1.0.apk",
+    "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR",
+    "size": "54382",
+    "target": "archive",
+    "url": "https://drive.google.com/file/d/15dyUCPaEl33mjoMmVTuQzfTefz-0yYPA/view?usp=drivesdk"
+  },
+  {
+    "id": "1bytcwh-1ZUPK_dh7qVnUXFHx3N557WIK",
+    "name": "Официальные источники 8BitDo M30.txt",
+    "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+    "size": "395",
+    "target": "manuals",
+    "url": "https://drive.google.com/file/d/1bytcwh-1ZUPK_dh7qVnUXFHx3N557WIK/view?usp=drivesdk"
+  },
+  {
+    "id": "1G7iXLrb4KtCcE38N21s2OPLGHMPSEUKa",
+    "name": "8BitDo M30 Bluetooth — инструкция Android TV и Sega RU.pdf",
+    "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+    "size": "90942",
+    "target": "manuals",
+    "url": "https://drive.google.com/file/d/1G7iXLrb4KtCcE38N21s2OPLGHMPSEUKa/view?usp=drivesdk"
+  }
+]

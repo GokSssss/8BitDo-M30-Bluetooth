@@ -1,0 +1,24 @@
+{
+  "version": "1.35",
+  "date": "2026-10-28",
+  "reason": "Obsolete non-key 1.33 installer/doc folder; current 1.35 and previous 1.34 verified. SOURCE retained separately for key 1.27/1.29 revision recovery.",
+  "deleted": [
+    {
+      "id": "1HzCCOxxQ3nj8Vn5vyfxXLtnjNWc8Lw8g",
+      "name": "Паспорт 1.33.txt",
+      "size": 1354
+    },
+    {
+      "id": "1LJzuAZCN1CICgKmbfc-ryzMH-tcnI8OD",
+      "name": "Как установить M30 Companion.txt",
+      "size": 2413
+    },
+    {
+      "id": "1GBQllaRtjisT2fABlxyYvFMplE86jR1w",
+      "name": "M30-Companion-1.33.apk",
+      "size": 943821
+    }
+  ],
+  "retainedSource": "1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4",
+  "deletedFolder": "133C1EBmct755HoauShJo7hzxQhQdZ4Ba"
+}

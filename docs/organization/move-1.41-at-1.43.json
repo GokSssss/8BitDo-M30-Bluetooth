@@ -1,0 +1,10 @@
+{
+  "checkpoint": "1.41",
+  "action": "move existing folder from root to Checkpoints after verifying new/current and previous; preserve IDs and source in Resources",
+  "status": "verified",
+  "deletions": 0,
+  "parent_before": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+  "parent_after": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+  "folder_id": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+  "source_parent_unchanged": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+}

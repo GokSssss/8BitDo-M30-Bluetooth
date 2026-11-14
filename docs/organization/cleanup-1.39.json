@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-28",
+  "reason": "Routine authorized removal of older non-key1.37 after verified1.39/current+1.38/previous and protected checkpoints. No cumulative archive.",
+  "files": [
+    {
+      "id": "1WJY7z-ckb74M7jpp_v5tM7hbY5WJ7Fzv",
+      "name": "M30-Companion-1.37.apk",
+      "size": 1081869,
+      "parent_before": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI",
+      "deleted": true
+    },
+    {
+      "id": "1wyOxCY4lnroOSoS9jG6nxqKv7KPQe95r",
+      "name": "M30-Companion-1.37-SOURCE.zip",
+      "size": 1126296,
+      "parent_before": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "deleted": true
+    },
+    {
+      "id": "1OWoaFi-7QCFb5W81oshcZy1izY_SHio6",
+      "name": "Паспорт 1.37.txt",
+      "size": 3042,
+      "parent_before": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI",
+      "deleted": true
+    },
+    {
+      "id": "1K6G1p8xl6PZogrljlJOh3KVFzcQpp4xH",
+      "name": "Как установить M30 Companion 1.37.txt",
+      "size": 1962,
+      "parent_before": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI",
+      "deleted": true
+    }
+  ],
+  "bytes_deleted": 2213169,
+  "folder": {
+    "id": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI",
+    "empty_after_children": true,
+    "deleted": true
+  },
+  "history": "docs/releases/1.37-history.txt, published SOURCE1.39, both living logs",
+  "preserved": [
+    "1.39",
+    "protected1.38",
+    "protected1.36",
+    "protected1.32",
+    "historical1.27/1.29",
+    "frozen1.33 SOURCE revision container",
+    "design resources"
+  ]
+}

@@ -1,0 +1,74 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -7,8 +7,8 @@
+         applicationId (previewMode ? 'app.m30.companion.preview' : 'app.m30.companion')
+         minSdk 26
+         targetSdk 35
+-        versionCode 52
+-        versionName (previewMode ? '1.51-preview' : '1.51')
++        versionCode 53
++        versionName (previewMode ? '1.52-preview' : '1.52')
+         manifestPlaceholders = [m30AppLabel: previewMode ? 'M30 Проверка' : 'M30 Companion']
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.51 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.52 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.51 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.52 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -546,7 +546,7 @@
+         android.content.SharedPreferences.Editor editor=getPreferences(0).edit();
+         for(int i=0;i<controllers.slots.length;i++){
+             ControllerSession target=controllers.slots[i];InputDevice input=controllerDevice(target);
+-            if(!target.bindingsLoaded){target.mode=getPreferences(0).getInt("profile:"+target.descriptor,getPreferences(0).getInt("mode",0));loadBindings(target);target.bindingsLoaded=true;}
++            if(!target.bindingsLoaded){String profile="profile:"+target.descriptor;Integer saved=getPreferences(0).contains(profile)?getPreferences(0).getInt(profile,0):null;target.mode=ModeDetector.profileOnConnect(saved,getPreferences(0).getInt("mode",0),input==null?null:input.getName(),input==null?0:input.getVendorId(),input==null?0:input.getProductId());loadBindings(target);target.bindingsLoaded=true;}
+             if(!target.descriptor.isEmpty()){
+                 if(input!=null){target.deviceName=input.getName();editor.putString("device_name:"+target.descriptor,target.deviceName);}
+                 else if(target.deviceName==null)target.deviceName=getPreferences(0).getString("device_name:"+target.descriptor,null);
+--- a/app/src/main/java/app/m30/companion/ModeDetector.java
++++ b/app/src/main/java/app/m30/companion/ModeDetector.java
+@@ -4,6 +4,12 @@
+ 
+ /** Identifies compatibility hints, never asserts the controller's firmware mode. */
+ public final class ModeDetector {
++    /** A saved per-device choice wins; an unseen peer gets its own initial estimate. */
++    public static int profileOnConnect(Integer saved,int fallback,String name,int vendor,int product){
++        if(saved!=null&&saved>=0&&saved<4)return saved;
++        int candidate=detect(name,vendor,product).candidate;
++        return candidate>=0&&candidate<4?candidate:fallback>=0&&fallback<4?fallback:0;
++    }
+     public static final class Result {
+         public final int candidate;
+         public final String title, evidence;
+--- a/tests/DiagnosticsTest.java
++++ b/tests/DiagnosticsTest.java
+@@ -4,6 +4,10 @@
+     private static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
+     private static InputMonitor.Key key(int id,int code,int scan,boolean down){return new InputMonitor.Key(id,"Device "+id,code,"KEY_"+code,scan,down,0,0x401);}
+     public static void main(String[] args){
++        check(ModeDetector.profileOnConnect(null,0,"8BitDo M30 gamepad",0x045e,0x02e0)==1,"An unseen Windows peer must get its own initial profile before the first auto-follow press");
++        check(ModeDetector.profileOnConnect(null,1,"8BitDo M30 gamepad",0x2dc8,0x0651)==0,"An unseen Android peer cannot inherit the first pad's Windows profile");
++        check(ModeDetector.profileOnConnect(0,1,"8BitDo M30 gamepad",0x045e,0x02e0)==0,"Saved manual per-device profile overrides an estimate");
++        check(ModeDetector.profileOnConnect(null,3,"Unknown",0,0)==3&&ModeDetector.profileOnConnect(99,99,null,0,0)==0,"Unknown identities retain a valid fallback; invalid settings cannot become a profile");
+         check(ModeDetector.detect(null,0,0).candidate==-1,"no device means no mode estimate");
+         check(ModeDetector.detect("8BitDo M30 gamepad",0x2dc8,0x0651).candidate==0,"observed Bluetooth M30 ID is an Android/D-input compatibility hint");
+         check(ModeDetector.detect("8BitDo M30",0,0).candidate==-1,"missing VID/PID cannot identify a mode");

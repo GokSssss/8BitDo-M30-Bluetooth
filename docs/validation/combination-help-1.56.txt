@@ -1,0 +1,6 @@
+13Nov2026 primary references:
+https://support.8bitdo.com/faq/m30-bluetooth-controller.html
+FAQ explicitly maps SELECT+LEFT/UP/RIGHT/DOWN and5seconds/red LED confirmation; DOWN swap onlySwitch. System mode vsD-pad reporting is separate.
+https://download.8bitdo.com/Manual/Controller/M30/M30_Manual.pdf
+PDF page visually inspected. Startup mode selection on powered-off M30; pairing after power-on; charge/status LED meanings.
+Physical location of red confirmation indicator clarified by owner13Nov: upper indicator beside PAIR. Native UI actions compiled, no real-device execution.

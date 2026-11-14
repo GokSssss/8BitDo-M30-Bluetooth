@@ -1,0 +1,30 @@
+[
+  {
+    "name": "M30-Companion-1.33.apk",
+    "size": 943821,
+    "sha256": "0b272a8af1d29378341d7c29d46e58883ae616cdaae917ebdc5833eff95e1b48",
+    "zip_crc": "passed",
+    "origin": "fresh Drive raw download"
+  },
+  {
+    "name": "M30-Companion-1.32.apk",
+    "size": 1031818,
+    "sha256": "05dda3245ba1e9980ae7e47f588de71443d23263d4b87420b4f326921ae089a7",
+    "zip_crc": "passed",
+    "origin": "fresh Drive raw download"
+  },
+  {
+    "name": "M30-Companion-1.32-SOURCE.zip",
+    "size": 931514,
+    "sha256": "4719fb67b06c805397adee706d89e5095011d9fa720c867f77511e039f6f89ec",
+    "zip_crc": "passed",
+    "origin": "fresh Drive raw download"
+  },
+  {
+    "name": "M30-Companion-1.33-SOURCE.zip",
+    "size": 939814,
+    "sha256": "0a0266b154ac0b9f82e250456cf8a91566d5e6d28fc6e279c30d52f7eac1f9a2",
+    "zip_crc": "passed",
+    "origin": "fresh Drive raw download"
+  }
+]

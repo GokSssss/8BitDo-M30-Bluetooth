@@ -1,0 +1,19 @@
+M30 Companion1.59 · versionCode60 · app.m30.companion
+14.11.2026 Asia/Makassar (13.11 UTC). Проверочный выпуск по фотографиям и видео владельца.
+
+В портретном режиме версия/прошивка над двумя справочными кнопками, кнопки в одном ряду с «Клавишами». На коротком горизонтальном экране схема ограничена высотой окна и целиком помещается с сохранением пропорций. Размеры текста и кнопок не уменьшаются.
+Нажатие «Подключение» открывает Bluetooth ниже и прокручивает к его заголовку, если панель не видна. Крестик возвращает прежнее место. В низком landscape панель занимает viewport; открытое подключение/владелец восстанавливаются при пересоздании экрана. Блоки страницы сохранены выше. Две колонки планшета/TV и Bluetooth/USB-протоколы не менялись.
+
+Установка поверх1.58 без удаления, данные сохраняются. Ключ12Nov свежо скачан с Диска и использован, нового ключа нет.
+26host-наборов и8headless Android View-тестов PASS. Robolectric4.14.1/API28/NATIVE Skia: TV1280x720, портрет360x780/fontScale1.3, короткий landscape640x320/fontScale1.3, landscape780x360/оба слота/возврат/пересоздание. До исправлений тесты воспроизвели три проблемы1.58. Снимки/исходники/логи в SOURCE. Это не проверка на физическом телефоне/TV/Bluetooth. Instrumentation только скомпилирована. Signed build/lint PASS:0errors/62warnings.
+
+APK: https://drive.google.com/file/d/1S5-j6s-CgyGyXqy6F2qpyADFQ3q_hRAi/view
+Размер: 1014165 bytes
+SHA256: a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9
+SOURCE: окончательные ID/размер/SHA256 во внешнем паспорте после загрузки; опубликованный ZIP неизменяемый.
+Сертификат SHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+Папка: https://drive.google.com/drive/folders/1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Резерв ключа/паролей/alias: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+Восстановление сборки: JDK17/Gradle8.11.1/SDK35 плюс официальный SDK37 android.jar для отдельного public helper, см.README. Тестовые зависимости JUnit4.13.2/Robolectric4.14.1; первый запуск загружает runtime SDK. Ключи и SDKstubs в SOURCE не включены.
+GitHub Release явно отложен владельцем до репозитория.

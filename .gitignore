@@ -1,0 +1,12 @@
+.gradle/
+**/build/
+local.properties
+*.apk
+*.apks
+*.aab
+*.zip
+*.p12
+*.pfx
+*.jks
+*.keystore
+Параметры сборки и подписи.txt

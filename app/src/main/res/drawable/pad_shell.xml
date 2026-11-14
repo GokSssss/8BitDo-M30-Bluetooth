@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp" android:height="216dp"
+    android:viewportWidth="1000" android:viewportHeight="540">
+    <path android:name="body" android:fillColor="#B6A45E" android:strokeColor="#171710" android:strokeWidth="4"
+        android:pathData="M132,78 C200,42 268,50 338,68 C410,82 590,82 662,68 C732,50 800,42 868,78 C934,118 969,213 972,327 C974,405 947,466 887,486 C818,509 767,482 689,454 C622,429 562,411 500,411 C438,411 378,429 311,454 C233,482 182,509 113,486 C53,466 26,405 28,327 C31,213 66,118 132,78 Z" />
+    <group android:scaleX="0.965" android:scaleY="0.94" android:pivotX="500" android:pivotY="270">
+        <path android:fillColor="#00000000" android:strokeColor="#302A0B" android:strokeWidth="3"
+            android:pathData="M132,78 C200,42 268,50 338,68 C410,82 590,82 662,68 C732,50 800,42 868,78 C934,118 969,213 972,327 C974,405 947,466 887,486 C818,509 767,482 689,454 C622,429 562,411 500,411 C438,411 378,429 311,454 C233,482 182,509 113,486 C53,466 26,405 28,327 C31,213 66,118 132,78 Z" />
+    </group>
+    <path android:name="dpad_ring" android:fillColor="#AB9A58" android:strokeColor="#26220B" android:strokeWidth="4"
+        android:pathData="M420,250 A160,160 0,1 1,100 250 A160,160 0,1 1,420 250 Z" />
+    <path android:fillColor="#B6A45E" android:strokeColor="#5D5012" android:strokeWidth="3"
+        android:pathData="M395,250 A135,135 0,1 1,125 250 A135,135 0,1 1,395 250 Z" />
+    <path android:name="face_ring" android:fillColor="#AB9A58" android:strokeColor="#26220B" android:strokeWidth="4"
+        android:pathData="M914,250 A174,174 0,1 1,566 250 A174,174 0,1 1,914 250 Z" />
+    <path android:fillColor="#B6A45E" android:strokeColor="#5D5012" android:strokeWidth="3"
+        android:pathData="M898,250 A158,158 0,1 1,582 250 A158,158 0,1 1,898 250 Z" />
+    <path android:fillColor="#9B8B50" android:strokeColor="#302A0B" android:strokeWidth="3"
+        android:pathData="M361,250 A101,101 0,1 1,159 250 A101,101 0,1 1,361 250 Z" />
+    <path android:name="dpad_cross" android:fillColor="#151515" android:strokeColor="#3A392E" android:strokeWidth="3"
+        android:pathData="M240,162 Q224,162 224,178 L224,214 L188,214 Q172,214 172,230 L172,270 Q172,286 188,286 L224,286 L224,322 Q224,338 240,338 L280,338 Q296,338 296,322 L296,286 L332,286 Q348,286 348,270 L348,230 Q348,214 332,214 L296,214 L296,178 Q296,162 280,162 Z" />
+</vector>

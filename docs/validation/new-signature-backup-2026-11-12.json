@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-12",
+  "key_backup": "Fresh download exact SHA256/size PASS",
+  "parameters_backup": "Fresh download exact bytes PASS",
+  "restored_keystore": "Opened PKCS12/alias with downloaded actual parameters PASS",
+  "signing": "Downloaded key signed original-package1.53 verification-only APK; apksigner/ZIPCRC/package PASS",
+  "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+  "previous_certificate_sha256": "e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272",
+  "compatible_update_over_1_47": false,
+  "artifact_status": "Local signature verification only, not published; owner design comments pending.",
+  "new_key_was_generated_once": true
+}

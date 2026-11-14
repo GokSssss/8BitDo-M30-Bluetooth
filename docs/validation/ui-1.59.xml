@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.m30.companion.TvUiRegressionTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-13T16:59:58" hostname="326f27afb2f9" time="10.664">
+  <properties/>
+  <testcase name="chosenSystemSearchDoesNotAskForLocationOrStartClassicDiscovery" classname="app.m30.companion.TvUiRegressionTest" time="7.052"/>
+  <testcase name="wideLabelsAndBothHelpButtonsRemainUsableWithLargeText" classname="app.m30.companion.TvUiRegressionTest" time="1.678"/>
+  <testcase name="portraitCaptionAndHelpFitWithLargeText" classname="app.m30.companion.TvUiRegressionTest" time="0.297"/>
+  <testcase name="openingConnectionRevealsBluetoothForEitherSlotAndClosingReturns" classname="app.m30.companion.TvUiRegressionTest" time="0.491"/>
+  <testcase name="fallbackIsOpaqueAndCheckboxMovesFocusToContinue" classname="app.m30.companion.TvUiRegressionTest" time="0.261"/>
+  <testcase name="restoredOpenConnectionRemainsVisibleAndOwnedBySecondSlot" classname="app.m30.companion.TvUiRegressionTest" time="0.488"/>
+  <testcase name="oldTvWithLocationOffOffersSettingsAndNeverLocationGate" classname="app.m30.companion.TvUiRegressionTest" time="0.221"/>
+  <testcase name="shortLandscapePhoneShowsWholeControllerAndHelp" classname="app.m30.companion.TvUiRegressionTest" time="0.174"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Intent = Intent { act=android.location.PROVIDERS_CHANGED }; Matching wrappers: []
+Intent = Intent { act=android.location.MODE_CHANGED }; Matching wrappers: []
+]]></system-err>
+</testsuite>

@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-12",
+  "reason": "Intermediate1.51 superseded before installation; fresh peer initialization corrected in1.52. History/patches retained.1.52 source/hash/CRC and passport readback verified first. Original1.47/current and1.46/previous untouched.",
+  "removed": [
+    {
+      "id": "1sv9u-Qc-OHDe1DUt3Iu5PhF_TgZYQqul",
+      "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "name": "1.51-M30 Companion-SOURCE.zip",
+      "size": 1422588
+    },
+    {
+      "id": "1tTrYqc-Klf9Wl3TIraRsSsFEA2J_btg1",
+      "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+      "name": "1.51-M30 Companion-Паспорт.txt",
+      "size": 3612
+    }
+  ],
+  "total_bytes": 1426200
+}

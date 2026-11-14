@@ -1,0 +1,68 @@
+{
+  "retired_version": "1.55",
+  "reason": "Current1.57 and previous1.56 full verified.1.56 contains the former1.55 behaviour; history/patches retained. Not a selected checkpoint.",
+  "files": [
+    {
+      "id": "1Qa5flNFkiD0yOmlsDYtJyDhydqx5Venx",
+      "title": "1.55-M30 Companion.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1153056",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1LA4rIzaAaVJXNJV6zDufhMJoOSGie3JO",
+      "title": "1.55-M30 Companion-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "1579339",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1zeg-zMWU6SVCrhMcBXdRi3P_nLSmh1lS",
+      "title": "1.55-M30 Companion-Паспорт.txt",
+      "mime_type": "text/plain",
+      "size": "5224",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  ],
+  "folder": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm",
+  "folder_parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+  "total_bytes": 2737619,
+  "status": "Completed after1.57/1.56 full-set verification",
+  "removed_empty_folder": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+}

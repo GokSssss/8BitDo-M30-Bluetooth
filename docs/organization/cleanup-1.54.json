@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-12",
+  "reason": "Verified signed1.54/current and exact1.47/previous retained. Superseded non-key1.46 plus unpublished1.48/1.50 intermediate source/passports removed; substantive logs/patches retained in1.54SOURCE.1.52/1.53 source-only rollback stages and all protected/historical resources retained.",
+  "removed": [
+    {
+      "id": "1ZDywq4jzs0mKF8BtKFXe05rG8wTZ1nCJ",
+      "parent": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+      "name": "1.46-M30-Companion.apk",
+      "size": 972689
+    },
+    {
+      "id": "1enT8WPFuDQWrhLd1wSTWgIuppdBn5OHM",
+      "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "name": "1.46-SOURCE.zip",
+      "size": 1314155
+    },
+    {
+      "id": "1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c",
+      "parent": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+      "name": "1.46-Паспорт.txt",
+      "size": 6075
+    },
+    {
+      "id": "1JwXulO6j9dotSAldfKyxeKKbgeA0ikiV",
+      "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "name": "1.48-M30 Companion-SOURCE.zip",
+      "size": 1371153
+    },
+    {
+      "id": "1XltMLFa-UgP0m2noNzWsEIS-wgE0Adem",
+      "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+      "name": "1.48-M30 Companion-Паспорт.txt",
+      "size": 5786
+    },
+    {
+      "id": "1rTzBy8d0ZkH6D8NEVqEZXNYEldbbZa0T",
+      "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "name": "1.50-M30 Companion-SOURCE.zip",
+      "size": 1404082
+    },
+    {
+      "id": "1f5Rd3E_lPD_CORvHF-gr-laPyoZ8Ymmz",
+      "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+      "name": "1.50-M30 Companion-Паспорт.txt",
+      "size": 3968
+    }
+  ],
+  "total_bytes": 5077908,
+  "empty_folder_removed": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo"
+}

@@ -1,0 +1,35 @@
+M30 Companion 1.55 · versionCode56 · app.m30.companion
+Проверочный выпуск,13.11.2026. Реальные Android/TV/Bluetooth/клавиатура ещё не проверены в этой среде.
+
+Изменения
+• Название и номер: компактная форма вместо большой сетки, внутренние отступы текста, ADJUST_RESIZE при клавиатуре. Номер по умолчанию выбранного слота; ручной текст и номер сохраняются.
+• Системное имя Bluetooth: в форме есть флажок Изменить имя и в Bluetooth. Доступно Android12+ с FEATURE_COMPANION_DEVICE_SETUP и разрешением устройств поблизости. Android попросит подтвердить доступ к конкретному полному MAC; затем setAlias и readback. Отказ, отмена и таймаут не сообщают успех; метка остаётся в приложении. На неподдерживаемых устройствах пояснение, а не фиктивное переименование. Имя меняется только на этом Android-хосте, не в прошивке M30 и не на всех телефонах.
+• Выбранный слот подключения сохраняется. Неизвестную привязку подтвердите нажатием кнопки на нужном M30; пульт не выбирает источник. Ранее явно связанный fullMAC/descriptor используется сразу. Перенос существующего источника сохраняет обе сессии/профили/назначения.
+• Новое устройство: public createBond и подтверждение Android. Сохранённый HID: ожидаем подключения Android и кнопки M30, через15с предлагаем настройки. Прямой public host-connect в SDK35 отсутствует; скрытых вызовов/подмены GATT нет. Отключить/Забыть остаются в системных настройках.
+• Общая рамка окна и вкладки окрашена цветом джойстика; Подключение в одну строку. Оба пояснения LED и два независимых широких поля сохранены.
+
+Установка
+Поверх1.54: скачайте APK и установите обновление, приложение не удалять. Данные и текущий ключ подписи сохраняются. Дополнительный ключ не создавался.
+Для старой1.47 сертификат другой: требуется удаление старой установки со сбросом локальных данных. Предыдущий1.54 и защищённая1.47 сохранены.
+
+Проверки
+M30 Companion 1.55/code56 · 13.11.2026
+24 host suites PASS; signed assembleDebug/lintDebug/assembleDebugAndroidTest PASS. Lint0 errors / 59 warnings.
+Certificate SHA256 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e. Same stable key as1.54, fresh Drive key/parameters restored and used. APK ZIPCRC, package/version/signature verified.
+Native UI/instrumentation compiled only, NOT RUN: no Android runtime/KVM/device. No physical Bluetooth, HID or CompanionDeviceManager renaming success claimed.
+GitHub deferred by explicit owner instruction; exact APK/SOURCE will be used when repository supplied.
+
+APK: https://drive.google.com/file/d/1Qa5flNFkiD0yOmlsDYtJyDhydqx5Venx/view
+Размер: 1153056 bytes
+SHA256: 9bffdc827f686923966a34f074f88a5fd85846d8572d3a47467dac2e2aa5c1a4
+SOURCE: окончательный ID/размер/SHA256 добавляются во внешний паспорт после загрузки; архив неизменяемый.
+Папка: https://drive.google.com/drive/folders/1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Ключ/фактические пароли/alias: только Ресурсы/Сборка и подпись, без копий вSOURCE/APK:
+https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+GitHubRelease отложен владельцем до предоставления репозитория, не заявляется опубликованным.
+
+Финальная проверка Google Диска13.11.2026: APK и SOURCE заново скачаны, размер/SHA256/ZIPCRC совпали, сертификат APK совпал с1.54.
+SOURCE: https://drive.google.com/file/d/1LA4rIzaAaVJXNJV6zDufhMJoOSGie3JO/view
+Размер 1579339 bytes; SHA256 aee68a0ea627e46bde9205ec813af1e63fd3a82ff6a2f517d47f3b625d1afe80
+Предыдущий полный1.54 проверен заново. Защищённая1.47 перемещена в Ключевые версии с прежним ID, без копии.

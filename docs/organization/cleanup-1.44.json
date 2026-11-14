@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-28",
+  "reason": "Authorized routine cleanup of obsolete non-key1.42 after verified1.44/current and1.43/previous and retained key metadata. No cumulative archive.",
+  "files": [
+    {
+      "id": "1TouEq1_NsRWeBl62imrDBKZCP3KZVOzj",
+      "name": "M30-Companion-1.42.apk",
+      "size": 1095190,
+      "parent_before": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA",
+      "deleted": true
+    },
+    {
+      "id": "1oEkyri6Vxow8fAfI10f0462OqPJpELqo",
+      "name": "M30-Companion-1.42-SOURCE.zip",
+      "size": 1238810,
+      "parent_before": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "deleted": true
+    },
+    {
+      "id": "1fA2x-e5ou5qrtWziN76pdsF0UTOJw9ea",
+      "name": "Паспорт 1.42.txt",
+      "size": 4341,
+      "parent_before": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA",
+      "deleted": true
+    },
+    {
+      "id": "1KU52nuVQun0P69FpZqWK4VMlI2V0KCr-",
+      "name": "Как установить M30 Companion 1.42.txt",
+      "size": 2163,
+      "parent_before": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA",
+      "deleted": true
+    }
+  ],
+  "bytes_deleted": 2340504,
+  "folder": {
+    "id": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA",
+    "empty_checked": true,
+    "deleted": true
+  },
+  "history": "docs/releases/1.42-history.txt in immutable SOURCE1.44; patch/validation/both logs retained",
+  "preserved": [
+    "1.44",
+    "1.43",
+    "protected1.41",
+    "protected1.38",
+    "protected1.36",
+    "protected1.32",
+    "historical1.27/1.29",
+    "frozen1.33 revision container",
+    "design assets"
+  ]
+}

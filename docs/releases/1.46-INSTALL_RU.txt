@@ -1,0 +1,7 @@
+M30 Companion1.46 — установка и проверка
+Установите поверх текущего приложения без удаления. Android8+/TV; package app.m30.companion, прежняя подпись.
+Bluetooth-колонки: заголовок и↻в одном компактном ряду, меньше пустых отступов. Landscape: имя · статус, адрес ниже; детали12sp, имя14sp. Длинный текст переносится без обрезания. Portrait сохраняет три строки. Фокус, подсказка переименования, левый scrollbar, меню обычным/долгим нажатием и одна кнопка StartStop сохранены.
+Проверьте читаемость и вместимость колонок наTV/телефоне, переходы пульта к↻/устройствам, длинные имена/системный крупный шрифт.20 host-наборов/сборка/lint прошли, реальная геометрия здесь не проверена. Вопрос ввода M30 наTV этим косметическим выпуском не исправлялся.
+APK: https://drive.google.com/file/d/1ZDywq4jzs0mKF8BtKFXe05rG8wTZ1nCJ/view?usp=drivesdk
+Папка1.46: https://drive.google.com/drive/folders/15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY

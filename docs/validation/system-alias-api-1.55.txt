@@ -1,0 +1,7 @@
+Verified Android public API references,13Nov2026:
+https://developer.android.com/reference/android/bluetooth/BluetoothDevice#setAlias(java.lang.String)
+setAlias addedAPI31, BLUETOOTH_CONNECT and BLUETOOTH_PRIVILEGED OR CompanionDeviceManager association. Locally stored alias survives restart; not firmware/remote name.
+https://developer.android.com/develop/connectivity/bluetooth/companion-device-pairing
+https://developer.android.com/reference/android/companion/CompanionDeviceManager.Callback
+onDeviceFound deprecated33 in favour of functionally equivalent onAssociationPending; only one needs overriding. Legacy callback + RESULT_OK used for API31–35, association list rechecked for exact MAC before alias write. Required companion setup feature is declared optional. No background companion permissions/services.
+Known limitations: OEM implementation and OS support; system chooser can require powered discoverable M30; alias update not exercised on real hardware. SDK35 public HID host connection remains unavailable; do not replace with reflection/RFCOMM/GATT.

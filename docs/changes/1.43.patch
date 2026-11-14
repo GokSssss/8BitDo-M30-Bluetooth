@@ -1,0 +1,186 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 43
+-        versionName '1.42'
++        versionCode 44
++        versionName '1.43'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -47,6 +47,33 @@
+     }
+     private ButtonGuideView guide(View view){if(view instanceof ButtonGuideView)return (ButtonGuideView)view;if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++){ButtonGuideView found=guide(group.getChildAt(i));if(found!=null)return found;}}return null;}
+     private void checkGuide(String text){ButtonGuideView diagram=guide(activity.getWindow().getDecorView());if(diagram==null||!diagram.getContentDescription().toString().contains(text))throw new AssertionError("Missing static guide: "+text);}
++    private void checkGuideSizing(){
++        float density=activity.getResources().getDisplayMetrics().density;
++        try{
++            ButtonGuideView diagram=guide(activity.getWindow().getDecorView());
++            java.lang.reflect.Field field=ButtonGuideView.class.getDeclaredField("captions");field.setAccessible(true);
++            boolean found=false;
++            for(Object caption:(java.util.List<?>)field.get(diagram)){
++                java.lang.reflect.Field action=caption.getClass().getDeclaredField("action");action.setAccessible(true);
++                StaticLayout layout=(StaticLayout)action.get(caption);
++                if(layout.getText().toString().equals("Перемещение")){
++                    found=true;if(layout.getLineCount()!=1)throw new AssertionError("Direction word must not lose its final letter to a second line");
++                }
++            }
++            if(!found)throw new AssertionError("Direction caption missing");
++        }catch(ReflectiveOperationException error){throw new AssertionError(error);}
++        for(int[] viewport:new int[][]{{780,320},{1080,360},{1920,1080}}){
++            int availableWidth=Math.round(viewport[0]*density),availableHeight=Math.round((viewport[1]-16)*density);
++            ButtonGuideCard card=new ButtonGuideCard(activity,availableHeight);card.setPadding(Math.round(14*density),Math.round(12*density),Math.round(14*density),Math.round(12*density));
++            String[] labels={"Кнопки в Android","По профилю: Windows · X-input","Статичная справка · назначения по профилю"};
++            for(int i=0;i<3;i++){
++                if(i==2)card.addView(new ButtonGuideView(activity,ButtonGuide.defaultBindings(1),1,0),new LinearLayout.LayoutParams(-1,-2));
++                TextView label=new TextView(activity);label.setText(labels[i]);label.setTextSize(i==0?18:i==1?13:10);label.setPadding(0,Math.round(4*density),0,Math.round(4*density));card.addView(label,new LinearLayout.LayoutParams(-1,-2));
++            }
++            card.measure(View.MeasureSpec.makeMeasureSpec(availableWidth,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED));
++            if(card.getMeasuredHeight()>availableHeight||card.getMeasuredWidth()>=availableWidth)throw new AssertionError("Whole guide card must fit the landscape height with side margins");
++        }
++    }
+     private boolean headerOnline(int slot){String description=header(activity.getWindow().getDecorView()).getContentDescription().toString();return description.startsWith("Геймпад "+slot+". ")&&description.contains(" · ID ");}
+     private int headerDevice(int slot){String description=header(activity.getWindow().getDecorView()).getContentDescription().toString();java.util.regex.Matcher id=java.util.regex.Pattern.compile(" · ID (\\d+)\\.").matcher(description);if(!headerOnline(slot)||!id.find())throw new AssertionError("Missing connected controller "+slot);return Integer.parseInt(id.group(1));}
+     private void checkDualControllers(){
+@@ -193,7 +220,7 @@
+     @Override public void onStart(){Bundle report=new Bundle();try{
+         activity=startActivitySync(new Intent(getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+         runOnMainSync(()->{check("App ");check("Предположительное Подключение");if(header(activity.getWindow().getDecorView()).getContentDescription().toString().contains("ID -1"))throw new AssertionError("Virtual Android source shown as a connected controller");checkHeader();checkInstructionLayout();check("Android");check("Windows");check("Switch");chooseMode(1);});waitForIdleSync();
+-        runOnMainSync(()->{check("Windows · X-input");check("X + START");check("Кнопки в Android");check("По профилю: Windows · X-input");checkGuide("C: —");if(find(activity.getWindow().getDecorView(),"B + START",false)!=null)throw new AssertionError("Windows instructions show stale Android combination");chooseMode(2);checkGuide("★: Снимок на Switch");chooseMode(0);checkGuide("★: Turbo");});waitForIdleSync();
++        runOnMainSync(()->{check("Windows · X-input");check("X + START");check("Кнопки в Android");check("По профилю: Windows · X-input");checkGuide("C: —");checkGuideSizing();if(find(activity.getWindow().getDecorView(),"B + START",false)!=null)throw new AssertionError("Windows instructions show stale Android combination");chooseMode(2);checkGuide("★: Снимок на Switch");chooseMode(0);checkGuide("★: Turbo");});waitForIdleSync();
+         runOnMainSync(()->{
+             check("B + START");checkModeOnOpen();
+             click("Джойстик 1");checkControllerTools();checkOverlays();boolean firstOnline=headerOnline(1);
+--- a/app/src/main/java/app/m30/companion/ButtonGuideCard.java
++++ b/app/src/main/java/app/m30/companion/ButtonGuideCard.java
+@@ -0,0 +1,37 @@
++package app.m30.companion;
++
++import android.content.Context;
++import android.view.View;
++import android.widget.LinearLayout;
++
++/** Fits the complete reference card to a landscape viewport, keeping its proportions. */
++public final class ButtonGuideCard extends LinearLayout {
++    private final int viewportHeight;
++
++    public ButtonGuideCard(Context context){this(context,0);}
++
++    public ButtonGuideCard(Context context,int viewportHeight){
++        super(context);setOrientation(VERTICAL);this.viewportHeight=viewportHeight;
++    }
++
++    @Override protected void onMeasure(int widthSpec,int heightSpec){
++        super.onMeasure(widthSpec,heightSpec);
++        if(viewportHeight<=0)return;
++        View diagram=null;
++        for(int i=0;i<getChildCount();i++)if(getChildAt(i) instanceof ButtonGuideView)diagram=getChildAt(i);
++        if(diagram==null)return;
++        // Re-measure the real heading/profile/footer at the narrower width as well.
++        // Never force the card's height: exceptionally large fonts can still scroll.
++        for(int pass=0;pass<4&&getMeasuredHeight()>viewportHeight;pass++){
++            int surroundingHeight=getMeasuredHeight()-diagram.getMeasuredHeight();
++            int drawingHeight=Math.max(1,viewportHeight-surroundingHeight);
++            int width=getPaddingLeft()+getPaddingRight()+(int)Math.floor(drawingHeight*RadialGuideGeometry.WIDTH/RadialGuideGeometry.HEIGHT);
++            if(width>=getMeasuredWidth())break;
++            int previousWidth=getMeasuredWidth(),previousHeight=getMeasuredHeight();
++            super.onMeasure(MeasureSpec.makeMeasureSpec(width,MeasureSpec.EXACTLY),heightSpec);
++            if(getMeasuredHeight()>=previousHeight){
++                super.onMeasure(MeasureSpec.makeMeasureSpec(previousWidth,MeasureSpec.EXACTLY),heightSpec);break;
++            }
++        }
++    }
++}
+--- a/app/src/main/java/app/m30/companion/ButtonGuideView.java
++++ b/app/src/main/java/app/m30/companion/ButtonGuideView.java
+@@ -22,7 +22,7 @@
+         Caption(String label,float[] start,float[] center,StaticLayout action){
+             this.label=label;this.start=start;this.center=center;this.action=action;
+             float vx=start[0]-center[0],vy=start[1]-center[1];
+-            float factor=Math.min(vx==0?999:36/Math.abs(vx),vy==0?999:action.getHeight()/2f/Math.abs(vy));
++            float factor=Math.min(vx==0?999:(action.getWidth()/2f+1)/Math.abs(vx),vy==0?999:action.getHeight()/2f/Math.abs(vy));
+             end=new float[]{center[0]+vx*factor,center[1]+vy*factor};
+         }
+     }
+@@ -36,7 +36,9 @@
+         for(int i=0;i<RadialGuideGeometry.LABELS.length;i++){
+             String label=RadialGuideGeometry.LABELS[i];String[] buttons=label.equals("↑ ↓ ← →")?new String[]{"↑","↓","←","→"}:new String[]{label};
+             String action=ButtonGuide.caption(buttons,bindings,mode);
+-            StaticLayout text=StaticLayout.Builder.obtain(action,0,action.length(),body,70).setAlignment(Layout.Alignment.ALIGN_CENTER).setIncludePad(false).setLineSpacing(1,1).build();
++            // The direction caption needs room for the whole word «Перемещение».
++            int captionWidth=label.equals("↑ ↓ ← →")?80:70;
++            StaticLayout text=StaticLayout.Builder.obtain(action,0,action.length(),body,captionWidth).setAlignment(Layout.Alignment.ALIGN_CENTER).setIncludePad(false).setLineSpacing(1,1).build();
+             captions.add(new Caption(label,RadialGuideGeometry.start(i),RadialGuideGeometry.end(i),text));
+             description.append(label).append(": ").append(action).append(". ");
+         }
+@@ -70,7 +72,7 @@
+         super.onDraw(canvas);canvas.save();float scale=getWidth()/RadialGuideGeometry.WIDTH;canvas.scale(scale,scale);
+         canvas.save();canvas.translate(RadialGuideGeometry.PAD_X,RadialGuideGeometry.PAD_Y);canvas.scale(RadialGuideGeometry.PAD_WIDTH/1000,RadialGuideGeometry.PAD_WIDTH/1000);miniature.draw(canvas);canvas.restore();
+         line.setColor(accent);line.setAlpha(155);line.setStrokeWidth(.75f);line.setStyle(Paint.Style.STROKE);
+-        for(Caption c:captions){canvas.drawLine(c.start[0],c.start[1],c.end[0],c.end[1],line);canvas.save();canvas.translate(c.center[0]-35,c.center[1]-c.action.getHeight()/2f);c.action.draw(canvas);canvas.restore();}
++        for(Caption c:captions){canvas.drawLine(c.start[0],c.start[1],c.end[0],c.end[1],line);canvas.save();canvas.translate(c.center[0]-c.action.getWidth()/2f,c.center[1]-c.action.getHeight()/2f);c.action.draw(canvas);canvas.restore();}
+         line.setStyle(Paint.Style.FILL);line.setColor(BACKGROUND);line.setAlpha(255);
+         for(Caption c:captions){canvas.drawRoundRect(c.badgeBox,4,4,line);canvas.drawText(c.label,c.badgeX,c.badgeY-(badge.ascent()+badge.descent())/2,badge);}
+         canvas.restore();
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.42 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.43 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.42 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.43 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/MainActivity.java
++++ b/app/src/main/java/app/m30/companion/MainActivity.java
+@@ -115,7 +115,8 @@
+         b.setBackground(shape(primary?accent():0xff2d2b22,14));b.setMinHeight(dp(48));b.setPadding(dp(12),dp(8),dp(12),dp(8));
+         b.setOnClickListener(v->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(48));lp.topMargin=dp(6);b.setLayoutParams(lp);return b;
+     }
+-    private LinearLayout card(String heading){LinearLayout c=column();c.setPadding(dp(14),dp(12),dp(14),dp(12));c.setBackground(shape(CARD,22));
++    private LinearLayout card(String heading){return card(heading,column());}
++    private LinearLayout card(String heading,LinearLayout c){c.setPadding(dp(14),dp(12),dp(14),dp(12));c.setBackground(shape(CARD,22));
+         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(14);content.addView(c,lp);if(heading!=null){TextView label=title(heading,18);int slotName=heading.indexOf("Джойстик 2");if(slotName>=0){android.text.SpannableString caption=new android.text.SpannableString(label.getText());caption.setSpan(new android.text.style.ForegroundColorSpan(ORANGE),slotName,slotName+"Джойстик 2".length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);label.setText(caption);}c.addView(label);}return c;}
+     private void render(){
+         int overlayScroll=inlineBluetoothOpen&&contentScroll!=null?contentScroll.getScrollY():-1;
+@@ -278,10 +279,21 @@
+         buttonGuideSection();
+     }
+     private void buttonGuideSection(){
+-        LinearLayout c=card(null);TextView heading=title("Кнопки в Android",18);heading.setGravity(Gravity.CENTER);c.addView(heading,new LinearLayout.LayoutParams(-1,-2));
++        LinearLayout c=card(null,new ButtonGuideCard(this,wholePageScroll?Math.max(1,guideViewportHeight()-dp(16)):0));
++        ((LinearLayout.LayoutParams)c.getLayoutParams()).gravity=Gravity.CENTER_HORIZONTAL;
++        TextView heading=title("Кнопки в Android",18);heading.setGravity(Gravity.CENTER);c.addView(heading,new LinearLayout.LayoutParams(-1,-2));
+         TextView profile=text("По профилю: "+modeNames[session.mode],13,accent());profile.setGravity(Gravity.CENTER);c.addView(profile,new LinearLayout.LayoutParams(-1,-2));
+         c.addView(new ButtonGuideView(this,session.state.bindings,session.mode,activeSlot),new LinearLayout.LayoutParams(-1,-2));
+         TextView note=text("Статичная справка · назначения по профилю",10,MUTED);note.setGravity(Gravity.CENTER);c.addView(note,new LinearLayout.LayoutParams(-1,-2));
++    }
++    private int guideViewportHeight(){
++        if(Build.VERSION.SDK_INT>=30){
++            android.view.WindowMetrics metrics=getWindowManager().getCurrentWindowMetrics();
++            android.graphics.Insets bars=metrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars()|WindowInsets.Type.displayCutout());
++            return metrics.getBounds().height()-bars.top-bars.bottom;
++        }
++        android.graphics.Rect visible=new android.graphics.Rect();getWindow().getDecorView().getWindowVisibleDisplayFrame(visible);
++        return visible.height()>0?visible.height():getResources().getDisplayMetrics().heightPixels;
+     }
+     private void showLedGuide(){
+         LinearLayout body=column();body.setPadding(dp(20),dp(8),dp(20),dp(12));

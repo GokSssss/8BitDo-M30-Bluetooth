@@ -1,0 +1,1309 @@
+{
+  "general_rules": {
+    "id": "1PC7jbtXP9HRTi1C8t3JTG8xc_Y-F9H_z",
+    "revision_date": "2026-10-27",
+    "observed_modified_time": "2026-10-27T09:41:42.200Z"
+  },
+  "metadata": [
+    {
+      "id": "1HzCCOxxQ3nj8Vn5vyfxXLtnjNWc8Lw8g",
+      "group": "current",
+      "title": "Паспорт 1.33.txt",
+      "mime_type": "text/plain",
+      "size": "1354",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "133C1EBmct755HoauShJo7hzxQhQdZ4Ba"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1LJzuAZCN1CICgKmbfc-ryzMH-tcnI8OD",
+      "group": "current",
+      "title": "Как установить M30 Companion.txt",
+      "mime_type": "text/plain",
+      "size": "2413",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "133C1EBmct755HoauShJo7hzxQhQdZ4Ba"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1GBQllaRtjisT2fABlxyYvFMplE86jR1w",
+      "group": "current",
+      "title": "M30-Companion-1.33.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "943821",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "133C1EBmct755HoauShJo7hzxQhQdZ4Ba"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1wtubV_r9OKc97hRYATr-X4v17HrbcGF7",
+      "group": "previous",
+      "title": "Паспорт 1.32.txt",
+      "mime_type": "text/plain",
+      "size": "1861",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS",
+      "group": "previous",
+      "title": "M30-Companion-1.32.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1031818",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh",
+      "group": "sources",
+      "title": "M30-Companion-1.32-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "931514",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4",
+      "group": "sources",
+      "title": "M30-Companion-1.33-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "939814",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1LISjP3h34ncu_WbGu4P6wHBzokxcRdDe",
+      "group": "cp127",
+      "title": "Паспорт 1.27.txt",
+      "mime_type": "text/plain",
+      "size": "1547",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1yfTZ9cNO646jrucDAMCWwzLfNdh4LKxH",
+      "group": "cp127",
+      "title": "M30-Companion-1.27.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "978849",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1qJPUT27OhZZQc8XmH8ooQJoEiHT-r3YB",
+      "group": "cp129",
+      "title": "Паспорт 1.29.txt",
+      "mime_type": "text/plain",
+      "size": "1493",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "14fEYUU_xlu52E9276hOdtDvTy4sxtguv"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1xqhVN_cPPOy5JxnIXcp7Fimfcf7tzYGx",
+      "group": "cp129",
+      "title": "M30-Companion-1.29.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "929921",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "14fEYUU_xlu52E9276hOdtDvTy4sxtguv"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1sRBuaPZCsdNKkVxULdXBUnGQAtk8H4Iw",
+      "group": "archive",
+      "title": "M30-Companion-1.31.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1025305",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1ES4rmlVmnecsad8NmHwDALrbT_ZH_qvr",
+      "group": "archive",
+      "title": "M30-Companion-1.30.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1019955",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1KHnFLfuuAJNzJUrmqhL1zm9gDW7EKWyW",
+      "group": "archive",
+      "title": "M30-Companion-1.28.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1013224",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1MYEC0wR6OFFipnnPypB4l-ijcUPDjo0G",
+      "group": "archive",
+      "title": "M30-Companion-1.26.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "906977",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1h-BbNja5R4R9sD-mPUAD2RTVinLhnyvk",
+      "group": "archive",
+      "title": "M30-Companion-1.25.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "906969",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1jcPWc4ljahk-QSM3-ZFiP-bQnxKCHmad",
+      "group": "archive",
+      "title": "M30-Companion-1.24.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "905701",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1YUI8VdhX7pxY3_j_JIY01R3busXP54Zq",
+      "group": "archive",
+      "title": "M30-Companion-1.23.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "905777",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1JTmrUlygof-eX0Qp-6CfhrpDqPV98opm",
+      "group": "archive",
+      "title": "M30-Companion-1.22.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "966964",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1A_881lgofH8f09OkFGh0OOy2e5xtgXCv",
+      "group": "archive",
+      "title": "M30-Companion-1.21.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "956918",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1Ea-qSQfNA9zz8YLhesLulObq5ncvOAEt",
+      "group": "archive",
+      "title": "M30-Companion-1.20.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "897822",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1g0t3aQE41LYMSyOtQyzS5HlW4D_LLrzO",
+      "group": "archive",
+      "title": "M30-Companion-1.19.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "897870",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1KjOraZNWADTzt-U8F-hnM47xb9tIUZb2",
+      "group": "archive",
+      "title": "M30-Companion-1.18.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "897251",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1Hx8X2UNfR963kfK8IQhtsXXoWnsSrgaI",
+      "group": "archive",
+      "title": "M30-Companion-1.17.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "948591",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1ZENCqJ-Gk9CRpf0p36ZBXeTOUNepPtzL",
+      "group": "archive",
+      "title": "M30-Companion-1.16.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "890003",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1eSmxdjIgAmCKg5PH_-gm3yVKn0Zt5jV5",
+      "group": "archive",
+      "title": "M30-Companion-1.15.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "888991",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1bQiYe0pd2NwTZR7T1iw2p2gKnqitQ-kw",
+      "group": "archive",
+      "title": "M30-Companion-1.14.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "938291",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1pFyknfYtlIZuJ2g6OBrN_sWaRmcaft-V",
+      "group": "archive",
+      "title": "M30-Companion-1.13.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "924622",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "16EU1z9c3v-Cv5kJeFmijoZtAjAF_imKV",
+      "group": "archive",
+      "title": "M30-Companion-1.12.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "879875",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1xDwLNZ72Z-1HkYWvNSbVXYPv9U3MJp3n",
+      "group": "archive",
+      "title": "M30-Companion-1.11.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "879803",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1GyT_WLYFpRJaaEvvUp5nRAo-w1xkycAM",
+      "group": "archive",
+      "title": "M30-Companion-1.10.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "879895",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1MahB60yXg8Hn2P9z_PE64FEvTWf5-Yni",
+      "group": "archive",
+      "title": "M30-Companion-1.9.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "918776",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1pTr4i8gpLO2N928_sfRscvbFRx27kLjd",
+      "group": "archive",
+      "title": "M30-Companion-1.8.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "878519",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1XAnwvOXp1xyn5hRKtaHgQivzurjjWn-q",
+      "group": "archive",
+      "title": "M30-Companion-1.7.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "50162",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "18ZkUwjhGWFARiP6qBYUMEB4dNhwg5FL-",
+      "group": "archive",
+      "title": "M30-Companion-1.6.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "50986",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1ZVUHdG7T0PGaBCGHU6cpyqZ71UZyNXBJ",
+      "group": "archive",
+      "title": "M30-Companion-1.5.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "90342",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1l9P_w18y4n7u1-cfnnbw4CJutZ_-vTQ_",
+      "group": "archive",
+      "title": "M30-Companion-1.4.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "46375",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1XNo76-hDmYRrfUhrb9bviV3lSdjf2rLD",
+      "group": "archive",
+      "title": "M30-Companion-1.2.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "82549",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1QKDMKLDpNzFlnU-8KaTRskmokElot8JP",
+      "group": "archive",
+      "title": "M30-Companion-1.1.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "70777",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "15dyUCPaEl33mjoMmVTuQzfTefz-0yYPA",
+      "group": "archive",
+      "title": "M30-Companion-1.0.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "54382",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  ],
+  "planned_delete": [
+    {
+      "id": "1sRBuaPZCsdNKkVxULdXBUnGQAtk8H4Iw",
+      "name": "M30-Companion-1.31.apk",
+      "size": 1025305,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1ES4rmlVmnecsad8NmHwDALrbT_ZH_qvr",
+      "name": "M30-Companion-1.30.apk",
+      "size": 1019955,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1KHnFLfuuAJNzJUrmqhL1zm9gDW7EKWyW",
+      "name": "M30-Companion-1.28.apk",
+      "size": 1013224,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1MYEC0wR6OFFipnnPypB4l-ijcUPDjo0G",
+      "name": "M30-Companion-1.26.apk",
+      "size": 906977,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1h-BbNja5R4R9sD-mPUAD2RTVinLhnyvk",
+      "name": "M30-Companion-1.25.apk",
+      "size": 906969,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1jcPWc4ljahk-QSM3-ZFiP-bQnxKCHmad",
+      "name": "M30-Companion-1.24.apk",
+      "size": 905701,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1YUI8VdhX7pxY3_j_JIY01R3busXP54Zq",
+      "name": "M30-Companion-1.23.apk",
+      "size": 905777,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1JTmrUlygof-eX0Qp-6CfhrpDqPV98opm",
+      "name": "M30-Companion-1.22.apk",
+      "size": 966964,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1A_881lgofH8f09OkFGh0OOy2e5xtgXCv",
+      "name": "M30-Companion-1.21.apk",
+      "size": 956918,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1Ea-qSQfNA9zz8YLhesLulObq5ncvOAEt",
+      "name": "M30-Companion-1.20.apk",
+      "size": 897822,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1g0t3aQE41LYMSyOtQyzS5HlW4D_LLrzO",
+      "name": "M30-Companion-1.19.apk",
+      "size": 897870,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1KjOraZNWADTzt-U8F-hnM47xb9tIUZb2",
+      "name": "M30-Companion-1.18.apk",
+      "size": 897251,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1Hx8X2UNfR963kfK8IQhtsXXoWnsSrgaI",
+      "name": "M30-Companion-1.17.apk",
+      "size": 948591,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1ZENCqJ-Gk9CRpf0p36ZBXeTOUNepPtzL",
+      "name": "M30-Companion-1.16.apk",
+      "size": 890003,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1eSmxdjIgAmCKg5PH_-gm3yVKn0Zt5jV5",
+      "name": "M30-Companion-1.15.apk",
+      "size": 888991,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1bQiYe0pd2NwTZR7T1iw2p2gKnqitQ-kw",
+      "name": "M30-Companion-1.14.apk",
+      "size": 938291,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1pFyknfYtlIZuJ2g6OBrN_sWaRmcaft-V",
+      "name": "M30-Companion-1.13.apk",
+      "size": 924622,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "16EU1z9c3v-Cv5kJeFmijoZtAjAF_imKV",
+      "name": "M30-Companion-1.12.apk",
+      "size": 879875,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1xDwLNZ72Z-1HkYWvNSbVXYPv9U3MJp3n",
+      "name": "M30-Companion-1.11.apk",
+      "size": 879803,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1GyT_WLYFpRJaaEvvUp5nRAo-w1xkycAM",
+      "name": "M30-Companion-1.10.apk",
+      "size": 879895,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1MahB60yXg8Hn2P9z_PE64FEvTWf5-Yni",
+      "name": "M30-Companion-1.9.apk",
+      "size": 918776,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1pTr4i8gpLO2N928_sfRscvbFRx27kLjd",
+      "name": "M30-Companion-1.8.apk",
+      "size": 878519,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1XAnwvOXp1xyn5hRKtaHgQivzurjjWn-q",
+      "name": "M30-Companion-1.7.apk",
+      "size": 50162,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "18ZkUwjhGWFARiP6qBYUMEB4dNhwg5FL-",
+      "name": "M30-Companion-1.6.apk",
+      "size": 50986,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1ZVUHdG7T0PGaBCGHU6cpyqZ71UZyNXBJ",
+      "name": "M30-Companion-1.5.apk",
+      "size": 90342,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1l9P_w18y4n7u1-cfnnbw4CJutZ_-vTQ_",
+      "name": "M30-Companion-1.4.apk",
+      "size": 46375,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1XNo76-hDmYRrfUhrb9bviV3lSdjf2rLD",
+      "name": "M30-Companion-1.2.apk",
+      "size": 82549,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "1QKDMKLDpNzFlnU-8KaTRskmokElot8JP",
+      "name": "M30-Companion-1.1.apk",
+      "size": 70777,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    },
+    {
+      "id": "15dyUCPaEl33mjoMmVTuQzfTefz-0yYPA",
+      "name": "M30-Companion-1.0.apk",
+      "size": 54382,
+      "parent": "1OSAs84VM0AfFLul2QMgHE-5XxBqJbEAR"
+    }
+  ],
+  "archive_folder_deleted": true,
+  "results": [
+    {
+      "id": "1sRBuaPZCsdNKkVxULdXBUnGQAtk8H4Iw",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1ES4rmlVmnecsad8NmHwDALrbT_ZH_qvr",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1KHnFLfuuAJNzJUrmqhL1zm9gDW7EKWyW",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1MYEC0wR6OFFipnnPypB4l-ijcUPDjo0G",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1h-BbNja5R4R9sD-mPUAD2RTVinLhnyvk",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1jcPWc4ljahk-QSM3-ZFiP-bQnxKCHmad",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1YUI8VdhX7pxY3_j_JIY01R3busXP54Zq",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1JTmrUlygof-eX0Qp-6CfhrpDqPV98opm",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1A_881lgofH8f09OkFGh0OOy2e5xtgXCv",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1Ea-qSQfNA9zz8YLhesLulObq5ncvOAEt",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1g0t3aQE41LYMSyOtQyzS5HlW4D_LLrzO",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1KjOraZNWADTzt-U8F-hnM47xb9tIUZb2",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1Hx8X2UNfR963kfK8IQhtsXXoWnsSrgaI",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1ZENCqJ-Gk9CRpf0p36ZBXeTOUNepPtzL",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1eSmxdjIgAmCKg5PH_-gm3yVKn0Zt5jV5",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1bQiYe0pd2NwTZR7T1iw2p2gKnqitQ-kw",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1pFyknfYtlIZuJ2g6OBrN_sWaRmcaft-V",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "16EU1z9c3v-Cv5kJeFmijoZtAjAF_imKV",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1xDwLNZ72Z-1HkYWvNSbVXYPv9U3MJp3n",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1GyT_WLYFpRJaaEvvUp5nRAo-w1xkycAM",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1MahB60yXg8Hn2P9z_PE64FEvTWf5-Yni",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1pTr4i8gpLO2N928_sfRscvbFRx27kLjd",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1XAnwvOXp1xyn5hRKtaHgQivzurjjWn-q",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "18ZkUwjhGWFARiP6qBYUMEB4dNhwg5FL-",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1ZVUHdG7T0PGaBCGHU6cpyqZ71UZyNXBJ",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1l9P_w18y4n7u1-cfnnbw4CJutZ_-vTQ_",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1XNo76-hDmYRrfUhrb9bviV3lSdjf2rLD",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "1QKDMKLDpNzFlnU-8KaTRskmokElot8JP",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "id": "15dyUCPaEl33mjoMmVTuQzfTefz-0yYPA",
+      "result": {
+        "success": true
+      }
+    }
+  ],
+  "local_export_cleanup": [
+    {
+      "name": "M30-Companion-1.31.apk",
+      "size": 1025305,
+      "sha256": "23620ca72f6917181f7acf7277f7f83dadfbd368601cd2eb43fc061e5c054cc8"
+    },
+    {
+      "name": "M30-Companion-1.30.apk",
+      "size": 1019955,
+      "sha256": "9891774119ea79617bef4e16978b043bd9f97b2cd937c9f1de2df56c9641556f"
+    },
+    {
+      "name": "M30-Companion-1.28.apk",
+      "size": 1013224,
+      "sha256": "e1499ceb2e4c876c14920799b567f1164404492852ded6a369c970fef7ca21f2"
+    },
+    {
+      "name": "M30-Companion-1.26.apk",
+      "size": 906977,
+      "sha256": "f86acf0fe4d4dbf5688dfbf3f6bf2f32dbae0eb819cd1dc968e9c11edd5fedd3"
+    },
+    {
+      "name": "M30-Companion-1.25.apk",
+      "size": 906969,
+      "sha256": "c46dd4ef21581f31a9013d93df596dc6a92f9841e437d1b2b385f23f5bce1296"
+    },
+    {
+      "name": "M30-Companion-1.24.apk",
+      "size": 905701,
+      "sha256": "846a10cc57839ac0a5c1bf63516737c18557c149f7b4c990224d1939da512d0a"
+    },
+    {
+      "name": "M30-Companion-1.23.apk",
+      "size": 905777,
+      "sha256": "26933787496260206694c1eadfc51b2789bf1c495707de0f4e4c78959143cd63"
+    },
+    {
+      "name": "M30-Companion-1.22.apk",
+      "size": 966964,
+      "sha256": "d994d320116f75ad07d5eaef55103f7d7a8d56818dfb9139d8ea60424ea513ba"
+    },
+    {
+      "name": "M30-Companion-1.21.apk",
+      "size": 956918,
+      "sha256": "6e36bc716290adb4b224680ec875f40da4616e5643e564a93e31b59f01bc5ac2"
+    },
+    {
+      "name": "M30-Companion-1.20.apk",
+      "size": 897822,
+      "sha256": "af94125d7d64edf43c014880ebb2f86476cc8148265b54a8e73d947b6abd1c09"
+    },
+    {
+      "name": "M30-Companion-1.19.apk",
+      "size": 897870,
+      "sha256": "500919cea44bbfffb24c229baed9cc502ac057d433b21479dbb9623e66cbe3a9"
+    },
+    {
+      "name": "M30-Companion-1.18.apk",
+      "size": 897251,
+      "sha256": "ad781915f90c21329e9185f33bfb12c1856efb33041a0de1eaec8df6164daf87"
+    },
+    {
+      "name": "M30-Companion-1.17.apk",
+      "size": 948591,
+      "sha256": "c8580758b9326a437034e963808ba9a76825c3c2b5eeb0281666a13a9f0d2c8a"
+    },
+    {
+      "name": "M30-Companion-1.16.apk",
+      "size": 890003,
+      "sha256": "2ead5cac4f5a33e37f8ac68381a4c0d2fb31a9c241e50a3137c30083a02944c8"
+    },
+    {
+      "name": "M30-Companion-1.15.apk",
+      "size": 888991,
+      "sha256": "9efc1659b73e8f0599e2d8019cc1e32eb092c88afcd63fc0bdaf8c2ec964a6c8"
+    },
+    {
+      "name": "M30-Companion-1.14.apk",
+      "size": 938291,
+      "sha256": "a99a885abaad7e58395e3f54b0c04b2ae35aac83164d01425ac0dfeaab60f20b"
+    },
+    {
+      "name": "M30-Companion-1.13.apk",
+      "size": 924622,
+      "sha256": "78b1def819de0f3d39f8e07e2f402d2f6b1c715fdce1b9042e421440da40e8e7"
+    },
+    {
+      "name": "M30-Companion-1.12.apk",
+      "size": 879875,
+      "sha256": "ad20a2bb59caee7f951c22939740872e356c175781968cd030c3f753f59ecee1"
+    },
+    {
+      "name": "M30-Companion-1.11.apk",
+      "size": 879803,
+      "sha256": "03a04d63342ec5437284794a286a53dd2280a6e62456e494b585c3b3de95a3da"
+    },
+    {
+      "name": "M30-Companion-1.10.apk",
+      "size": 879895,
+      "sha256": "74d99bff4f8ce7c04f90658c999fa44cde278d367f51ab4724a8b0570563868a"
+    },
+    {
+      "name": "M30-Companion-1.9.apk",
+      "size": 918776,
+      "sha256": "d73588a98168c2313cdcb249ec6e6adf2d2df037e343c257c9f93d75130ad8c9"
+    },
+    {
+      "name": "M30-Companion-1.8.apk",
+      "size": 878519,
+      "sha256": "04d0839a08dc9b7e804fa8b72096eb20a329d6175c666c13c2c6c2020a784158"
+    },
+    {
+      "name": "M30-Companion-1.7.apk",
+      "size": 50162,
+      "sha256": "07d32ae91237c4368ec3538edabe9125334b5bf507f46e897d10c71988cea40e"
+    },
+    {
+      "name": "M30-Companion-1.6.apk",
+      "size": 50986,
+      "sha256": "f95e5ba1dfaddfc467e3248d1b9c966557364a31f9656b98727b230132eacaf7"
+    },
+    {
+      "name": "M30-Companion-1.5.apk",
+      "size": 90342,
+      "sha256": "5b7bf4d9fe1291239ef8eb6cde9882a1b1a0f6b5cc94ae30a9bd5d92198dac65"
+    },
+    {
+      "name": "M30-Companion-1.4.apk",
+      "size": 46375,
+      "sha256": "c4c06fa5979e07fa8d60e216a54d6288c03ee7aa1cc5223a560ec7fe58b459ff"
+    },
+    {
+      "name": "M30-Companion-1.2.apk",
+      "size": 82549,
+      "sha256": "2acbecbec6138c6f1ad9651e3ba8b064355700cf0ba5a058b0167858ef0782fb"
+    },
+    {
+      "name": "M30-Companion-1.1.apk",
+      "size": 70777,
+      "sha256": "bc539e7bc6acb276ee4bf35a3016886b50c0f00e158ab3033b7da68d20050486"
+    },
+    {
+      "name": "M30-Companion-1.0.apk",
+      "size": 54382,
+      "sha256": "403ba151a43c3a8da98e5cd8fde4566ef00715bcf10e3e09ef31a298f925eb8b"
+    }
+  ]
+}

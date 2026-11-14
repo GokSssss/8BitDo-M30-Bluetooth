@@ -1,0 +1,120 @@
+{
+  "scope": "HTML design prototype only; no native APK changed/tested",
+  "checks": [
+    {
+      "name": "01-портрет-джойстик-1",
+      "w": 412,
+      "h": 900,
+      "width": 412,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": false,
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "02-портрет-подключение-1",
+      "w": 412,
+      "h": 900,
+      "width": 412,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": true,
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "03-портрет-джойстик-2",
+      "w": 412,
+      "h": 900,
+      "width": 412,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": false,
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "04-портрет-подключение-2",
+      "w": 412,
+      "h": 900,
+      "width": 412,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": true,
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "05-горизонтально-оба",
+      "w": 1440,
+      "h": 900,
+      "width": 1440,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": false,
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "06-горизонтально-подключение-1",
+      "w": 1440,
+      "h": 900,
+      "width": 1440,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": false,
+      "wideHost": "1",
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    },
+    {
+      "name": "07-горизонтально-подключение-2",
+      "w": 1440,
+      "h": 900,
+      "width": 1440,
+      "height": 900,
+      "tabHeights": [
+        52,
+        52,
+        52
+      ],
+      "btOpen": false,
+      "wideHost": "0",
+      "visibleOverflow": [],
+      "errors": [],
+      "interactions": "PASS"
+    }
+  ],
+  "smallPhone360": "PASS"
+}

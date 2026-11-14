@@ -1,0 +1,39 @@
+M301.40 — текстовая история перед обычной очисткой при1.42.
+
+M30 Companion 1.40 / versionCode41 /28.10.2026
+Package app.m30.companion. Android8+/TV, minSdk26,target/compile35.
+
+Изменения:
+• Слова Android, Windows, Xbox, macOS, Switch, X/D-input в имени Bluetooth выделены жирным. Системное имя и логика определения режима не меняются.
+• Верхняя кнопка полностью «Системные настройки Bluetooth»: больше ширина, перенос на2строки, подгонка размера. Высота панели и нижний экран сохранены.
+• Подпись под крестовиной на тёмной плашке ниже кругового контура, белый жирный текст, сохранено открытие меню по нажатию. Для статической схемы без действия прежний D-PAD сохранён.
+
+Проверки: offline assembleDebug/lintDebug/assembleDebugAndroidTest PASS. Lint0errors/43warnings. Существующие экранные проверки уточнены для новой подписи/точки нажатия; скомпилированы, runtime не запускался. Новых тестов для обратимого форматирования нет; core-набор повторно не запускался, логика состояния/протокол не изменены. aapt сверилpackage/versionName1.40/code41/min26/target35; apksigner проверил прежнюю подпись. ZIP CRC и SHA256 локальных окончательныхAPK/SOURCE проверены. Предыдущий1.39 APK/SOURCE заново скачаны сDrive, SHA256/size/CRC совпали.
+Пределы: физические phone/TV, реальная читаемость/переносы/нажатие здесь не проверены. Установить поверх текущей версии и проверить оба оформления. ПрямоеHID/автоматизация настроек этим выпуском не добавлены, firmware-протокол/привязки/слоты не изменялись.
+
+APK 969773 bytes
+SHA256 ab410be46295b71148898a6e9aa2b01f9abf89e41fb890be847ad75ff832d2b3
+https://drive.google.com/file/d/10uExwjnoehO26ZqqFhNPeanLJv6opxmG/view?usp=drivesdk
+SOURCE 1208810 bytes
+SHA256 48da156d242d58a3843a59d1567d667fbc515dac279bd305b8af13eb9c43649a
+https://drive.google.com/file/d/1Lge-GLpUTxAYUQb2X00iMgZwxZ_n7dTc/view?usp=drivesdk
+SOURCE отдельный и неизменяемый. СобственныйID/hash не встраиваются внутрьZIP; окончательные значения здесь и в живом индексе. Поздние документы войдут в следующий SOURCE. Build/cache/SDK/local.properties/ключи не включены.
+СертификатSHA256 e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272 — прежняя AndroidDebug подпись.
+Инструкция: https://drive.google.com/file/d/1F73m82tsGSmCXDkKE2-8awzCf9a68vth/view?usp=drivesdk
+Папка1.40: https://drive.google.com/drive/folders/1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Предыдущий1.39 остаётся в корне. Защищённая1.38 после проверки нового SOURCE перемещается в Ключевые версии с прежнимID, еёSOURCE остаётся вРесурсах. Новая защита ради форматирования не создаётся. Удалений нет, прежние ключевые/исторические материалы/контейнер1.33 сохранены.
+
+Публикация проверена: новыеAPK/SOURCE повторно скачаны, SHA256/size/CRC совпали; метаданные/parents сверены. Защищённая1.38 перемещена вКлючевые версии с прежнимID и проверкой родителей; текущий1.40/предыдущий1.39. Удалений нет.
+
+
+M30 Companion 1.40 — установка
+Установите APK поверх текущей версии без удаления приложения. Package app.m30.companion, Android8+/TV, прежняя подпись.
+Изменения: Android/Windows/Xbox и другие названия режима в имени Bluetooth выделены жирным. Верхняя кнопка — «Системные настройки Bluetooth» полностью. Системные имена и текущие пары не изменяются.
+Под крестовиной белая жирная подпись на тёмной плашке ниже кольца; нажатие открывает прежнее меню комбинаций. Проверьте читаемость на своём телефоне/TV, на жёлтом/оранжевом оформлении.
+Новая геометрия панели1.39, два списка и Start/Stop сохранены. Прямое HID-подключение/автоматические нажатия вAndroid этим выпуском не добавлены.
+Сборка/lint и компиляция экранных тестов прошли; физический рендер здесь не проверен.
+APK: https://drive.google.com/file/d/10uExwjnoehO26ZqqFhNPeanLJv6opxmG/view?usp=drivesdk
+Папка1.40: https://drive.google.com/drive/folders/1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+

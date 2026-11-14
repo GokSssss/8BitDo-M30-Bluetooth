@@ -1,0 +1,86 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 46
+-        versionName '1.45'
++        versionCode 47
++        versionName '1.46'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -60,6 +60,7 @@
+         }catch(SecurityException error){accessLost();}
+     }};
+     private int dp(int value){return Math.round(value*activity.getResources().getDisplayMetrics().density);}
++    private boolean landscape(){return activity.getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;}
+     private GradientDrawable shape(int color){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(14));return d;}
+     private TextView label(String value,int size,int color){TextView v=new TextView(activity);v.setText(value);v.setTextColor(color);v.setTextSize(size);v.setPadding(0,dp(7),0,dp(7));return v;}
+     private Button button(String text,Runnable action){Button b=new Button(activity);b.setText(text);b.setAllCaps(false);b.setTextSize(14);b.setTextColor(TEXT);b.setBackground(shape(CARD));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setMinHeight(dp(48));b.setOnClickListener(v->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(7);b.setLayoutParams(lp);return b;}
+@@ -108,16 +109,16 @@
+     }
+     private LinearLayout listColumn(LinearLayout target,boolean saved){
+         LinearLayout column=new LinearLayout(activity);column.setOrientation(LinearLayout.VERTICAL);column.setBackground(shape(CARD));column.setPadding(dp(8),dp(4),dp(8),dp(8));LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(0,-1,1);if(!saved)cp.leftMargin=dp(8);target.addView(column,cp);
+-        LinearLayout heading=new LinearLayout(activity);heading.setGravity(Gravity.CENTER_VERTICAL);column.addView(heading,new LinearLayout.LayoutParams(-1,dp(48)));
+-        TextView caption=label(saved?"Ранее подключённые (0)":"Найдены рядом",14,accent);caption.setPadding(dp(2),0,0,0);heading.addView(caption,new LinearLayout.LayoutParams(0,-1,1));if(saved)savedHeading=caption;
+-        if(saved){savedButton=button("↻",()->loadSaved(true));savedButton.setTextSize(18);savedButton.setPadding(0,0,0,0);savedButton.setMinHeight(0);savedButton.setMinimumHeight(0);savedButton.setContentDescription("Обновить сохранённые пары Android");savedButton.setTag(R.id.navigation_key,"bt:saved");heading.addView(savedButton,new LinearLayout.LayoutParams(dp(32),dp(32)));}
++        LinearLayout heading=new LinearLayout(activity);heading.setGravity(Gravity.CENTER_VERTICAL);heading.setMinimumHeight(dp(40));column.addView(heading,new LinearLayout.LayoutParams(-1,-2));
++        TextView caption=label(saved?"Ранее подключённые (0)":"Найдены рядом",14,accent);caption.setPadding(dp(2),dp(2),dp(4),dp(2));caption.setGravity(Gravity.CENTER_VERTICAL);heading.addView(caption,new LinearLayout.LayoutParams(0,-2,1));if(saved)savedHeading=caption;
++        if(saved){savedButton=button("↻",()->loadSaved(true));savedButton.setTextSize(18);savedButton.setPadding(0,0,0,0);savedButton.setMinHeight(0);savedButton.setMinimumHeight(0);savedButton.setContentDescription("Обновить сохранённые пары Android");savedButton.setTag(R.id.navigation_key,"bt:saved");heading.addView(savedButton,new LinearLayout.LayoutParams(dp(40),dp(40)));}
+         if(saved){TextView hint=label("Одинаковые джойстики советуем переименовать в настройках Bluetooth.",12,MUTED);hint.setPadding(dp(2),0,dp(2),dp(5));hint.setTag(R.id.navigation_key,"bt:rename-hint");column.addView(hint,new LinearLayout.LayoutParams(-1,-2));}
+         ScrollView scroll=new ScrollView(activity);scroll.setFocusable(false);
+         if(saved){scroll.setTag(R.id.navigation_key,"bt:saved-scroll");scroll.setVerticalScrollBarEnabled(true);scroll.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);scroll.setScrollbarFadingEnabled(false);scroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);scroll.setScrollBarSize(dp(4));
+             if(Build.VERSION.SDK_INT>=29){GradientDrawable thumb=shape(MUTED);scroll.setVerticalScrollbarThumbDrawable(thumb);scroll.setVerticalScrollbarTrackDrawable(shape(0xff333333));}
+         }
+         column.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));LinearLayout inside=new LinearLayout(activity);inside.setOrientation(LinearLayout.VERTICAL);scroll.addView(inside);
+-        TextView empty=label(saved?(canReadSaved()?"Сохранённых геймпадов нет.":"Нажмите ↻, чтобы загрузить пары Android."):"Нажмите «Старт поиска».",13,MUTED);inside.addView(empty);if(saved)savedEmpty=empty;else foundEmpty=empty;
++        TextView empty=label(saved?(canReadSaved()?"Сохранённых геймпадов нет.":"Нажмите ↻, чтобы загрузить пары Android."):"Нажмите «Старт поиска».",13,MUTED);empty.setPadding(0,dp(3),0,dp(3));inside.addView(empty);if(saved)savedEmpty=empty;else foundEmpty=empty;
+         LinearLayout group=new LinearLayout(activity);group.setOrientation(LinearLayout.VERTICAL);inside.addView(group);return group;
+     }
+     private void buildLists(LinearLayout target,int height){
+@@ -205,7 +206,9 @@
+         }catch(SecurityException error){accessLost();}
+     }
+     private CharSequence deviceRowText(String name,String detail,String suffix){
+-        android.text.SpannableString text=new android.text.SpannableString(name+"\n"+detail+"\n"+suffix);
++        boolean horizontal=landscape();String separator=horizontal?" · ":"\n";
++        android.text.SpannableString text=new android.text.SpannableString(name+separator+detail+"\n"+suffix);
++        if(horizontal){int start=name.length()+separator.length();text.setSpan(new android.text.style.RelativeSizeSpan(12f/14f),start,text.length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);}
+         java.util.regex.Matcher modes=java.util.regex.Pattern.compile("(?iu)(?<![\\p{L}\\p{N}])(?:android|windows(?:[ -]*xbox)?|xbox|macos|switch|[xd][ -]?input)(?![\\p{L}\\p{N}])").matcher(name);
+         while(modes.find())text.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),modes.start(),modes.end(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+         return text;
+@@ -219,7 +222,7 @@
+             LinearLayout group=saved?savedResults:foundResults;List<BluetoothDeviceList.Entry> entries=devices.section(saved);
+             for(int n=0;n<entries.size();n++){
+                 BluetoothDeviceList.Entry e=entries.get(n);String key=(saved?"saved|":"found|")+e.address;Button row=rows.get(key);
+-                if(row==null){row=button("",()->select(candidates.get(e.address)));row.setOnLongClickListener(v->{select(candidates.get(e.address));return true;});row.setTag(R.id.navigation_key,"bt:"+key);row.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);rows.put(key,row);row.setTextSize(14);row.setPadding(dp(7),dp(7),dp(7),dp(7));FocusNavigation.prepare(row);}
++                if(row==null){row=button("",()->select(candidates.get(e.address)));row.setOnLongClickListener(v->{select(candidates.get(e.address));return true;});row.setTag(R.id.navigation_key,"bt:"+key);row.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);rows.put(key,row);row.setTextSize(14);row.setPadding(dp(7),dp(4),dp(7),dp(4));LinearLayout.LayoutParams rp=(LinearLayout.LayoutParams)row.getLayoutParams();rp.topMargin=dp(4);FocusNavigation.prepare(row);}
+                 if(row.getParent()!=group||group.indexOfChild(row)!=n){boolean focused=row.hasFocus();if(row.getParent() instanceof ViewGroup)((ViewGroup)row.getParent()).removeView(row);group.addView(row,Math.min(n,group.getChildCount()));if(focused)row.requestFocus();}
+                 boolean match=e.saved()&&e.found;GradientDrawable bg=shape(match?0xff203125:0xff242424);if(match)bg.setStroke(dp(1),0xff73d39b);row.setBackground(bg);
+                 String detail=e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.45 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.46 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.45 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.46 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }

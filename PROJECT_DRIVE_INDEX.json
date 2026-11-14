@@ -1,0 +1,1898 @@
+{
+  "schema": 1,
+  "project": "20 / M30 Companion",
+  "updated": "2026-11-14",
+  "root": {
+    "id": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "url": "https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "name": "20 GAMEPAD 8BitDo M30 Bluetooth"
+  },
+  "folders": {
+    "current": {
+      "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
+      "name": "1.59 — Компактный экран и видимое подключение",
+      "url": "https://drive.google.com/drive/folders/1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
+    },
+    "previous": {
+      "id": "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr",
+      "name": "1.58 — Пульт, кнопки и поиск на TV",
+      "url": "https://drive.google.com/drive/folders/1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr"
+    },
+    "resources": {
+      "id": "1GRRJgf9OZSetefKJQuUTZCrHMc_jebvO",
+      "name": "Ресурсы",
+      "url": "https://drive.google.com/drive/folders/1GRRJgf9OZSetefKJQuUTZCrHMc_jebvO"
+    },
+    "checkpoints": {
+      "id": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+      "name": "Ключевые версии",
+      "url": "https://drive.google.com/drive/folders/1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+    },
+    "sources": {
+      "id": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+      "name": "Исходники",
+      "url": "https://drive.google.com/drive/folders/11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+    },
+    "design": {
+      "id": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+      "name": "Макеты и оформление",
+      "url": "https://drive.google.com/drive/folders/1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK"
+    },
+    "manuals": {
+      "id": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+      "name": "Документация",
+      "url": "https://drive.google.com/drive/folders/1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+    },
+    "checkpoint127": {
+      "id": "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA",
+      "name": "1.27 — До записи прошивки",
+      "url": "https://drive.google.com/drive/folders/1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA"
+    },
+    "checkpoint129": {
+      "id": "14fEYUU_xlu52E9276hOdtDvTy4sxtguv",
+      "name": "1.29 — Первое подтверждённое обновление",
+      "url": "https://drive.google.com/drive/folders/14fEYUU_xlu52E9276hOdtDvTy4sxtguv"
+    },
+    "checkpoint132": {
+      "id": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+      "name": "1.32 — Режим и батарея",
+      "url": "https://drive.google.com/drive/folders/1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+    },
+    "checkpoint136": {
+      "id": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL",
+      "name": "1.36 — Совпадения сохранённых пар",
+      "url": "https://drive.google.com/drive/folders/1SDwO8TG01t9tezxu0UWMv6QItJP00atL",
+      "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+    },
+    "checkpoint138": {
+      "id": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ",
+      "name": "1.38 — Пульт и список Bluetooth",
+      "url": "https://drive.google.com/drive/folders/1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ",
+      "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+    },
+    "checkpoint141": {
+      "id": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+      "name": "1.41 — Раздельные блоки Bluetooth",
+      "url": "https://drive.google.com/drive/folders/1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+      "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+    },
+    "build_signing": {
+      "id": "1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P",
+      "name": "Сборка и подпись",
+      "url": "https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P"
+    }
+  },
+  "live_documents": {
+    "rules": {
+      "id": "1E-mNUOnTzln8FZ0N9MqioYlT59UbSw8C",
+      "url": "https://drive.google.com/file/d/1E-mNUOnTzln8FZ0N9MqioYlT59UbSw8C/view?usp=drivesdk",
+      "name": "20База!",
+      "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+    },
+    "userLog": {
+      "id": "1mgP15_VNkJh95RenxRY3NKa3fdGuXj5T",
+      "url": "https://drive.google.com/file/d/1mgP15_VNkJh95RenxRY3NKa3fdGuXj5T/view?usp=drivesdk",
+      "name": "Журнал улучшений M30.txt",
+      "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+    },
+    "devLog": {
+      "id": "1cH-aRi-HoBMHLTfpo1bQwL6wX4tJmIDf",
+      "url": "https://drive.google.com/file/d/1cH-aRi-HoBMHLTfpo1bQwL6wX4tJmIDf/view?usp=drivesdk",
+      "name": "20_DEVELOPMENT_LOG_RU.txt",
+      "parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+    },
+    "registry": {
+      "id": "1yJEQL-j2313RD9b1zzj94TTGtorVj9sj",
+      "url": "https://drive.google.com/file/d/1yJEQL-j2313RD9b1zzj94TTGtorVj9sj/view?usp=drivesdk",
+      "name": "Реестр ключевых версий.txt",
+      "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+    },
+    "agents": {
+      "id": "1kdqYHf9v2VKvBuIkKH2AgxmhQVinT3GP",
+      "url": "https://drive.google.com/file/d/1kdqYHf9v2VKvBuIkKH2AgxmhQVinT3GP/view?usp=drivesdk",
+      "name": "AGENTS.md",
+      "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+    },
+    "driveIndex": {
+      "id": "1K5mijWZWzgoYTDug4vdNNK14rHHy0pYZ",
+      "url": "https://drive.google.com/file/d/1K5mijWZWzgoYTDug4vdNNK14rHHy0pYZ/view?usp=drivesdk",
+      "name": "PROJECT_DRIVE_INDEX.json",
+      "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+    }
+  },
+  "releases": {
+    "1.33": {
+      "role": "active_revision_container",
+      "versionCode": 34,
+      "source": {
+        "id": "1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4",
+        "url": "https://drive.google.com/file/d/1NSl3acDtgAsWRfrWZxNdiuEM80LsL6v4/view?usp=drivesdk",
+        "name": "M30-Companion-1.33-SOURCE.zip",
+        "size": 939814,
+        "sha256": "0a0266b154ac0b9f82e250456cf8a91566d5e6d28fc6e279c30d52f7eac1f9a2",
+        "recovered": false
+      },
+      "protected": false,
+      "retirement": "1.33 APK/doc folder deleted after full 1.35/1.34 verification. SOURCE preserved solely as active revision container for original selected 1.27/1.29 sources, not a complete 1.33 backup."
+    },
+    "1.32": {
+      "role": "checkpoint",
+      "versionCode": 33,
+      "folder": {
+        "id": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+        "name": "1.32 — Режим и батарея",
+        "url": "https://drive.google.com/drive/folders/1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+      },
+      "apk": {
+        "id": "1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS",
+        "url": "https://drive.google.com/file/d/1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS/view?usp=drivesdk",
+        "name": "M30-Companion-1.32.apk",
+        "size": 1031818,
+        "sha256": "05dda3245ba1e9980ae7e47f588de71443d23263d4b87420b4f326921ae089a7"
+      },
+      "source": {
+        "id": "1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh",
+        "url": "https://drive.google.com/file/d/1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh/view?usp=drivesdk",
+        "name": "M30-Companion-1.32-SOURCE.zip",
+        "size": 931514,
+        "sha256": "4719fb67b06c805397adee706d89e5095011d9fa720c867f77511e039f6f89ec",
+        "recovered": true
+      },
+      "passport": {
+        "id": "1wtubV_r9OKc97hRYATr-X4v17HrbcGF7",
+        "url": "https://drive.google.com/file/d/1wtubV_r9OKc97hRYATr-X4v17HrbcGF7/view?usp=drivesdk",
+        "name": "Паспорт 1.32.txt",
+        "parent": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+      },
+      "protected": true
+    },
+    "1.36": {
+      "role": "checkpoint",
+      "versionCode": 37,
+      "folder": {
+        "id": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL",
+        "name": "1.36 — Совпадения сохранённых пар",
+        "url": "https://drive.google.com/drive/folders/1SDwO8TG01t9tezxu0UWMv6QItJP00atL"
+      },
+      "apk": {
+        "id": "1PIubbJED-HClSgVYI01b0yisI5imWdGZ",
+        "name": "M30-Companion-1.36.apk",
+        "url": "https://drive.google.com/file/d/1PIubbJED-HClSgVYI01b0yisI5imWdGZ/view?usp=drivesdk",
+        "size": 1073476,
+        "sha256": "986cc6b7a189ca336305f4d9a4272f965ab89b73d995f9a5f2cb7df359f4791e"
+      },
+      "source": {
+        "id": "1Ih6XldSaXuuiXiptIE6Z3efNWAo5oyK4",
+        "name": "M30-Companion-1.36-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1Ih6XldSaXuuiXiptIE6Z3efNWAo5oyK4/view?usp=drivesdk",
+        "size": 1088328,
+        "sha256": "f9af146cc05d82ba5acf2c89def3c8d2c0d1489a5dc0efd537e880e1a9ba60cf",
+        "recovered": false
+      },
+      "protected": true,
+      "passport": {
+        "id": "1kq27UPZfVZth4HQHMkEgnfptSLgGbsK-",
+        "name": "Паспорт 1.36.txt",
+        "url": "https://drive.google.com/file/d/1kq27UPZfVZth4HQHMkEgnfptSLgGbsK-/view?usp=drivesdk",
+        "parent": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL"
+      },
+      "install": {
+        "id": "18Y4DxTPLOgbHQDxVIZqYqW7_MQBxCuO1",
+        "name": "Как установить M30 Companion 1.36.txt",
+        "url": "https://drive.google.com/file/d/18Y4DxTPLOgbHQDxVIZqYqW7_MQBxCuO1/view?usp=drivesdk",
+        "parent": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL"
+      }
+    },
+    "1.37": {
+      "role": "retired",
+      "versionCode": 38,
+      "folder": {
+        "id": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI",
+        "name": "1.37 — Bluetooth в шапке и Keyboard",
+        "url": "https://drive.google.com/drive/folders/1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI"
+      },
+      "apk": {
+        "id": "1WJY7z-ckb74M7jpp_v5tM7hbY5WJ7Fzv",
+        "name": "M30-Companion-1.37.apk",
+        "url": "https://drive.google.com/file/d/1WJY7z-ckb74M7jpp_v5tM7hbY5WJ7Fzv/view?usp=drivesdk",
+        "size": 1081869,
+        "sha256": "9acd3a5830bda9688a7376a22d9d740d1e10a219a2503ed0d4505e241e517e5e"
+      },
+      "source": {
+        "id": "1wyOxCY4lnroOSoS9jG6nxqKv7KPQe95r",
+        "name": "M30-Companion-1.37-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1wyOxCY4lnroOSoS9jG6nxqKv7KPQe95r/view?usp=drivesdk",
+        "size": 1126296,
+        "sha256": "1bd75626ba024e1c9a12604cc4598b35dc20dc9eea351a0d8fcf3790b545a3da",
+        "recovered": false
+      },
+      "protected": false,
+      "passport": {
+        "id": "1OWoaFi-7QCFb5W81oshcZy1izY_SHio6",
+        "name": "Паспорт 1.37.txt",
+        "url": "https://drive.google.com/file/d/1OWoaFi-7QCFb5W81oshcZy1izY_SHio6/view?usp=drivesdk",
+        "parent": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI"
+      },
+      "install": {
+        "id": "1K6G1p8xl6PZogrljlJOh3KVFzcQpp4xH",
+        "name": "Как установить M30 Companion 1.37.txt",
+        "url": "https://drive.google.com/file/d/1K6G1p8xl6PZogrljlJOh3KVFzcQpp4xH/view?usp=drivesdk",
+        "parent": "1dt9h9s9E6tovayhJmYcw9fmZ2iQoDCrI"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after1.39/1.38 SHA/size/CRC verification. Text history preserved in docs/releases/1.37-history.txt and published SOURCE1.39."
+    },
+    "1.38": {
+      "role": "checkpoint",
+      "versionCode": 39,
+      "folder": {
+        "id": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ",
+        "name": "1.38 — Пульт и список Bluetooth",
+        "url": "https://drive.google.com/drive/folders/1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ"
+      },
+      "apk": {
+        "id": "14xjVwDDc6OdXy7BK1ZufPhdOaKunySzt",
+        "name": "M30-Companion-1.38.apk",
+        "url": "https://drive.google.com/file/d/14xjVwDDc6OdXy7BK1ZufPhdOaKunySzt/view?usp=drivesdk",
+        "size": 965733,
+        "sha256": "54a90e6a6a2337d1ee5a98f8daf436fe83e75683e18c4079397048ba345c5b4d"
+      },
+      "source": {
+        "id": "1CDC2ZRGkolrPFGQtqCzsRNqehtkhzgh1",
+        "name": "M30-Companion-1.38-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1CDC2ZRGkolrPFGQtqCzsRNqehtkhzgh1/view?usp=drivesdk",
+        "size": 1159308,
+        "sha256": "24b6c41ca3defc2872e5c88bca4e3be4d6c6d2d8a5c1b4e4dd5a9d68f1a17f8e",
+        "recovered": false
+      },
+      "protected": true,
+      "install": {
+        "id": "1xjt7DUh8KYu_AungmakVs23UgJHsMpwQ",
+        "name": "Как установить M30 Companion 1.38.txt",
+        "url": "https://drive.google.com/file/d/1xjt7DUh8KYu_AungmakVs23UgJHsMpwQ/view?usp=drivesdk",
+        "parent": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ"
+      },
+      "passport": {
+        "id": "1Tsv30CxWnWGEwVOioBO8DvfdmaXtQDrA",
+        "name": "Паспорт 1.38.txt",
+        "url": "https://drive.google.com/file/d/1Tsv30CxWnWGEwVOioBO8DvfdmaXtQDrA/view?usp=drivesdk",
+        "parent": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ"
+      }
+    },
+    "1.39": {
+      "role": "retired",
+      "versionCode": 40,
+      "folder": {
+        "id": "1BlfAj31sbo36N_Uodw66jhlXZkflfu5m",
+        "name": "1.39 — Bluetooth поверх шапки",
+        "url": "https://drive.google.com/drive/folders/1BlfAj31sbo36N_Uodw66jhlXZkflfu5m"
+      },
+      "apk": {
+        "id": "159cFX2IE5s6GNpzOnaG0jj3bwopxmH3Y",
+        "name": "M30-Companion-1.39.apk",
+        "url": "https://drive.google.com/file/d/159cFX2IE5s6GNpzOnaG0jj3bwopxmH3Y/view?usp=drivesdk",
+        "size": 1093529,
+        "sha256": "1969b6329b6e54c4774e09f3af984725a857f8617f9539aac47b4c7fda3899b2"
+      },
+      "source": {
+        "id": "1RbMYNjO7eagXkA5zA2HXeP67yi4rC9-I",
+        "name": "M30-Companion-1.39-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1RbMYNjO7eagXkA5zA2HXeP67yi4rC9-I/view?usp=drivesdk",
+        "size": 1196206,
+        "sha256": "dd91c56637005b11efa398d416ba51ca0f709029e56e87738832d96e661ef7cb",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "1C6sR9lUs4iSHgxDDy4mNY5bfhtgqE2NK",
+        "name": "Как установить M30 Companion 1.39.txt",
+        "url": "https://drive.google.com/file/d/1C6sR9lUs4iSHgxDDy4mNY5bfhtgqE2NK/view?usp=drivesdk",
+        "parent": "1BlfAj31sbo36N_Uodw66jhlXZkflfu5m"
+      },
+      "passport": {
+        "id": "11sDFPcrSCNimTbHUPuBNBRAAvtvZ8ZKI",
+        "name": "Паспорт 1.39.txt",
+        "url": "https://drive.google.com/file/d/11sDFPcrSCNimTbHUPuBNBRAAvtvZ8ZKI/view?usp=drivesdk",
+        "parent": "1BlfAj31sbo36N_Uodw66jhlXZkflfu5m"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after1.41/1.40 verification. Texts preserved in docs/releases/1.39-history.txt and immutable SOURCE1.41."
+    },
+    "1.40": {
+      "role": "retired",
+      "versionCode": 41,
+      "folder": {
+        "id": "1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR",
+        "name": "1.40 — Читаемые подписи",
+        "url": "https://drive.google.com/drive/folders/1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR"
+      },
+      "apk": {
+        "id": "10uExwjnoehO26ZqqFhNPeanLJv6opxmG",
+        "name": "M30-Companion-1.40.apk",
+        "url": "https://drive.google.com/file/d/10uExwjnoehO26ZqqFhNPeanLJv6opxmG/view?usp=drivesdk",
+        "size": 969773,
+        "sha256": "ab410be46295b71148898a6e9aa2b01f9abf89e41fb890be847ad75ff832d2b3"
+      },
+      "source": {
+        "id": "1Lge-GLpUTxAYUQb2X00iMgZwxZ_n7dTc",
+        "name": "M30-Companion-1.40-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1Lge-GLpUTxAYUQb2X00iMgZwxZ_n7dTc/view?usp=drivesdk",
+        "size": 1208810,
+        "sha256": "48da156d242d58a3843a59d1567d667fbc515dac279bd305b8af13eb9c43649a",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "1F73m82tsGSmCXDkKE2-8awzCf9a68vth",
+        "name": "Как установить M30 Companion 1.40.txt",
+        "url": "https://drive.google.com/file/d/1F73m82tsGSmCXDkKE2-8awzCf9a68vth/view?usp=drivesdk",
+        "parent": "1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR"
+      },
+      "passport": {
+        "id": "123djB-C8Nv_GhWdSdwIeks2bwz2x8U5g",
+        "name": "Паспорт 1.40.txt",
+        "url": "https://drive.google.com/file/d/123djB-C8Nv_GhWdSdwIeks2bwz2x8U5g/view?usp=drivesdk",
+        "parent": "1eKco0QGSGEAoHl0HZPDIM8u2aHerapDR"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after verified1.42/current and protected1.41/previous. Texts preserved in docs/releases/1.40-history.txt and immutable SOURCE1.42."
+    },
+    "1.41": {
+      "role": "checkpoint",
+      "versionCode": 42,
+      "folder": {
+        "id": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+        "name": "1.41 — Раздельные блоки Bluetooth",
+        "url": "https://drive.google.com/drive/folders/1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+        "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+      },
+      "apk": {
+        "id": "1fHuDpvSDZtbgzaxOOUU8PRu32A8K6q4V",
+        "name": "M30-Companion-1.41.apk",
+        "url": "https://drive.google.com/file/d/1fHuDpvSDZtbgzaxOOUU8PRu32A8K6q4V/view?usp=drivesdk",
+        "size": 1094762,
+        "sha256": "7a306e60c9a5f382e711834c65238c3a889ba31e442cb5f5750654a2a16fe3dd"
+      },
+      "source": {
+        "id": "18sGkxIQwdNntktERbxQDI8X-zb6fvCUx",
+        "name": "M30-Companion-1.41-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/18sGkxIQwdNntktERbxQDI8X-zb6fvCUx/view?usp=drivesdk",
+        "size": 1219631,
+        "sha256": "d0db22854aaa12896b02d88115534aef6d3b042c90e5d28eefc8058c400e7e92",
+        "recovered": false
+      },
+      "protected": true,
+      "install": {
+        "id": "101yTiu8I61P7DdaBWxotym-pSmOGr2YJ",
+        "name": "Как установить M30 Companion 1.41.txt",
+        "url": "https://drive.google.com/file/d/101yTiu8I61P7DdaBWxotym-pSmOGr2YJ/view?usp=drivesdk",
+        "parent": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu"
+      },
+      "passport": {
+        "id": "1nd2TFf9zoJ_ScGRm5TcpyFSVTPZnYC5Y",
+        "name": "Паспорт 1.41.txt",
+        "url": "https://drive.google.com/file/d/1nd2TFf9zoJ_ScGRm5TcpyFSVTPZnYC5Y/view?usp=drivesdk",
+        "parent": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu"
+      }
+    },
+    "1.42": {
+      "role": "retired",
+      "versionCode": 43,
+      "folder": {
+        "id": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA",
+        "name": "1.42 — Прокрутка и крупный текст",
+        "url": "https://drive.google.com/drive/folders/1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA"
+      },
+      "apk": {
+        "id": "1TouEq1_NsRWeBl62imrDBKZCP3KZVOzj",
+        "name": "M30-Companion-1.42.apk",
+        "url": "https://drive.google.com/file/d/1TouEq1_NsRWeBl62imrDBKZCP3KZVOzj/view?usp=drivesdk",
+        "size": 1095190,
+        "sha256": "57504b31c13ef1244ccfb75c8e8522558db22440156d1a00c83e4f16c949e7d0"
+      },
+      "source": {
+        "id": "1oEkyri6Vxow8fAfI10f0462OqPJpELqo",
+        "name": "M30-Companion-1.42-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1oEkyri6Vxow8fAfI10f0462OqPJpELqo/view?usp=drivesdk",
+        "size": 1238810,
+        "sha256": "05ddb954b9dc7aa48a87ab2a36fff700c6d60e5cd946a8b5526ac31ca0728226",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "1KU52nuVQun0P69FpZqWK4VMlI2V0KCr-",
+        "name": "Как установить M30 Companion 1.42.txt",
+        "url": "https://drive.google.com/file/d/1KU52nuVQun0P69FpZqWK4VMlI2V0KCr-/view?usp=drivesdk",
+        "parent": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA"
+      },
+      "passport": {
+        "id": "1fA2x-e5ou5qrtWziN76pdsF0UTOJw9ea",
+        "name": "Паспорт 1.42.txt",
+        "url": "https://drive.google.com/file/d/1fA2x-e5ou5qrtWziN76pdsF0UTOJw9ea/view?usp=drivesdk",
+        "parent": "1zRBookLMxV8y9ET_diGfhvJHEmsVV4yA"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after verified1.44/current and1.43/previous. Texts in docs/releases/1.42-history.txt and immutable SOURCE1.44; patches/validation/logs retained."
+    },
+    "1.43": {
+      "role": "retired",
+      "versionCode": 44,
+      "folder": {
+        "id": "1wBvMDOBgm91vd672dxdyc9azrDvCA4GC",
+        "name": "1.43 — Схема по высоте экрана",
+        "url": "https://drive.google.com/drive/folders/1wBvMDOBgm91vd672dxdyc9azrDvCA4GC"
+      },
+      "apk": {
+        "id": "1JU0jzCnaPWbsbVJK98uDuIxz2-9EDxA9",
+        "name": "M30-Companion-1.43.apk",
+        "url": "https://drive.google.com/file/d/1JU0jzCnaPWbsbVJK98uDuIxz2-9EDxA9/view?usp=drivesdk",
+        "size": 1097269,
+        "sha256": "75d79d921bf6742ed0e0f01947780a1b78d4374ace949a5809612dea5e3a92e0"
+      },
+      "source": {
+        "id": "1JG4f2tbORRSnNqnWEw_z0ojQ885ynz-A",
+        "name": "M30-Companion-1.43-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1JG4f2tbORRSnNqnWEw_z0ojQ885ynz-A/view?usp=drivesdk",
+        "size": 1252738,
+        "sha256": "0a55f613774fd9569bbd60f6b09c71946a0f9177b3e43ea954f1e3eda9a54bee",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "1Nz1IuLODVz4OIILJQYfD9u8AvVkl2sx2",
+        "name": "Как установить M30 Companion 1.43.txt",
+        "url": "https://drive.google.com/file/d/1Nz1IuLODVz4OIILJQYfD9u8AvVkl2sx2/view?usp=drivesdk",
+        "parent": "1wBvMDOBgm91vd672dxdyc9azrDvCA4GC"
+      },
+      "passport": {
+        "id": "1RS8CCTdjUhl140m8KkBIy7_YMpvXJV-l",
+        "name": "Паспорт 1.43.txt",
+        "url": "https://drive.google.com/file/d/1RS8CCTdjUhl140m8KkBIy7_YMpvXJV-l/view?usp=drivesdk",
+        "parent": "1wBvMDOBgm91vd672dxdyc9azrDvCA4GC"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after verified1.45/current and1.44/previous. History in docs/releases/1.43-history.txt and immutable SOURCE1.45; patch/validation/logs retained."
+    },
+    "1.44": {
+      "role": "retired",
+      "versionCode": 45,
+      "folder": {
+        "id": "1B7YrZMWRicwxS_qxezWddEyfXlI6AKfw",
+        "name": "1.44 — Меню устройств и навигация TV",
+        "url": "https://drive.google.com/drive/folders/1B7YrZMWRicwxS_qxezWddEyfXlI6AKfw"
+      },
+      "apk": {
+        "id": "1oo44nte4FaSOIKHxdd7gH1dnF4I3y2ep",
+        "name": "M30-Companion-1.44.apk",
+        "url": "https://drive.google.com/file/d/1oo44nte4FaSOIKHxdd7gH1dnF4I3y2ep/view?usp=drivesdk",
+        "size": 1098967,
+        "sha256": "2e915c77fef5850c745f36409eb8695e0477aa3df3b616047a693f658dc293ab"
+      },
+      "source": {
+        "id": "14SSiVM9kqMOwLJ_-qxnZfA3PvBT_mAmc",
+        "name": "M30-Companion-1.44-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/14SSiVM9kqMOwLJ_-qxnZfA3PvBT_mAmc/view?usp=drivesdk",
+        "size": 1277574,
+        "sha256": "ba0badaa46a3b4c76ef56693c8c8925a151e4f03331ee1ecddeca8fd8ee3b1cc",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "1-JYv_woKp3-YRgUWO6z6iOaiR3unndU0",
+        "name": "Как установить M30 Companion 1.44.txt",
+        "url": "https://drive.google.com/file/d/1-JYv_woKp3-YRgUWO6z6iOaiR3unndU0/view?usp=drivesdk",
+        "parent": "1B7YrZMWRicwxS_qxezWddEyfXlI6AKfw"
+      },
+      "passport": {
+        "id": "1hBl-BnklOWG2he7Yi0VNuCaCdD2co09o",
+        "name": "Паспорт 1.44.txt",
+        "url": "https://drive.google.com/file/d/1hBl-BnklOWG2he7Yi0VNuCaCdD2co09o/view?usp=drivesdk",
+        "parent": "1B7YrZMWRicwxS_qxezWddEyfXlI6AKfw"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and empty folder deleted after verified1.46/current and1.45/previous. History docs/releases/1.44-history.txt included in immutable SOURCE1.46; patch/validation/logs retained."
+    },
+    "1.45": {
+      "role": "retired",
+      "versionCode": 46,
+      "folder": {
+        "id": "1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ",
+        "name": "1.45 — Ровная шапка и поиск одной кнопкой",
+        "url": "https://drive.google.com/drive/folders/1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ"
+      },
+      "apk": {
+        "id": "1fwj5S5qy0C_f-DS2sZkuv_yzLHTHyyYH",
+        "name": "M30-Companion-1.45.apk",
+        "url": "https://drive.google.com/file/d/1fwj5S5qy0C_f-DS2sZkuv_yzLHTHyyYH/view?usp=drivesdk",
+        "size": 972425,
+        "sha256": "42659be53a93048a5568b2a941966e2e64075a5469225588b2e78231e99136ad"
+      },
+      "source": {
+        "id": "1ZyhxW4PXfhQmX8YkAocxyQTUb8gXxDpb",
+        "name": "M30-Companion-1.45-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1ZyhxW4PXfhQmX8YkAocxyQTUb8gXxDpb/view?usp=drivesdk",
+        "size": 1298572,
+        "sha256": "8b31910bf02a594f42de328f8569e3d8eac4f80b7d2228b446a8643f71334976",
+        "recovered": false
+      },
+      "protected": false,
+      "install": {
+        "id": "14E8d63A31UQYHaKLmpzAYLEgPrKgRaXg",
+        "name": "Как установить M30 Companion 1.45.txt",
+        "url": "https://drive.google.com/file/d/14E8d63A31UQYHaKLmpzAYLEgPrKgRaXg/view?usp=drivesdk",
+        "parent": "1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ"
+      },
+      "passport": {
+        "id": "1Qw3n55Zkw1XPrc9ByR_gZ7d1wcBCD9RE",
+        "name": "Паспорт 1.45.txt",
+        "url": "https://drive.google.com/file/d/1Qw3n55Zkw1XPrc9ByR_gZ7d1wcBCD9RE/view?usp=drivesdk",
+        "parent": "1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ"
+      },
+      "retirement": "Non-key APK/SOURCE/passport/guide and checked empty folder deleted after verified1.47/current and1.46/previous. History docs/releases/1.45-history.txt in immutable SOURCE1.47, patches/validation/logs retained."
+    },
+    "1.46": {
+      "role": "removed_after_verified1.54_and1.47",
+      "versionCode": 47,
+      "folder": {
+        "id": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+        "name": "1.46 — Компактные списки Bluetooth",
+        "url": "https://drive.google.com/drive/folders/15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+        "removed": true
+      },
+      "apk": {
+        "id": "1ZDywq4jzs0mKF8BtKFXe05rG8wTZ1nCJ",
+        "name": "1.46-M30-Companion.apk",
+        "url": "https://drive.google.com/file/d/1ZDywq4jzs0mKF8BtKFXe05rG8wTZ1nCJ/view?usp=drivesdk",
+        "size": 972689,
+        "sha256": "b7e7dcfd9ab354e0d271501353751d8a409f63a3679ea8e48791d79bdf1a24ba",
+        "removed": true
+      },
+      "source": {
+        "id": "1enT8WPFuDQWrhLd1wSTWgIuppdBn5OHM",
+        "name": "1.46-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1enT8WPFuDQWrhLd1wSTWgIuppdBn5OHM/view?usp=drivesdk",
+        "size": 1314155,
+        "sha256": "d1833c3ca2a3a9ad06077ab21b561fa59f4ed8e1200c5bc8ac736582aba3c5a0",
+        "recovered": false,
+        "removed": true
+      },
+      "protected": false,
+      "install": {
+        "status": "Merged into passport on29.10.2026 after verified readback; duplicate guide removed",
+        "url": "https://drive.google.com/file/d/1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c/view?usp=drivesdk",
+        "id": "1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c"
+      },
+      "passport": {
+        "id": "1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c",
+        "name": "1.46-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c/view?usp=drivesdk",
+        "parent": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+        "removed": true
+      }
+    },
+    "1.47": {
+      "role": "protected_checkpoint",
+      "versionCode": 48,
+      "folder": {
+        "id": "1t_89vgsMnT0RIcrq9-J3xoY2NBS1l10s",
+        "name": "1.47 — Имена геймпадов и статус подключения",
+        "url": "https://drive.google.com/drive/folders/1t_89vgsMnT0RIcrq9-J3xoY2NBS1l10s",
+        "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+      },
+      "apk": {
+        "id": "1ybXauGpAurf5mK6dUUmYhxsQx668gqhS",
+        "name": "1.47-M30-Companion.apk",
+        "url": "https://drive.google.com/file/d/1ybXauGpAurf5mK6dUUmYhxsQx668gqhS/view?usp=drivesdk",
+        "size": 1110869,
+        "sha256": "4742352d347f187a039c048a79d0d9a1a8c9e9150575730029f6c4b1daf87c3b"
+      },
+      "source": {
+        "id": "1Ifz8Cczxe70KwEF_E5-XCrvcPKlt78Ad",
+        "name": "1.47-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1Ifz8Cczxe70KwEF_E5-XCrvcPKlt78Ad/view?usp=drivesdk",
+        "size": 1342195,
+        "sha256": "da1aa07c6d96fbb64b7a9b5ece0287f20c4d45edae5edc6d2c5e127930ee2a06",
+        "recovered": false
+      },
+      "protected": true,
+      "passport": {
+        "id": "15ohvkk0hFyBPl78WpMhE-6_3yY7LhrbA",
+        "name": "1.47-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/15ohvkk0hFyBPl78WpMhE-6_3yY7LhrbA/view?usp=drivesdk",
+        "parent": "1t_89vgsMnT0RIcrq9-J3xoY2NBS1l10s"
+      },
+      "install": {
+        "status": "Included in single passport, no duplicate guide file",
+        "id": "15ohvkk0hFyBPl78WpMhE-6_3yY7LhrbA",
+        "url": "https://drive.google.com/file/d/15ohvkk0hFyBPl78WpMhE-6_3yY7LhrbA/view?usp=drivesdk"
+      },
+      "protection_reason": "Existing signed installer and exact source before automatic controller view following; same IDs. Original rebuild signing key unavailable; owner evidence verifies input only partially.",
+      "certificate_sha256": "e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272"
+    },
+    "1.54": {
+      "role": "protected_checkpoint",
+      "versionCode": 55,
+      "folder": {
+        "id": "1cPKPAZtF3essKutDReW5BixCdMZUfAT_",
+        "name": "1.54 — Новый интерфейс и два джойстика",
+        "url": "https://drive.google.com/drive/folders/1cPKPAZtF3essKutDReW5BixCdMZUfAT_",
+        "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+      },
+      "apk": {
+        "id": "1e3aC8SOoyihidzzdYbTHJmdWVnEkofQ5",
+        "name": "1.54-M30 Companion.apk",
+        "url": "https://drive.google.com/file/d/1e3aC8SOoyihidzzdYbTHJmdWVnEkofQ5/view",
+        "size": 993496,
+        "sha256": "d2ff6ea1562aa4606db82d3416892876c8dae222b37c6879eb28165518b5a44d",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC matches; apksigner newcert/package/versionCode verified locally."
+      },
+      "source": {
+        "id": "1geoEGzCsVdvdfqCf2QY9WTrz6qjWAf8y",
+        "name": "1.54-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1geoEGzCsVdvdfqCf2QY9WTrz6qjWAf8y/view",
+        "size": 1537409,
+        "sha256": "3965d1cdf9188e8de50180cebf8fcf04820355b6a139c21a7e361cc101e2bfb3",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC PASS; full exact code/source without signing secrets."
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Reinstall1.47, local data loss; subsequent newcert updates supported. Rollback to1.47 also reinstall.",
+      "github": "deferred_by_owner_repository_later",
+      "protected": true,
+      "passport": {
+        "id": "1f3knk-ZWatR19skSJk2kks_KvftWJ9V8",
+        "name": "1.54-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1f3knk-ZWatR19skSJk2kks_KvftWJ9V8/view",
+        "parent": "1cPKPAZtF3essKutDReW5BixCdMZUfAT_",
+        "verification": "Exact Drive text readback matched external passport."
+      },
+      "protection_reason": "First full new-signature and joined-native-UI baseline before1.55 companion alias/slot movement; exact full set, selected rollback boundary."
+    },
+    "1.55": {
+      "role": "deleted_non_key_after157_verified",
+      "versionCode": 56,
+      "folder": {
+        "name": "1.55 — Имена Bluetooth и выбранный джойстик",
+        "status": "deleted",
+        "former_id": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+      },
+      "apk": {
+        "name": "1.55-M30 Companion.apk",
+        "size": 1153056,
+        "sha256": "9bffdc827f686923966a34f074f88a5fd85846d8572d3a47467dac2e2aa5c1a4",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC/certificate PASS",
+        "status": "deleted",
+        "former_id": "1Qa5flNFkiD0yOmlsDYtJyDhydqx5Venx"
+      },
+      "source": {
+        "name": "1.55-M30 Companion-SOURCE.zip",
+        "size": 1579339,
+        "sha256": "aee68a0ea627e46bde9205ec813af1e63fd3a82ff6a2f517d47f3b625d1afe80",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC PASS, exact native source checked.",
+        "status": "deleted",
+        "former_id": "1LA4rIzaAaVJXNJV6zDufhMJoOSGie3JO"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.54, no uninstall/data reset",
+      "github": "deferred_by_owner_repository_later",
+      "protected": false,
+      "passport": {
+        "name": "1.55-M30 Companion-Паспорт.txt",
+        "parent": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm",
+        "status": "deleted",
+        "former_id": "1zeg-zMWU6SVCrhMcBXdRi3P_nLSmh1lS"
+      },
+      "deleted": "2026-11-13",
+      "retirement_reason": "Current1.57 and previous1.56 verified;1.56 covers former1.55 behaviour. History/patches retained."
+    },
+    "1.56": {
+      "role": "deleted_non_key_after158_verified",
+      "versionCode": 57,
+      "folder": {
+        "name": "1.56 — Опции и понятные сочетания M30",
+        "status": "deleted",
+        "former_id": "1LqNQn8sI1zV3m04898WOWZJ7h1QuYk59"
+      },
+      "apk": {
+        "name": "1.56-M30 Companion.apk",
+        "size": 999992,
+        "sha256": "c118d2c44de4785ed7f3a41ef0fa530dd8d8336c769f7fc08765ff7c9fab256a",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC and certificate PASS",
+        "status": "deleted",
+        "former_id": "1Rrpk410BZR5MQDH0ZNxYBsr-8s_0tmvk"
+      },
+      "source": {
+        "name": "1.56-M30 Companion-SOURCE.zip",
+        "size": 1601144,
+        "sha256": "0d89ea708cb519890d3ebdc0202261b1585f6bb46f2a5298fe9e17bccc186370",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC and exact changed source PASS",
+        "status": "deleted",
+        "former_id": "1thSEcFH8O5onQeHb2mMOei9nncc6MN-L"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.55/1.54 without uninstalling",
+      "github": "deferred_by_owner_repository_later",
+      "protected": false,
+      "passport": {
+        "name": "1.56-M30 Companion-Паспорт.txt",
+        "parent": "1LqNQn8sI1zV3m04898WOWZJ7h1QuYk59",
+        "status": "deleted",
+        "former_id": "1LUefVUaw2LQQMM0PMethmD2OmwUXlyt5"
+      },
+      "deleted": "2026-11-13",
+      "retirement_reason": "Current1.58 and previous1.57 fully verified;1.57 covers previous1.56, logs/patches retained."
+    },
+    "1.57": {
+      "role": "previous_full_verified",
+      "versionCode": 58,
+      "folder": {
+        "id": "18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg",
+        "name": "1.57 — Переименование и совместимость Bluetooth",
+        "url": "https://drive.google.com/drive/folders/18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg"
+      },
+      "apk": {
+        "id": "1ALJZDuO8suBBYE1LeaBjv57sYAKMGlb9",
+        "name": "1.57-M30 Companion.apk",
+        "url": "https://drive.google.com/file/d/1ALJZDuO8suBBYE1LeaBjv57sYAKMGlb9/view",
+        "size": 1167990,
+        "sha256": "b9a3d3663733ad4b062b56d08ddac54c4ea07920199291cb7a939c76eb3b63cb",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC and same stable certificate PASS"
+      },
+      "source": {
+        "id": "1ITMAjBWZ13kanjUyCtCxhBkSYdje38zk",
+        "name": "1.57-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1ITMAjBWZ13kanjUyCtCxhBkSYdje38zk/view",
+        "size": 1642391,
+        "sha256": "5006de931793f086c945e95447051d1462bb19693e0066451ab5f3ae76b68b80",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC and exact native/API37 source PASS"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.56 without uninstalling",
+      "github": "deferred_by_owner_repository_later",
+      "protected": false,
+      "passport": {
+        "id": "1ZLnWCg-mymK-qdEZmKX9y-CPcBrSNJ5c",
+        "name": "1.57-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1ZLnWCg-mymK-qdEZmKX9y-CPcBrSNJ5c/view",
+        "parent": "18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg",
+        "verification": "Exact Drive text readback matched"
+      }
+    },
+    "1.58": {
+      "role": "previous_full_verified",
+      "versionCode": 59,
+      "folder": {
+        "id": "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr",
+        "name": "1.58 — Пульт, кнопки и поиск на TV",
+        "url": "https://drive.google.com/drive/folders/1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr"
+      },
+      "apk": {
+        "id": "1nxnjW0FBX69DFtkJV88RfTLZYLvHo0lq",
+        "name": "1.58-M30 Companion.apk",
+        "size": 1013401,
+        "sha256": "2cfe3c758ed42b865a7d0c2703ef0a668b406e67fe269dad010e44672fee9105",
+        "url": "https://drive.google.com/file/d/1nxnjW0FBX69DFtkJV88RfTLZYLvHo0lq/view",
+        "verification": "Fresh Drive size/SHA256/ZIPCRC/stable certificate PASS"
+      },
+      "source": {
+        "id": "1DbUTbaEvEsN4jipWyagJVpEJ9DrwpcJz",
+        "name": "1.58-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1DbUTbaEvEsN4jipWyagJVpEJ9DrwpcJz/view",
+        "size": 2084182,
+        "sha256": "e904d0b6e7dccb05312a89574b0b5e2f0e442a3882e3e4108f950945bdbbb2e2",
+        "verification": "Fresh Drive size/SHA256/ZIPCRC/exact native source PASS"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.57 without uninstalling",
+      "github": "deferred_by_owner_repository_later",
+      "protected": false,
+      "passport": {
+        "id": "1yysB2HW-K0AaY8DGpJG7thw96sBm5sVE",
+        "name": "1.58-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1yysB2HW-K0AaY8DGpJG7thw96sBm5sVE/view",
+        "parent": "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr",
+        "verification": "Exact Drive text readback matched"
+      }
+    },
+    "1.59": {
+      "role": "current_prepared_source_upload_pending",
+      "versionCode": 60,
+      "folder": {
+        "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
+        "name": "1.59 — Компактный экран и видимое подключение",
+        "url": "https://drive.google.com/drive/folders/1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
+      },
+      "apk": {
+        "id": "1S5-j6s-CgyGyXqy6F2qpyADFQ3q_hRAi",
+        "name": "1.59-M30 Companion.apk",
+        "size": 1014165,
+        "sha256": "a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9",
+        "url": "https://drive.google.com/file/d/1S5-j6s-CgyGyXqy6F2qpyADFQ3q_hRAi/view"
+      },
+      "source": {
+        "status": "ID/hash added externally after immutable upload"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.58 without uninstalling",
+      "github": "deferred_by_owner_repository_later",
+      "protected": false
+    }
+  },
+  "checkpoints": [
+    {
+      "version": "1.32",
+      "date": "2026-10-27",
+      "reason": "Перед крестовиной и отдельными окнами 1.33",
+      "status": "Полный восстановленный резерв; весь APK на телефоне не объявляется проверенным",
+      "folder": {
+        "id": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+        "name": "1.32 — Режим и батарея",
+        "url": "https://drive.google.com/drive/folders/1pXjekcyFpg_rhm9spGrooLN-qFllCgnh"
+      },
+      "apk": {
+        "id": "1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS",
+        "name": "M30-Companion-1.32.apk",
+        "parent": "1pXjekcyFpg_rhm9spGrooLN-qFllCgnh",
+        "size": "1031818",
+        "target": "checkpoint132",
+        "url": "https://drive.google.com/file/d/1kXqpbZlSj8FvVXfkdQvSPJOTJFewTlaS/view?usp=drivesdk"
+      },
+      "source": {
+        "accepted_input": "file_uri",
+        "success": true,
+        "id": "1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh",
+        "title": "M30-Companion-1.32-SOURCE.zip",
+        "file_name": "M30-Companion-1.32-SOURCE.zip",
+        "mime_type": "application/zip",
+        "url": "https://drive.google.com/file/d/1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh/view?usp=drivesdk",
+        "parent_id": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "structuredContent": {
+          "accepted_input": "file_uri",
+          "success": true,
+          "id": "1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh",
+          "title": "M30-Companion-1.32-SOURCE.zip",
+          "file_name": "M30-Companion-1.32-SOURCE.zip",
+          "mime_type": "application/zip",
+          "url": "https://drive.google.com/file/d/1lJ6v-BUq90as3mneQRIhO5EAQsbgZQEh/view?usp=drivesdk",
+          "parent_id": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+        }
+      }
+    },
+    {
+      "version": "1.29",
+      "date": "2026-10-27",
+      "reason": "Первое подтверждённое пользователем обновление 2.00 → 2.01",
+      "status": "APK сохранён; самостоятельный SOURCE отсутствует, исторический комплект НЕПОЛНЫЙ",
+      "folder": {
+        "id": "14fEYUU_xlu52E9276hOdtDvTy4sxtguv",
+        "name": "1.29 — Первое подтверждённое обновление",
+        "url": "https://drive.google.com/drive/folders/14fEYUU_xlu52E9276hOdtDvTy4sxtguv"
+      },
+      "apk": {
+        "id": "1xqhVN_cPPOy5JxnIXcp7Fimfcf7tzYGx",
+        "name": "M30-Companion-1.29.apk",
+        "parent": "14fEYUU_xlu52E9276hOdtDvTy4sxtguv",
+        "size": "929921",
+        "target": "checkpoint129",
+        "url": "https://drive.google.com/file/d/1xqhVN_cPPOy5JxnIXcp7Fimfcf7tzYGx/view?usp=drivesdk"
+      },
+      "revision": {
+        "id": "0B7CZlAUwBzKDWW1uUWRRRGtldUtSNlRkck41K0ZmWjZMakwwPQ",
+        "size": "909310",
+        "modifiedTime": "2026-10-26T20:46:53.865Z"
+      }
+    },
+    {
+      "version": "1.27",
+      "date": "2026-10-27",
+      "reason": "До введения записи официальной прошивки в 1.28",
+      "status": "APK сохранён; самостоятельный SOURCE отсутствует, исторический комплект НЕПОЛНЫЙ",
+      "folder": {
+        "id": "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA",
+        "name": "1.27 — До записи прошивки",
+        "url": "https://drive.google.com/drive/folders/1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA"
+      },
+      "apk": {
+        "id": "1yfTZ9cNO646jrucDAMCWwzLfNdh4LKxH",
+        "name": "M30-Companion-1.27.apk",
+        "parent": "1ab2RsrGipOFg-djViJwwmsiNYWUOQLwA",
+        "size": "978849",
+        "target": "checkpoint127",
+        "url": "https://drive.google.com/file/d/1yfTZ9cNO646jrucDAMCWwzLfNdh4LKxH/view?usp=drivesdk"
+      },
+      "revision": {
+        "id": "0B7CZlAUwBzKDVmNFdEM0K00rQW54WTdGSXBMT3VQODNIT1hBPQ",
+        "size": "879890",
+        "modifiedTime": "2026-10-26T19:15:49.451Z"
+      }
+    },
+    {
+      "version": "1.36",
+      "date": "2026-10-28",
+      "reason": "Before shared Bluetooth controller/inline header and remote page navigation in1.37",
+      "status": "Full saved reserve; physical function not confirmed",
+      "folder": {
+        "id": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL",
+        "name": "1.36 — Совпадения сохранённых пар",
+        "url": "https://drive.google.com/drive/folders/1SDwO8TG01t9tezxu0UWMv6QItJP00atL"
+      },
+      "apk": {
+        "id": "1PIubbJED-HClSgVYI01b0yisI5imWdGZ",
+        "name": "M30-Companion-1.36.apk",
+        "url": "https://drive.google.com/file/d/1PIubbJED-HClSgVYI01b0yisI5imWdGZ/view?usp=drivesdk",
+        "size": 1073476,
+        "sha256": "986cc6b7a189ca336305f4d9a4272f965ab89b73d995f9a5f2cb7df359f4791e"
+      },
+      "source": {
+        "id": "1Ih6XldSaXuuiXiptIE6Z3efNWAo5oyK4",
+        "name": "M30-Companion-1.36-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1Ih6XldSaXuuiXiptIE6Z3efNWAo5oyK4/view?usp=drivesdk",
+        "size": 1088328,
+        "sha256": "f9af146cc05d82ba5acf2c89def3c8d2c0d1489a5dc0efd537e880e1a9ba60cf",
+        "recovered": false
+      }
+    },
+    {
+      "version": "1.38",
+      "date": "2026-10-28",
+      "reason": "Before FrameLayout overlay, floating Bluetooth anchor and independent two-column discovery in1.39; unique previous phone layout after focus changes1.38. Reuses complete saved release, no duplicate files.",
+      "status": "Full reserve; screenshot from owner shows1.38 search UI, complete TV/radio coverage not claimed.",
+      "folder": {
+        "id": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ",
+        "name": "1.38 — Пульт и список Bluetooth",
+        "url": "https://drive.google.com/drive/folders/1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ"
+      },
+      "apk": {
+        "id": "14xjVwDDc6OdXy7BK1ZufPhdOaKunySzt",
+        "name": "M30-Companion-1.38.apk",
+        "url": "https://drive.google.com/file/d/14xjVwDDc6OdXy7BK1ZufPhdOaKunySzt/view?usp=drivesdk",
+        "size": 965733,
+        "sha256": "54a90e6a6a2337d1ee5a98f8daf436fe83e75683e18c4079397048ba345c5b4d"
+      },
+      "source": {
+        "id": "1CDC2ZRGkolrPFGQtqCzsRNqehtkhzgh1",
+        "name": "M30-Companion-1.38-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1CDC2ZRGkolrPFGQtqCzsRNqehtkhzgh1/view?usp=drivesdk",
+        "size": 1159308,
+        "sha256": "24b6c41ca3defc2872e5c88bca4e3be4d6c6d2d8a5c1b4e4dd5a9d68f1a17f8e",
+        "recovered": false
+      }
+    },
+    {
+      "version": "1.41",
+      "date": "2026-10-28",
+      "reason": "Before orientation-specific full-page scrolling in1.42. Owner screenshot confirms separated portrait Bluetooth cards and says overall good; keep previous layout as rollback.",
+      "status": "Full reserve; owner portrait screenshot, complete TV/radio/runtime coverage not claimed. No duplicate files.",
+      "folder": {
+        "id": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+        "name": "1.41 — Раздельные блоки Bluetooth",
+        "url": "https://drive.google.com/drive/folders/1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+        "parent": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe"
+      },
+      "apk": {
+        "id": "1fHuDpvSDZtbgzaxOOUU8PRu32A8K6q4V",
+        "name": "M30-Companion-1.41.apk",
+        "url": "https://drive.google.com/file/d/1fHuDpvSDZtbgzaxOOUU8PRu32A8K6q4V/view?usp=drivesdk",
+        "size": 1094762,
+        "sha256": "7a306e60c9a5f382e711834c65238c3a889ba31e442cb5f5750654a2a16fe3dd"
+      },
+      "source": {
+        "id": "18sGkxIQwdNntktERbxQDI8X-zb6fvCUx",
+        "name": "M30-Companion-1.41-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/18sGkxIQwdNntktERbxQDI8X-zb6fvCUx/view?usp=drivesdk",
+        "size": 1219631,
+        "sha256": "d0db22854aaa12896b02d88115534aef6d3b042c90e5d28eefc8058c400e7e92",
+        "recovered": false
+      }
+    },
+    {
+      "version": "1.47",
+      "date": "2026-11-11",
+      "reason": "Existing signed installer and exact source before automatic controller view following; same IDs. Original rebuild signing key unavailable; owner evidence verifies input only partially.",
+      "status": "Existing signed installer/source before auto-follow. Rebuild key missing; physical input observed only partially. Still current in root, no copies.",
+      "folder": {
+        "id": "1t_89vgsMnT0RIcrq9-J3xoY2NBS1l10s",
+        "name": "1.47 — Имена геймпадов и статус подключения",
+        "url": "https://drive.google.com/drive/folders/1t_89vgsMnT0RIcrq9-J3xoY2NBS1l10s"
+      },
+      "apk": {
+        "id": "1ybXauGpAurf5mK6dUUmYhxsQx668gqhS",
+        "name": "1.47-M30-Companion.apk",
+        "url": "https://drive.google.com/file/d/1ybXauGpAurf5mK6dUUmYhxsQx668gqhS/view?usp=drivesdk",
+        "size": 1110869,
+        "sha256": "4742352d347f187a039c048a79d0d9a1a8c9e9150575730029f6c4b1daf87c3b"
+      },
+      "source": {
+        "id": "1Ifz8Cczxe70KwEF_E5-XCrvcPKlt78Ad",
+        "name": "1.47-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1Ifz8Cczxe70KwEF_E5-XCrvcPKlt78Ad/view?usp=drivesdk",
+        "size": 1342195,
+        "sha256": "da1aa07c6d96fbb64b7a9b5ece0287f20c4d45edae5edc6d2c5e127930ee2a06",
+        "recovered": false
+      }
+    }
+  ],
+  "signature_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+  "policy": "Read current general rules, 20База!, AGENTS.md and both logs. Immutable numbered APK/SOURCE; two latest plus selected checkpoints. Delete obsolete non-key releases after verification; no cumulative archive. Old shared SOURCE ID is frozen at 1.33. √ means verified compliance, reset when general rules change.",
+  "general_rules": {
+    "id": "1PC7jbtXP9HRTi1C8t3JTG8xc_Y-F9H_z",
+    "url": "https://drive.google.com/file/d/1PC7jbtXP9HRTi1C8t3JTG8xc_Y-F9H_z/view",
+    "edition": "2026-11-12",
+    "observed_modified_time": "2026-11-12T15:14:11.854Z"
+  },
+  "compliance": {
+    "date": "2026-11-14",
+    "status": "checked_with_historical_source_gaps",
+    "known_gap": "Historical selected APK 1.27/1.29 have no standalone SOURCE; retained for active recovery, not claimed full backups.",
+    "mark_applied": false,
+    "mark_reason": "Incomplete selected historical 1.27/1.29 backups: standalone SOURCE unavailable. Do not certify full compliance until resolved.",
+    "deleted_non_key_apks": 30,
+    "deleted_bytes": 23379558,
+    "archive_removed": true,
+    "preserved_artifacts": "Current1.59 prepared, previous1.58 verified by fresh hashes/CRC.1.57 pending cleanup after new set verification; selected checkpoints unchanged.",
+    "text_readback": "Rules, AGENTS, registry and both logs matched local; journal history retained.",
+    "signing_gap": "New main key backed up/restored and used for1.54. Original historical private key remains unavailable; no update compatibility over1.47.",
+    "github_gap": "GitHubRelease explicitly deferred by owner; repository later."
+  },
+  "source_snapshot_note": "Own archive SHA256 cannot be embedded in itself. This snapshot precedes SOURCE upload; use the live PROJECT_DRIVE_INDEX.json and passport on Drive for final artifact IDs/hashes.",
+  "publication": {
+    "version": "1.59",
+    "date": "2026-11-14",
+    "timezone": "Asia/Makassar",
+    "status": "prepared_immutable_source_upload_pending",
+    "checks": "M30 Companion1.59/code60;14Nov2026Asia/Makassar(13NovUTC).26pure host suites PASS.8headless Android View tests PASS, Robolectric4.14.1/API28/NATIVE Skia: TV1280x720, portrait360x780+landscape640x320/fontScale1.3, landscape780x360. Signed build/lint/instrumentation compile PASS,0errors/62warnings. Physical phone/TV/Bluetooth/HID untested. Same stable cert 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, freshly restored key/parameters; update over1.58. GitHub deferred by owner.\n",
+    "new_signature_reinstall_required": false,
+    "github": "deferred_by_owner_repository_later"
+  },
+  "cleanup_1_35": {
+    "files_deleted": 3,
+    "bytes_deleted": 947588,
+    "empty_release_folder_deleted": true,
+    "source_1_33_retained_for_key_recovery": true
+  },
+  "cleanup_1_36": {
+    "retired_version": "1.34",
+    "files_deleted": 4,
+    "bytes_deleted": 1981428,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.34-history.txt",
+    "audit": "docs/organization/cleanup-1.36.json"
+  },
+  "cleanup_1_37": {
+    "retired_version": "1.35",
+    "files_deleted": 4,
+    "bytes_deleted": 2141234,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.35-history.txt",
+    "audit": "docs/organization/cleanup-1.37.json"
+  },
+  "organization_1_38": {
+    "current": "1.38",
+    "previous": "1.37",
+    "checkpoint_1_36_moved": true,
+    "from": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "to": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+    "preserved_folder_id": "1SDwO8TG01t9tezxu0UWMv6QItJP00atL",
+    "deleted_files": 0,
+    "note": "Protected reserve moved with same ID; source remains in Resources. No non-key release ages out in this publication."
+  },
+  "design_drafts": {
+    "bluetooth_overlay_2026_10_28": {
+      "status": "User authorized build after sketches; independent columns implemented in1.39. UI runtime awaits owner check.",
+      "id": "1zQPB4RoamZtxI5XgdpVJAzd6vWRMVGBo",
+      "url": "https://drive.google.com/file/d/1zQPB4RoamZtxI5XgdpVJAzd6vWRMVGBo/view?usp=drivesdk",
+      "name": "M30 — Bluetooth поверх шапки — 3 эскиза.png",
+      "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+      "size": 1615574,
+      "sha256": "e001b98e9488078317bfb5eb2836206d7f7f3734d7025a0554a1d258056d15e4",
+      "spec": "docs/design/BLUETOOTH_OVERLAY_OPTIONS_2026-10-28.txt",
+      "source": "image_gen using owner annotated screenshot1000013830.jpg",
+      "options": [
+        "independent columns",
+        "aligned matching rows",
+        "combined matching card"
+      ],
+      "verified": "Fresh Drive PNG re-download matched size/SHA256; parent/MIME verified.",
+      "owner_clarification": "Two independent columns. A discovered bonded address remains visible in BOTH columns; matching highlights only, no merged card. Option3 no longer a basis. Ordinary switch-on reconnects through Android; selection does not automatically delete/recreate bond.",
+      "owner_replacement_policy": "User accepts replacement of the old bond by Android during the selected new connection; no extra protection/confirmation solely to preserve that bond. Not blanket authorization to delete all bonds. No APK change."
+    },
+    "dpad_plain_caption_2026_10_28": {
+      "date": "2026-10-28",
+      "status": "draft shown; owner decision pending; app1.43 unchanged",
+      "id": "1tGPPWhAH-7vsuBcmN01uOTKQYU_azcw0",
+      "name": "M30 — Подпись крестовины без плашки — эскиз.png",
+      "url": "https://drive.google.com/file/d/1tGPPWhAH-7vsuBcmN01uOTKQYU_azcw0/view?usp=drivesdk",
+      "parent": "1XOcILJTf12bauZ6Imgi8jzXsElMMMgEK",
+      "size": 1330878,
+      "sha256": "4ddac21e74a18f74cf79fa19a1be23726623ed350e42c1aab90243d6ddaf2424",
+      "reference": "1000013799.jpg, reattached by owner",
+      "intent": "Bare dark text on empty gold band below D-pad ring, gentle slope along shell; no badge/background. Preserve tap combinations in future implementation.",
+      "spec": "docs/design/DPAD_PLAIN_CAPTION_DRAFT_2026-10-28.txt"
+    },
+    "compact_redesign_2026_11_12": {
+      "status": "design_and_native_code_implemented_native_device_checks_pending",
+      "folder": "1OIBHQwXkkhNC6c2hix7eV9Ib9pByq9qx",
+      "url": "https://drive.google.com/drive/folders/1OIBHQwXkkhNC6c2hix7eV9Ib9pByq9qx",
+      "assets": [
+        {
+          "file": "M30-compact-redesign.html",
+          "id": "1BNQw5ZPXNtH_FmSofMW0Mu9GePd1U-J1",
+          "name": "M30 — интерактивный эскиз.html",
+          "url": "https://drive.google.com/file/d/1BNQw5ZPXNtH_FmSofMW0Mu9GePd1U-J1/view?usp=drivesdk"
+        },
+        {
+          "file": "phone.png",
+          "id": "1at2X9SHeUsOxOUzO6g5BV6IVL9jnIb9U",
+          "name": "M30 — телефон.png",
+          "url": "https://drive.google.com/file/d/1at2X9SHeUsOxOUzO6g5BV6IVL9jnIb9U/view?usp=drivesdk"
+        },
+        {
+          "file": "wide-both.png",
+          "id": "1YYCT6L6l_5Fu-b3GENW-kMIkr3MP0_3z",
+          "name": "M30 — два джойстика.png",
+          "url": "https://drive.google.com/file/d/1YYCT6L6l_5Fu-b3GENW-kMIkr3MP0_3z/view?usp=drivesdk"
+        },
+        {
+          "file": "wide-connection-1.png",
+          "id": "1yCMOrXR5sdv2DjrC2jJGDqTI3t6a0Z5P",
+          "name": "M30 — Connection первого.png",
+          "url": "https://drive.google.com/file/d/1yCMOrXR5sdv2DjrC2jJGDqTI3t6a0Z5P/view?usp=drivesdk"
+        },
+        {
+          "file": "wide-connection-2.png",
+          "id": "1l7zp0lpnktWmDFZGHbnmwis5YeQvKttF",
+          "name": "M30 — Connection второго.png",
+          "url": "https://drive.google.com/file/d/1l7zp0lpnktWmDFZGHbnmwis5YeQvKttF/view?usp=drivesdk"
+        },
+        {
+          "file": "REDESIGN_RU.txt",
+          "id": "1ArrIU6qW6edl2eRRk1i0GOWaXfYjWlnc",
+          "name": "M30 — редизайн, описание и проверки.txt",
+          "url": "https://drive.google.com/file/d/1ArrIU6qW6edl2eRRk1i0GOWaXfYjWlnc/view?usp=drivesdk"
+        }
+      ],
+      "verification": "All6 files metadata/parent and fresh download SHA256 matched. HTML6 geometry/interaction checks PASS; not native Android device evidence."
+    },
+    "compact_redesign_r2_2026_11_12": {
+      "status": "sketches_only_owner_review_pending_native_code_unchanged_1_53",
+      "folder": "1WHpjjRTiwXri5Cx4Wn5Iz7tXCU5Hsr0R",
+      "url": "https://drive.google.com/drive/folders/1WHpjjRTiwXri5Cx4Wn5Iz7tXCU5Hsr0R",
+      "assets": [
+        {
+          "file": "01-портрет-джойстик-1.png",
+          "id": "1cx6ydebqqBXoLbMWk9I0mT5AVf2O7Htp",
+          "url": "https://drive.google.com/file/d/1cx6ydebqqBXoLbMWk9I0mT5AVf2O7Htp/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "02-портрет-подключение-1.png",
+          "id": "1Hu8D3notr4zi8EzWal_VjrgCP8j0dm9I",
+          "url": "https://drive.google.com/file/d/1Hu8D3notr4zi8EzWal_VjrgCP8j0dm9I/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "03-портрет-джойстик-2.png",
+          "id": "1KpkFW9xjunJ8aedac_bfvTYlHKF7Ufl4",
+          "url": "https://drive.google.com/file/d/1KpkFW9xjunJ8aedac_bfvTYlHKF7Ufl4/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "04-портрет-подключение-2.png",
+          "id": "13NAWAgkV38k59FM6F8K04Wx7Ja7ou2lX",
+          "url": "https://drive.google.com/file/d/13NAWAgkV38k59FM6F8K04Wx7Ja7ou2lX/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "05-горизонтально-оба.png",
+          "id": "1OAz7cN32ck92aloAO4aUcK5-ZhAWYQhj",
+          "url": "https://drive.google.com/file/d/1OAz7cN32ck92aloAO4aUcK5-ZhAWYQhj/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "06-горизонтально-подключение-1.png",
+          "id": "1SjqChPG_OOJR_8_KGAYesYiHm5bQFh7O",
+          "url": "https://drive.google.com/file/d/1SjqChPG_OOJR_8_KGAYesYiHm5bQFh7O/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "07-горизонтально-подключение-2.png",
+          "id": "1FnykUU46s0ILAG3us3bPyphu9ej4CvED",
+          "url": "https://drive.google.com/file/d/1FnykUU46s0ILAG3us3bPyphu9ej4CvED/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-портреты-эскизы-2.png",
+          "id": "1KpH20c8hXi7FnGpR7GQkl5I6th5rwdpa",
+          "url": "https://drive.google.com/file/d/1KpH20c8hXi7FnGpR7GQkl5I6th5rwdpa/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-горизонтально-эскизы-2.png",
+          "id": "1SU1VbFGc5Fa9nVKYcsOnqfjM8Se3FSoe",
+          "url": "https://drive.google.com/file/d/1SU1VbFGc5Fa9nVKYcsOnqfjM8Se3FSoe/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-compact-redesign-r2.html",
+          "id": "1l6HpT1wuynIOXyurraNVS6It6AZ1f-gg",
+          "url": "https://drive.google.com/file/d/1l6HpT1wuynIOXyurraNVS6It6AZ1f-gg/view?usp=drivesdk",
+          "mime": "text/html"
+        },
+        {
+          "file": "Эскизы 2 — описание.txt",
+          "id": "1qb72fTjSIsm0DyTPshmIcmDZ1NYWD89l",
+          "url": "https://drive.google.com/file/d/1qb72fTjSIsm0DyTPshmIcmDZ1NYWD89l/view?usp=drivesdk",
+          "mime": "text/plain"
+        }
+      ],
+      "changes": [
+        "Battery above each diagram; narrower dense Russian buttons Подключение/Выбрать/Опции/Клавиши; third tab Тест кнопок.",
+        "Compact vertical spacing and mode cards, both pre-PAIR mode and post-PAIR connection LED explanations visible.",
+        "Owner confirmed portrait: hide diagram/readout; instructions above embedded Bluetooth.",
+        "Four portrait states: controller1/2 each normal/connection. Two landscape reciprocal overlays plus combined baseline."
+      ],
+      "checks": "Chromium7states/360px narrow probe PASS: no horizontal/button overflow, uniform tabs, portrait search/close and reciprocal overlays;11Drive files fresh downloads SHA256/metadata/parents matched. HTML sketches only; native Android not changed/tested for R2.",
+      "portrait_note": "Superseded by direct owner R3 clarification: keep all blocks, append Bluetooth below."
+    },
+    "compact_redesign_r3_2026_11_12": {
+      "status": "sketches_only_owner_review_pending_native_1_53_unchanged",
+      "folder": "1YSQe3vcWh56IXC8JRse3NBxhW4jkzA8r",
+      "url": "https://drive.google.com/drive/folders/1YSQe3vcWh56IXC8JRse3NBxhW4jkzA8r",
+      "assets": [
+        {
+          "file": "01-портрет-джойстик-1.png",
+          "id": "11yBVl-Gm1ksNxN_3vuXDydmfvV6jsuiL",
+          "url": "https://drive.google.com/file/d/11yBVl-Gm1ksNxN_3vuXDydmfvV6jsuiL/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "02-портрет-подключение-1.png",
+          "id": "1fmO81ZhKltEn_h9ahlgNko-iLTSySnOr",
+          "url": "https://drive.google.com/file/d/1fmO81ZhKltEn_h9ahlgNko-iLTSySnOr/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "03-портрет-джойстик-2.png",
+          "id": "14zgDwn1-HN9qzs5gznGHmFQqth8DpIf9",
+          "url": "https://drive.google.com/file/d/14zgDwn1-HN9qzs5gznGHmFQqth8DpIf9/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "04-портрет-подключение-2.png",
+          "id": "1ag7cACbI5ThPp4J-vqJnbqJ10tt2U_uI",
+          "url": "https://drive.google.com/file/d/1ag7cACbI5ThPp4J-vqJnbqJ10tt2U_uI/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "05-горизонтально-оба.png",
+          "id": "1Jq8UAWiItb1YQhwO6nxY69sxU671fa4a",
+          "url": "https://drive.google.com/file/d/1Jq8UAWiItb1YQhwO6nxY69sxU671fa4a/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "06-горизонтально-подключение-1.png",
+          "id": "1VCNsv6mTM04h_Q2jxJHpINxleGnByQmy",
+          "url": "https://drive.google.com/file/d/1VCNsv6mTM04h_Q2jxJHpINxleGnByQmy/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "07-горизонтально-подключение-2.png",
+          "id": "14mG4ClnEPGc-0iuVG28HxXpiOIFq1G-f",
+          "url": "https://drive.google.com/file/d/14mG4ClnEPGc-0iuVG28HxXpiOIFq1G-f/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-портреты-эскизы-3.png",
+          "id": "1MTmly2AIxaGhbddSYnYjrocAR4v1dvmV",
+          "url": "https://drive.google.com/file/d/1MTmly2AIxaGhbddSYnYjrocAR4v1dvmV/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-горизонтально-эскизы-3.png",
+          "id": "10zu0Bu5pk6iQ4QU2gYXNeKs9GJ3QNA7F",
+          "url": "https://drive.google.com/file/d/10zu0Bu5pk6iQ4QU2gYXNeKs9GJ3QNA7F/view?usp=drivesdk",
+          "mime": "image/png"
+        },
+        {
+          "file": "M30-compact-redesign-r3.html",
+          "id": "18E27VKIYeFkBNsnOezo-BdvrL9DLRS5y",
+          "url": "https://drive.google.com/file/d/18E27VKIYeFkBNsnOezo-BdvrL9DLRS5y/view?usp=drivesdk",
+          "mime": "text/html"
+        },
+        {
+          "file": "Эскизы 3 — описание.txt",
+          "id": "1QgnSjnWDWRaT6j4jOSTTqrF7tvJJQiah",
+          "url": "https://drive.google.com/file/d/1QgnSjnWDWRaT6j4jOSTTqrF7tvJJQiah/view?usp=drivesdk",
+          "mime": "text/plain"
+        },
+        {
+          "file": "M30-settings-outline.svg",
+          "id": "12Vd8LoZljdkOn09ZsfRadtXU_O-X7SwF",
+          "url": "https://drive.google.com/file/d/12Vd8LoZljdkOn09ZsfRadtXU_O-X7SwF/view?usp=drivesdk",
+          "mime": "image/svg+xml"
+        },
+        {
+          "file": "Опции-контурная-иконка-крупно.png",
+          "id": "1o5C1LRZKh__v3x_KIstqqMjLrtDo5eLy",
+          "url": "https://drive.google.com/file/d/1o5C1LRZKh__v3x_KIstqqMjLrtDo5eLy/view?usp=drivesdk",
+          "mime": "image/png"
+        }
+      ],
+      "changes": [
+        "Tabs visually join the content frame, both orientations, following owner AutoRead reference.",
+        "Battery uses existing empty top of diagram without separate row; instruction profile on same line as connection heading.",
+        "Portrait keeps ALL original blocks; Bluetooth appears BELOW and fills remaining area. This explicitly replaces R2 hide/raise behavior.",
+        "Horizontal opposite-panel mechanism remains approved."
+      ],
+      "checks": "7HTML states plus narrow360px PASS; visible portrait hero/readout retained during Bluetooth, search/close/reciprocal wide panels PASS.11Drive assets metadata/parents/fresh download SHA256 matched. Not native Android verification.",
+      "settings_icon": "Owner-approved R3 layout, options emoji replaced by flat monochrome SVG currentColor; gold for slot1/orange forslot2, no layout/action changes. All13Drive files fresh downloads SHA256/parents matched; Chromium7states PASS, explicit SVG/no emoji/two-color checks PASS. Editable design IDs preserved; no APK/SOURCE changes."
+    }
+  },
+  "cleanup_1_39": {
+    "retired_version": "1.37",
+    "files_deleted": 4,
+    "bytes_deleted": 2213169,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.37-history.txt",
+    "audit": "docs/organization/cleanup-1.39.json",
+    "previous_1_38_protected": true
+  },
+  "pending_changes": {
+    "dpad_caption_legibility": {
+      "status": "New bare-text draft shown; owner review pending. App remains1.43 with existing badge.",
+      "requested": "2026-10-28",
+      "reference": "1000013799.jpg",
+      "component": "PadView caption below D-pad",
+      "requirement": "Plain legible dark text on clear yellow/orange body below D-pad outline; no backing/frame; slight tilt along lower shell edge allowed. Keep tap-to-open combinations.",
+      "draft_id": "1tGPPWhAH-7vsuBcmN01uOTKQYU_azcw0"
+    },
+    "bluetooth_device_menu": {
+      "status": "implemented1.57; physical/native runtime check pending",
+      "requirement": "System rename/connection first; explicit persistent local-label/external-settings alternatives, compact Compatibility disclosure, exact-MAC consent and owner-slot preservation."
+    },
+    "tv_boundary_paging": {
+      "status": "implemented1.44; physical TV check pending",
+      "requirement": "Page at blocked horizontal focus from any main-screen control; interior focus first, no repeat jumps, M30 stays in tester, tab order unchanged."
+    },
+    "header_bluetooth_1_45": {
+      "status": "implemented1.45; physical TV check pending",
+      "requirements": "Controller pages open landscape at top after layout/focus, caption row retained; selected Gamepad1 gray fill/yellow outline; saved filtered unique count; persistent left scrollbar on overflow; one stable Start/Stop button."
+    },
+    "bluetooth_compact_1_46": {
+      "status": "implemented1.46, physical TV check pending",
+      "requirements": "Centered wrap/min40dp heading with refresh in same row; reduced gaps; landscape name and status inline, MAC suffix below; portrait3lines; no truncation."
+    },
+    "tv_input_diagnosis": {
+      "status": "unresolved, no input changes in1.46",
+      "evidence": "Owner photos: selected M30 ID23, VID045E:02E0, sources0x1000511, battery52%; Keyboard KEYCODE_BUTTON_X99 UP scan306 source0x501 fromsame ID23. Empty active tokens and last transition123s old do not prove missing DOWN unless key was held. Need DOWN/held evidence; do not synthesize input or claim keyboard remapping fixes games."
+    },
+    "bluetooth_names_1_47": {
+      "status": "implemented1.47, owner TV verification pending",
+      "behavior": "Common rename footer below both columns. Two-line controller tabs with active input name or system alias after explicit one-time full-MAC-to-source-descriptor link. Cyan connected row/slot comes only from user link plus active assigned input source and current bond/permission; green discovery match remains separate. No name-based identity guesses, no HID connect APIs."
+    }
+  },
+  "organization_1_40": {
+    "current": "1.40",
+    "previous": "1.39",
+    "checkpoint138_moved": true,
+    "preserved_folder_id": "1wIiifZ6wP-nmFCy4nCswyrUsGH1NzZOZ",
+    "from": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "to": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+    "deleted_files": 0
+  },
+  "cleanup_1_41": {
+    "retired_version": "1.39",
+    "files_deleted": 4,
+    "bytes_deleted": 2298970,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.39-history.txt",
+    "audit": "docs/organization/cleanup-1.41.json"
+  },
+  "cleanup_1_42": {
+    "retired_version": "1.40",
+    "files_deleted": 4,
+    "bytes_deleted": 2184416,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.40-history.txt",
+    "audit": "docs/organization/cleanup-1.42.json",
+    "previous1_41_protected": true
+  },
+  "organization_1_43": {
+    "checkpoint": "1.41",
+    "action": "move existing folder from root to Checkpoints after verifying new/current and previous; preserve IDs and source in Resources",
+    "status": "verified",
+    "deletions": 0,
+    "parent_before": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "parent_after": "1YTwLhYGdofqyFz5a3_0ZdJbua3iAoFYe",
+    "folder_id": "1EwcG9PcL2mOs0ryaTWo7cZLJr2evIffu",
+    "source_parent_unchanged": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+  },
+  "cleanup_1_44": {
+    "retired_version": "1.42",
+    "files_deleted": 4,
+    "bytes_deleted": 2340504,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.42-history.txt",
+    "audit": "docs/organization/cleanup-1.44.json"
+  },
+  "cleanup_1_45": {
+    "retired_version": "1.43",
+    "files_deleted": 4,
+    "bytes_deleted": 2355726,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.43-history.txt",
+    "audit": "docs/organization/cleanup-1.45.json"
+  },
+  "cleanup_1_46": {
+    "retired_version": "1.44",
+    "files_deleted": 4,
+    "bytes_deleted": 2385092,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.44-history.txt",
+    "audit": "docs/organization/cleanup-1.46.json"
+  },
+  "organization_29_oct_2026": {
+    "rules_revision": "29.10.2026",
+    "modifiedTime": "2026-10-29T09:35:33.914Z",
+    "release_format": "New1.47 filenames begin with version; only APK+passport in release folder; install merged into passport, SOURCE once in Resources/Sources. Previous1.46 renamed metadata only; guide merged into existing passport ID and removed after readback. Historical frozen snapshots/older selected materials retain provenance and old internal names; no binary repackaging. Root remains without checkmark due documented incomplete historical1.27/1.29."
+  },
+  "cleanup_1_47": {
+    "retired_version": "1.45",
+    "files_deleted": 4,
+    "bytes_deleted": 2278300,
+    "empty_release_folder_deleted": true,
+    "history": "docs/releases/1.45-history.txt",
+    "audit": "docs/organization/cleanup-1.47.json",
+    "previous_duplicate_guide_bytes_removed_after_merge": 1518
+  },
+  "signing_materials": {
+    "status": "owner_authorized_new_main_key_backed_up_and_restore_verified",
+    "expected_certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+    "folder_id": "1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P",
+    "parameters_id": "1nLcJLdvV_cOMT3uZzTj83BL1fh-cE7n1",
+    "parameters_url": "https://drive.google.com/file/d/1nLcJLdvV_cOMT3uZzTj83BL1fh-cE7n1/view",
+    "checked": "13Nov2026 actual p12 and parameters freshly downloaded, opened and used for1.57; same stable certificate.",
+    "key_id": "1WvI2zI9bXuoaD-YVJmvYfy_GHqLJ9WMi",
+    "key_name": "M30-Companion-signing-2026-11-12.p12",
+    "key_url": "https://drive.google.com/file/d/1WvI2zI9bXuoaD-YVJmvYfy_GHqLJ9WMi/view",
+    "key_size": 3542,
+    "key_sha256": "cf6355e244c9429e06b3b8d1e7c1f65d84406b7d24e5d3969c41a9fff760574e",
+    "active_certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+    "previous_certificate_sha256": "e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272",
+    "alias": "m30-companion",
+    "compatible_update_over_1_47": false,
+    "authorization": "Owner12Nov2026 explicitly approved new key and reinstall original app, with full Drive backup. No separate preview required.",
+    "first_new_signature_release": "1.54"
+  },
+  "drafts": {
+    "1.48": {
+      "versionCode": 49,
+      "status": "retired_after_verified_signed1.54",
+      "blocked_by": "Missing original signing key; no compatible installable APK; published1.47/current and1.46/previous remain unchanged.",
+      "changes": [
+        "Tablet layout: no baseline alignment for two-line tabs; wrap/min heights; caption/control/pad space; immediate native focus-scroll restores.",
+        "Controller2 shows same preconnection profile instructions asController1.",
+        "Connect action caption Подключить устройство, public createBond/system settings behavior preserved.",
+        "App-only per-full-MAC label and badge1/2/3, legacy1.38 mode-label restoration, safe clear. Labels follow existing explicit source links without changing Android alias/mode."
+      ],
+      "source": {
+        "id": "1JwXulO6j9dotSAldfKyxeKKbgeA0ikiV",
+        "name": "1.48-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1JwXulO6j9dotSAldfKyxeKKbgeA0ikiV/view",
+        "size": 1371153,
+        "sha256": "668d8ae7b081aa9fb6609688b46433156f5ddf79569143dde1fda41ec8d2ecb0",
+        "verification": "Fresh downloaded Drive bytes/size/SHA256/ZIPCRC match; source draft only, no signed installable APK.",
+        "removed": true
+      },
+      "checks": "22 host suites PASS; unsigned assembleDebug/lintDebug/assembleDebugAndroidTest PASS. Lint0errors/46warnings. Instrumentation compiled only, not run; physical tablet/TV unverified.",
+      "passport": {
+        "id": "1XltMLFa-UgP0m2noNzWsEIS-wgE0Adem",
+        "name": "1.48-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1XltMLFa-UgP0m2noNzWsEIS-wgE0Adem/view",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "removed": true
+      },
+      "retention_reason": "Superseded by verified signed1.54; relevant patch/history retained in1.54 SOURCE; no old installer existed."
+    },
+    "1.49": {
+      "versionCode": 50,
+      "status": "superseded_source_and_passport_removed",
+      "changes": [
+        "App-only badge1..99, quick1..8 and custom entry.",
+        "Optional controller auto-follow, default enabled, fresh assigned gamepad activity only; release/repeat/neutral/modal/Keyboard guards."
+      ],
+      "checks": "23 host suites and unsigned build/lint PASS; UI instrumentation compiled only; actual two-pad scenario untested.",
+      "blocked_by": "Original signing key missing. Published1.47/current and1.46/previous unchanged.",
+      "source": {
+        "id": "1YmX5itKxuicMNGsw186iY60usM3pjAnz",
+        "name": "1.49-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1YmX5itKxuicMNGsw186iY60usM3pjAnz/view",
+        "size": 1393518,
+        "sha256": "6940dd6188d03d56310e0cc3e9e092d07e06575fbaf0d34b359b4681074f86bb",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC match; not installable publication.",
+        "removed": true
+      },
+      "superseded_reason": "Pre-delivery inspection found ordinary switchPage could recalculate profile and clear first press. Fixed in1.50; history/diffs retained, intermediate source/passport remove after verified replacement."
+    },
+    "1.50": {
+      "versionCode": 51,
+      "status": "retired_after_verified_signed1.54",
+      "changes": [
+        "App-only badge1..99, quick1..8 and custom entry.",
+        "Optional controller auto-follow, default enabled, fresh assigned gamepad activity only; release/repeat/neutral/modal/Keyboard guards.",
+        "Auto-follow preserves manual profile/bindings and first press; no alignModeOnOpen on automatic transition."
+      ],
+      "checks": "23 host suites and unsigned build/lint PASS; UI instrumentation compiled only; actual two-pad scenario untested.",
+      "blocked_by": "Original signing key missing. Published1.47/current and1.46/previous unchanged.",
+      "source": {
+        "id": "1rTzBy8d0ZkH6D8NEVqEZXNYEldbbZa0T",
+        "name": "1.50-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1rTzBy8d0ZkH6D8NEVqEZXNYEldbbZa0T/view",
+        "size": 1404082,
+        "sha256": "a254362a2344363fa394177138f71993b107493413d5358e329606fa39568524",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC match; no signed installer.",
+        "removed": true
+      },
+      "passport": {
+        "id": "1f5Rd3E_lPD_CORvHF-gr-laPyoZ8Ymmz",
+        "name": "1.50-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1f5Rd3E_lPD_CORvHF-gr-laPyoZ8Ymmz/view",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "removed": true
+      },
+      "retention_reason": "Superseded by verified signed1.54; relevant patch/history retained in1.54 SOURCE; no old installer existed."
+    },
+    "1.51": {
+      "versionCode": 52,
+      "status": "superseded_source_and_passport_removed",
+      "source": {
+        "id": "1sv9u-Qc-OHDe1DUt3Iu5PhF_TgZYQqul",
+        "name": "1.51-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1sv9u-Qc-OHDe1DUt3Iu5PhF_TgZYQqul/view",
+        "size": 1422588,
+        "sha256": "6c675c35a1e66ef09b4cf8e7ec749a87c495f7a08670db037d00c63d15e19155",
+        "verification": "Fresh downloaded size/SHA256/ZIPCRC match. Unsigned original/preview builds ready; key decision pending.",
+        "removed": true
+      },
+      "changes": [
+        "Distinct gray dialog action buttons with borders/pressed/disabled states.",
+        "Uniform tab heights with baseline disabled.",
+        "Optional separate app.m30.companion.preview / M30 Проверка /1.51-preview; original default unchanged. Main preferences namespace corrected for either package."
+      ],
+      "verification": "Both unsigned variants assembled/linted/instrumentation compiled; lint0errors/46warnings each; aapt package/label/activity checked. UI/device tests not run.",
+      "signing": "No new key created. Original key missing. Explicit question pending for separate preview key; no installable APK yet.",
+      "passport": {
+        "id": "1tTrYqc-Klf9Wl3TIraRsSsFEA2J_btg1",
+        "name": "1.51-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1tTrYqc-Klf9Wl3TIraRsSsFEA2J_btg1/view",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "removed": true
+      },
+      "superseded_reason": "Fresh peer profile initialization corrected before any key/signature/installer delivery; diffs/history retained."
+    },
+    "1.52": {
+      "versionCode": 53,
+      "status": "two_unsigned_variants_ready_awaiting_preview_signing_decision",
+      "source": {
+        "id": "1A5OYisHed5WvnwCzhx01oHp_9iul-GeU",
+        "name": "1.52-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1A5OYisHed5WvnwCzhx01oHp_9iul-GeU/view",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "size": 1435346,
+        "sha256": "59471d7f47c4f1074647d426111fc16f7ab9bc465a6db7a81de7a31e5ea284cc",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC PASS; unsigned source-only draft, no installable publication."
+      },
+      "changes": [
+        "Distinct gray dialog action buttons with borders/pressed/disabled states.",
+        "Uniform tab heights with baseline disabled.",
+        "Optional separate app.m30.companion.preview / M30 Проверка /1.52-preview; original default unchanged. Main preferences namespace corrected for either package.",
+        "Unseen peer chooses its own initial estimated profile; stored manual profile wins."
+      ],
+      "verification": "23 host suites PASS; both original/preview unsigned builds/lint/UI-test compilation PASS, lint0errors/46warnings each. Actual device UI not tested.",
+      "signing": "No new key created. Original key missing. Explicit question pending for separate preview key; no installable APK yet.",
+      "passport": {
+        "id": "1vXiNoImgsmdxy9EsMiW8kHcg29PcfenI",
+        "name": "1.52-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1vXiNoImgsmdxy9EsMiW8kHcg29PcfenI/view",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "verification": "Readback matches external local passport."
+      },
+      "retention_reason": "Verified source-only baseline before major compact/two-controller UI1.53; not an installable checkpoint. Original signed1.47/current and1.46/previous unchanged."
+    },
+    "1.53": {
+      "versionCode": 54,
+      "status": "implemented_built_unsigned_not_released",
+      "source": {
+        "id": "1cvSAX10T-Uo43-VoxhqcKIGu9nFUVMV6",
+        "name": "1.53-M30 Companion-SOURCE.zip",
+        "url": "https://drive.google.com/file/d/1cvSAX10T-Uo43-VoxhqcKIGu9nFUVMV6/view",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "size": 1480067,
+        "sha256": "6a123c376326a6ac0ebb1d98dced18217d48bed448d930d8ad84c8b8d350a0a5",
+        "verification": "Fresh Drive download size/SHA256/ZIPCRC PASS; no signed installable APK."
+      },
+      "changes": [
+        "Compact top tabs, Options and keys reference in rail, two-line readout, shorter instructions.",
+        "Two independent controllers on landscape tablet/TV. Connection overlays the opposite whole panel and restores it on close; both input states stay live.",
+        "Single-controller phone Connection uses freed area below tabs; wide-phone preference question unanswered, default one controller."
+      ],
+      "checks": "23host suites PASS; original+preview unsigned build/lint/native UI-test compilation PASS; lint0errors/54warnings each. Native UI tests NOT RUN. HTML checks6sizes/menus/reciprocal overlay PASS.",
+      "signing": "Owner approved NEW main-app key and reinstall12Nov2026. Key+actual parameters backed up and fresh-download/open/signature verified. Original signed1.47/current remains.1.53SOURCE frozen/unsigned stage; no installer published. New requested R2 layout is sketches only, review pending; no separate preview needed.",
+      "passport": {
+        "id": "1lDuUb18tab63cSFELZtpuKLfXl6cRtY-",
+        "name": "1.53-M30 Companion-Паспорт.txt",
+        "url": "https://drive.google.com/file/d/1lDuUb18tab63cSFELZtpuKLfXl6cRtY-/view",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+      }
+    }
+  },
+  "cleanup_draft_1_49": {
+    "reason": "Own intermediate source stage replaced before APK delivery by verified1.50 preserving manual profile/first press. Diffs/history retained. No published installer removed.",
+    "files": [
+      {
+        "id": "1YmX5itKxuicMNGsw186iY60usM3pjAnz",
+        "size": 1393518,
+        "parent_before": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      },
+      {
+        "id": "1qD4Rh-nFGPZzJmoKiSkf3Ok2Nw35z2ss",
+        "size": 3582,
+        "parent_before": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls"
+      }
+    ],
+    "bytes_removed": 1397100,
+    "history": "docs/changes/1.49.patch +1.50.patch, technical journal, docs/drafts, immutable SOURCE1.50"
+  },
+  "cleanup_draft_1_51": {
+    "date": "2026-11-12",
+    "reason": "Intermediate1.51 superseded before installation; fresh peer initialization corrected in1.52. History/patches retained.1.52 source/hash/CRC and passport readback verified first. Original1.47/current and1.46/previous untouched.",
+    "removed": [
+      {
+        "id": "1sv9u-Qc-OHDe1DUt3Iu5PhF_TgZYQqul",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "name": "1.51-M30 Companion-SOURCE.zip",
+        "size": 1422588
+      },
+      {
+        "id": "1tTrYqc-Klf9Wl3TIraRsSsFEA2J_btg1",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "name": "1.51-M30 Companion-Паспорт.txt",
+        "size": 3612
+      }
+    ],
+    "total_bytes": 1426200
+  },
+  "github": {
+    "status": "deferred_by_owner_repository_later",
+    "repository": null,
+    "planned_tag": "v1.57",
+    "planned_prerelease": true,
+    "checked": "Connected GitHub lists only true-tv-launcher/bookmarks; no M30 repository configured. Release upload tools unavailable in current connector; no cross-project writes. Owner asked for project URI.",
+    "owner_reply": "будет позже"
+  },
+  "cleanup_1_54": {
+    "date": "2026-11-12",
+    "reason": "Verified signed1.54/current and exact1.47/previous retained. Superseded non-key1.46 plus unpublished1.48/1.50 intermediate source/passports removed; substantive logs/patches retained in1.54SOURCE.1.52/1.53 source-only rollback stages and all protected/historical resources retained.",
+    "removed": [
+      {
+        "id": "1ZDywq4jzs0mKF8BtKFXe05rG8wTZ1nCJ",
+        "parent": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+        "name": "1.46-M30-Companion.apk",
+        "size": 972689
+      },
+      {
+        "id": "1enT8WPFuDQWrhLd1wSTWgIuppdBn5OHM",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "name": "1.46-SOURCE.zip",
+        "size": 1314155
+      },
+      {
+        "id": "1RVfxxygZbh9QKvR55x2Z2w65_4KLor_c",
+        "parent": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo",
+        "name": "1.46-Паспорт.txt",
+        "size": 6075
+      },
+      {
+        "id": "1JwXulO6j9dotSAldfKyxeKKbgeA0ikiV",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "name": "1.48-M30 Companion-SOURCE.zip",
+        "size": 1371153
+      },
+      {
+        "id": "1XltMLFa-UgP0m2noNzWsEIS-wgE0Adem",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "name": "1.48-M30 Companion-Паспорт.txt",
+        "size": 5786
+      },
+      {
+        "id": "1rTzBy8d0ZkH6D8NEVqEZXNYEldbbZa0T",
+        "parent": "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge",
+        "name": "1.50-M30 Companion-SOURCE.zip",
+        "size": 1404082
+      },
+      {
+        "id": "1f5Rd3E_lPD_CORvHF-gr-laPyoZ8Ymmz",
+        "parent": "1tNKEZf9G9no_at64cn2q_3L1JXKuU-Ls",
+        "name": "1.50-M30 Companion-Паспорт.txt",
+        "size": 3968
+      }
+    ],
+    "total_bytes": 5077908,
+    "empty_folder_removed": "15jVJu3C4hfjcxmEy4EQFonc3kwcl9KGo"
+  },
+  "cleanup_1_57": {
+    "retired_version": "1.55",
+    "reason": "Current1.57 and previous1.56 full verified.1.56 contains the former1.55 behaviour; history/patches retained. Not a selected checkpoint.",
+    "files": [
+      {
+        "id": "1Qa5flNFkiD0yOmlsDYtJyDhydqx5Venx",
+        "title": "1.55-M30 Companion.apk",
+        "mime_type": "application/vnd.android.package-archive",
+        "size": "1153056",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      {
+        "id": "1LA4rIzaAaVJXNJV6zDufhMJoOSGie3JO",
+        "title": "1.55-M30 Companion-SOURCE.zip",
+        "mime_type": "application/zip",
+        "size": "1579339",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      {
+        "id": "1zeg-zMWU6SVCrhMcBXdRi3P_nLSmh1lS",
+        "title": "1.55-M30 Companion-Паспорт.txt",
+        "mime_type": "text/plain",
+        "size": "5224",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    ],
+    "folder": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm",
+    "folder_parent": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
+    "total_bytes": 2737619,
+    "status": "Completed after1.57/1.56 full-set verification",
+    "removed_empty_folder": "1UbXL5N8FIMiEh1rvR2ZIqBXiRbsctNjm"
+  },
+  "build_api37": {
+    "official_archive": "https://dl.google.com/android/repository/platform-37.0_r02.zip",
+    "archive_sha1": "ed8ebf7f8822a4de5686d427f237d2fa30ff7410",
+    "env": "M30_ANDROID37_JAR",
+    "main_target": 35,
+    "minSdk": 26,
+    "bridge": "app/src/api37/java compiled --release8; only own class packaged",
+    "verification": "Official SHA1, javap public connect call, source/bytecode checks; physical runtime untested."
+  },
+  "cleanup_1_58": {
+    "date": "2026-11-13",
+    "reason": "Current1.58 and previous1.57 complete verified; non-key1.56 superseded; logs and selected checkpoints retained",
+    "files": {
+      "folder": {
+        "id": "1LqNQn8sI1zV3m04898WOWZJ7h1QuYk59",
+        "title": "1.56 — Опции и понятные сочетания M30",
+        "mime_type": "application/vnd.google-apps.folder",
+        "size": null,
+        "url": null,
+        "file_or_folder": "folder",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "source": {
+        "id": "1thSEcFH8O5onQeHb2mMOei9nncc6MN-L",
+        "title": "1.56-M30 Companion-SOURCE.zip",
+        "mime_type": "application/zip",
+        "size": "1601144",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "passport": {
+        "id": "1LUefVUaw2LQQMM0PMethmD2OmwUXlyt5",
+        "title": "1.56-M30 Companion-Паспорт.txt",
+        "mime_type": "text/plain",
+        "size": "4750",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1LqNQn8sI1zV3m04898WOWZJ7h1QuYk59"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "apk": {
+        "id": "1Rrpk410BZR5MQDH0ZNxYBsr-8s_0tmvk",
+        "title": "1.56-M30 Companion.apk",
+        "mime_type": "application/vnd.android.package-archive",
+        "size": "999992",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1LqNQn8sI1zV3m04898WOWZJ7h1QuYk59"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    },
+    "bytes": 2605886,
+    "status": "deleted_after_verified_current_and_previous",
+    "folder_checked_empty_before_delete": true
+  }
+}

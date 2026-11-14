@@ -1,0 +1,135 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'app.m30.companion'
+         minSdk 26
+         targetSdk 35
+-        versionCode 40
+-        versionName '1.39'
++        versionCode 41
++        versionName '1.40'
+         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+--- a/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
++++ b/app/src/androidTest/java/app/m30/companion/SmokeInstrumentation.java
+@@ -74,7 +74,7 @@
+             java.lang.reflect.Field field=MainActivity.class.getDeclaredField("dpadDialog");field.setAccessible(true);Dialog dpad=(Dialog)field.get(activity);
+             if(dpad==null||!dpad.isShowing()||find(dpad.getWindow().getDecorView(),"SELECT + ↑",false)==null)throw new AssertionError("D-pad caption must open combinations in an overlay");
+             if(find(root,"Крестовина M30",false)!=null||mainScroll.getScrollY()!=y)throw new AssertionError("D-pad popup changed main page content or scroll");dpad.dismiss();
+-            PadView diagram=header(root);float scale=Math.min(diagram.getWidth()/1000f,diagram.getHeight()/540f);float x=(diagram.getWidth()-1000*scale)/2+260*scale,yTap=(diagram.getHeight()-540*scale)/2+397*scale;long now=SystemClock.uptimeMillis();
++            PadView diagram=header(root);float scale=Math.min(diagram.getWidth()/1000f,diagram.getHeight()/540f);float x=(diagram.getWidth()-1000*scale)/2+220*scale,yTap=(diagram.getHeight()-540*scale)/2+436*scale;long now=SystemClock.uptimeMillis();
+             for(int action:new int[]{MotionEvent.ACTION_DOWN,MotionEvent.ACTION_UP}){MotionEvent tap=MotionEvent.obtain(now,now,action,x,yTap,0);diagram.onTouchEvent(tap);tap.recycle();}
+             dpad=(Dialog)field.get(activity);if(dpad==null||!dpad.isShowing())throw new AssertionError("Touching physical D-pad caption must open the combinations");dpad.dismiss();
+             for(int action:new int[]{MotionEvent.ACTION_DOWN,MotionEvent.ACTION_CANCEL,MotionEvent.ACTION_UP}){MotionEvent tap=MotionEvent.obtain(now,now,action,x,yTap,0);diagram.onTouchEvent(tap);tap.recycle();}
+@@ -138,7 +138,7 @@
+             originalScroll=(ScrollView)field(activity,"contentScroll");originalScrollY=originalScroll.getScrollY();bluetoothBounds=screenBounds(bt);tabBounds=screenBounds(FocusNavigation.find(root,"tab:0"));bt.performClick();
+         });waitForIdleSync();
+         runOnMainSync(()->{
+-            unchangedOverlayGeometry();check("Старт поиска");check("Стоп");check("Настройки");check("Ранее подключённые");check("Найдены рядом");
++            unchangedOverlayGeometry();check("Старт поиска");check("Стоп");check("Системные настройки Bluetooth");check("Ранее подключённые");check("Найдены рядом");
+             originalBluetooth=(BluetoothSearchController)field(activity,"inlineBluetooth");
+             if(originalBluetooth==null||originalBluetooth.searching())throw new AssertionError("Overlay must open without automatic discovery");
+             if(!(originalBluetooth.view().getParent() instanceof FrameLayout)||header(activity.getWindow().getDecorView()).isShown())throw new AssertionError("Panel must cover fixed header, with base hidden from focus");
+@@ -212,7 +212,7 @@
+         checkInlineBluetooth();
+         checkRemoteNavigation();
+         Activity beforeSearch=activity;activity=startActivitySync(new Intent(getTargetContext(),BluetoothControllerActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+-        runOnMainSync(()->{check("Bluetooth · геймпады");check("Ранее подключённые");check("Найдены рядом");check("Старт поиска");check("Настройки");check("Проверить кнопки");
++        runOnMainSync(()->{check("Bluetooth · геймпады");check("Ранее подключённые");check("Найдены рядом");check("Старт поиска");check("Системные настройки Bluetooth");check("Проверить кнопки");
+             try{java.lang.reflect.Field field=BluetoothControllerActivity.class.getDeclaredField("search");field.setAccessible(true);if(((BluetoothSearchController)field.get(activity)).searching())throw new AssertionError("Opening the screen must not start discovery");}catch(ReflectiveOperationException error){throw new AssertionError(error);}
+             activity.finish();});activity=beforeSearch;
+         Activity main=activity;activity=startActivitySync(new Intent(getTargetContext(),M30FirmwareActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();
+--- a/app/src/main/java/app/m30/companion/BluetoothSearchController.java
++++ b/app/src/main/java/app/m30/companion/BluetoothSearchController.java
+@@ -94,10 +94,11 @@
+     private void buildActions(LinearLayout target){
+         actions=new LinearLayout(activity);actions.setOrientation(LinearLayout.HORIZONTAL);actions.setGravity(Gravity.CENTER_VERTICAL);target.addView(actions,new LinearLayout.LayoutParams(-1,dp(40)));
+         if(compact){headerReserve=new Space(activity);actions.addView(headerReserve,new LinearLayout.LayoutParams(dp(104),1));}
+-        settings=button("Настройки",()->openSettings(Settings.ACTION_BLUETOOTH_SETTINGS));settings.setContentDescription("Системные настройки Bluetooth");settings.setTag(R.id.navigation_key,"bt:settings");actions.addView(settings);
++        settings=button("Системные настройки Bluetooth",()->openSettings(Settings.ACTION_BLUETOOTH_SETTINGS));settings.setContentDescription("Системные настройки Bluetooth");settings.setTag(R.id.navigation_key,"bt:settings");actions.addView(settings);
+         search=button("Старт поиска",this::beginSearch);search.setTag(R.id.navigation_key,"bt:search");actions.addView(search);
+         stop=button("Стоп",()->finishScan("Поиск остановлен."));stop.setTag(R.id.navigation_key,"bt:stop");actions.addView(stop);
+-        for(Button b:new Button[]{settings,search,stop}){b.setTextSize(compact?10:13);b.setMinHeight(0);b.setMinimumHeight(0);b.setPadding(dp(3),dp(2),dp(3),dp(2));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(36),b==stop?.75f:1.15f);lp.leftMargin=dp(4);b.setLayoutParams(lp);}
++        for(Button b:new Button[]{settings,search,stop}){b.setTextSize(compact?10:13);b.setMinHeight(0);b.setMinimumHeight(0);b.setPadding(dp(3),dp(2),dp(3),dp(2));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(36),b==settings?2.3f:b==stop?.7f:1.25f);lp.leftMargin=dp(4);b.setLayoutParams(lp);}
++        settings.setMaxLines(2);settings.setAutoSizeTextTypeUniformWithConfiguration(8,compact?11:14,1,android.util.TypedValue.COMPLEX_UNIT_SP);
+     }
+     private void buildStatus(LinearLayout target){
+         status=label(adapter==null?"Bluetooth недоступен.":"Выберите устройство или начните поиск.",compact?11:14,TEXT);status.setMaxLines(2);status.setEllipsize(android.text.TextUtils.TruncateAt.END);status.setPadding(dp(2),dp(3),dp(2),dp(3));status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);status.setTag(R.id.navigation_key,"bt:status");
+@@ -194,6 +195,12 @@
+             entry.mode=activity.getSharedPreferences("bluetooth_modes",0).getInt(entry.address,-1);
+             candidates.put(entry.address,device);refreshRows();
+         }catch(SecurityException error){accessLost();}
++    }
++    private CharSequence deviceRowText(String name,String detail,String suffix){
++        android.text.SpannableString text=new android.text.SpannableString(name+"\n"+detail+"\n"+suffix);
++        java.util.regex.Matcher modes=java.util.regex.Pattern.compile("(?iu)(?<![\\p{L}\\p{N}])(?:android|windows(?:[ -]*xbox)?|xbox|macos|switch|[xd][ -]?input)(?![\\p{L}\\p{N}])").matcher(name);
++        while(modes.find())text.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),modes.start(),modes.end(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
++        return text;
+     }
+     private void refreshRows(){
+         Set<String> wanted=new HashSet<>();for(boolean saved:new boolean[]{true,false})for(BluetoothDeviceList.Entry e:devices.section(saved))wanted.add((saved?"saved|":"found|")+e.address);
+@@ -207,7 +214,7 @@
+                 if(row.getParent()!=group||group.indexOfChild(row)!=n){boolean focused=row.hasFocus();if(row.getParent() instanceof ViewGroup)((ViewGroup)row.getParent()).removeView(row);group.addView(row,Math.min(n,group.getChildCount()));if(focused)row.requestFocus();}
+                 boolean match=e.saved()&&e.found;GradientDrawable bg=shape(match?0xff203125:0xff242424);if(match)bg.setStroke(dp(1),0xff73d39b);row.setBackground(bg);
+                 String detail=e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
+-                row.setText(e.displayName()+"\n"+detail+"\n"+e.address.substring(9));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
++                row.setText(deviceRowText(e.displayName(),detail,e.address.substring(9)));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
+             }
+             (saved?savedEmpty:foundEmpty).setVisibility(entries.isEmpty()?View.VISIBLE:View.GONE);
+         }
+--- a/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
++++ b/app/src/main/java/app/m30/companion/M30FirmwareActivity.java
+@@ -78,7 +78,7 @@
+     private void readController(UsbDevice d){new Thread(()->{
+         try(UsbM30Link link=new UsbM30Link(usb(),d)){
+             M30UpdateEngine.Probe found=M30UpdateEngine.probe(link);
+-            String text=String.format(Locale.ROOT,"M30 Companion 1.39 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
++            String text=String.format(Locale.ROOT,"M30 Companion 1.40 · официальный протокол Windows\nЗагрузчик 2DC8:3208 ответил.\nМодель: 0x%08X · M30 Bluetooth\nВерсия: %d.%02d\nКоманда чтения: 5 · адрес 0x01017040, CRC и поля ответа проверены.\nЗапись, стирание и перезапуск не выполнялись.",found.model,found.version/100,found.version%100);
+             runOnUiThread(()->{probe=found;probedName=d.getDeviceName();probeReport=text;busy=false;status.setText("M30 определён. Можно выбрать официальный файл.");getSharedPreferences("firmware",0).edit().putString("report",text).apply();refresh();});
+         }catch(Exception error){runOnUiThread(()->{probe=null;probedName=null;probeReport="Чтение модели/версии не завершено: "+error.getClass().getSimpleName()+" · "+error.getMessage()+"\nЗапись, стирание и перезапуск не выполнялись.";busy=false;status.setText(probeReport);refresh();});}
+     },"M30-native-probe").start();}
+--- a/app/src/main/java/app/m30/companion/M30UpdateService.java
++++ b/app/src/main/java/app/m30/companion/M30UpdateService.java
+@@ -46,7 +46,7 @@
+             UsbManager manager=(UsbManager)getSystemService(USB_SERVICE);UsbDevice boot=UsbM30Link.singleBoot(manager);
+             if(!boot.getDeviceName().equals(usbName))throw new IllegalArgumentException("USB-устройство изменилось; выберите загрузчик заново");
+             for(UsbDevice d:manager.getDeviceList().values())if(!d.getDeviceName().equals(usbName)&&UsbDeviceIdentity.firmwareCandidate(d.getVendorId(),d.getProductId(),d.getProductName()))throw new IllegalArgumentException("Оставьте один M30 по USB на время обновления");
+-            detail="M30 Companion 1.39 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
++            detail="M30 Companion 1.40 · USB update\nОфициальный M30 "+image.versionText()+"\nSHA-256: "+image.sha256+"\n"+OfficialM30Files.integrityNote(image)+"\nСекция 0x5006: "+image.second.length+" байт, адрес 0x01018000. Секция PID 0 не записывается в ветке загрузчика 3208.\n";
+             try(UsbM30Link link=new UsbM30Link(manager,boot)){
+                 M30UpdateEngine.install(image,link,this::update);
+             }
+--- a/app/src/main/java/app/m30/companion/PadView.java
++++ b/app/src/main/java/app/m30/companion/PadView.java
+@@ -74,11 +74,20 @@
+         label(canvas,"PAIR",430,80,16,(neutral?0xffeeeeee:Color.rgb(255,244,180)),false);
+         label(canvas,"8BitDo",500,120,40,(neutral?0xff171717:Color.rgb(23,23,16)),true);
+         modelLabel(canvas);
+-        label(canvas,dpadCaption,260,397,dpadAction==null?18:24,(neutral?0xff303030:Color.rgb(48,42,11)),false);
++        if(dpadAction!=null)dpadCaptionBadge(canvas);else label(canvas,dpadCaption,260,397,18,(neutral?0xff303030:Color.rgb(48,42,11)),false);
+         label(canvas,"STAR",442,389,16,(neutral?0xff303030:Color.rgb(48,42,11)),false);
+         label(canvas,"SELECT",500,389,16,(neutral?0xff303030:Color.rgb(48,42,11)),false);
+         label(canvas,"HOME",558,389,16,(neutral?0xff303030:Color.rgb(48,42,11)),false);
+         canvas.restore();
++    }
++    private void dpadCaptionBadge(Canvas canvas){
++        p.setTypeface(Typeface.create("sans-serif",Typeface.BOLD));float size=28;p.setTextSize(size);
++        while(p.measureText(dpadCaption)>216&&size>20){size--;p.setTextSize(size);}
++        float half=Math.max(65,Math.min(120,p.measureText(dpadCaption)/2+12));
++        RectF badge=new RectF(220-half,416,220+half,456);
++        p.setStyle(Paint.Style.FILL);p.setColor(0xff151515);canvas.drawRoundRect(badge,12,12,p);
++        p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(neutral?0xffc0c0c0:accent);canvas.drawRoundRect(badge,12,12,p);
++        label(canvas,dpadCaption,220,436,size,Color.WHITE,true);
+     }
+     private int keyColor(String label){return state.active(label)?(neutral?0xfff0f0f0:Color.rgb(255,251,220)):state.tested(label)?Color.rgb(Math.round(Color.red(accent)*.55f),Math.round(Color.green(accent)*.55f),Math.round(Color.blue(accent)*.55f)):Color.rgb(21,21,21);}
+     private void modelLabel(Canvas canvas){
+@@ -123,7 +132,7 @@
+         float scale=Math.min(getWidth()/(float)WIDTH,getHeight()/(float)HEIGHT);
+         if(scale<=0)return false;
+         float px=(x-(getWidth()-WIDTH*scale)/2)/scale,py=(y-(getHeight()-HEIGHT*scale)/2)/scale;
+-        return px>=125&&px<=395&&py>=145&&py<=430;
++        return px>=95&&px<=395&&py>=145&&py<=466;
+     }
+     @Override public boolean onTouchEvent(MotionEvent e) {
+         if(e.getActionMasked()==MotionEvent.ACTION_DOWN){tapX=e.getX();tapY=e.getY();dpadTap=dpadAction!=null&&dpadHit(tapX,tapY);return true;}

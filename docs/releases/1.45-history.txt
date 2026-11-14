@@ -1,0 +1,38 @@
+M30 Companion1.45 — текстовая история до удаления неключевого установщика/SOURCE. Точный возврат удалённых бинарников по документации не обещается; патч/валидация/журналы сохранены.
+
+Паспорт сDrive:
+M30 Companion 1.45 / versionCode46 /28.10.2026
+Package app.m30.companion, Android8+/TV, min26/target/compile35. Установка поверх текущего приложения без удаления, прежняя подпись.
+
+При открытии страницы джойстика в landscape восстанавливается верх после layout/автофокуса, чтобы Gamepad1/2 не имели разного сдвига и подпись не уезжала за экран. Обе строки24dp. При render той же страницы сохраняется текущая ручная прокрутка; шапка остаётся в общей прокрутке. Выбранный tab0 — CARD-фон с жёлтыми текстом/рамкой, как оформление tab2. Keyboard и белый TV-focus прежние.
+Bluetooth: saved-заголовок «Ранее подключённые (N)», N уникальных сохранённых геймпадов этого списка; found+saved не удваивает число. Scrollbar saved-колонки слева/4dp/без затухания, при переполнении показывает позицию. API29+ явные thumb/track, API26–28 native. Один и тот же bt:search меняется между Start/Stop по фактическому ownsDiscovery. Начало с прежними permissions/enable/location-guards, остановка/timeout/error/pause возвращают Start. ID/геометрия/фокус кнопки сохраняются. Меню устройства1.44/системные операции/слоты/прошивочный механизм/макеты не менялись.
+
+Проверки:20 host core suites PASS; offline assembleDebug/lintDebug/assembleDebugAndroidTest PASS. Lint0 errors/43 warnings, новая SetTextI18n для literal-счётчика в существующем русском UI. Instrumentation для выравнивания header после scroll/focus, outline-style, N, левого scrollbar и одного toggle-view скомпилирована, НЕ ИСПОЛНЕНА. Радиопоиск при проверке UI не запускался. Физические TV/телефон, фактический автофокус/положение шапки и ползунок ещё требуют проверки владельцем.
+aapt app.m30.companion/versionName1.45/code46/min26/target35 и прежний сертификат apksigner проверены. Новые и предыдущие1.44 APK/SOURCE заново скачаны с Drive, SHA256/size/ZIP CRC совпали. Метаданные/parents новых и сохраняемых ключевых проверены.
+
+APK 972425 bytes
+SHA256 42659be53a93048a5568b2a941966e2e64075a5469225588b2e78231e99136ad
+https://drive.google.com/file/d/1fwj5S5qy0C_f-DS2sZkuv_yzLHTHyyYH/view?usp=drivesdk
+SOURCE 1298572 bytes
+SHA256 8b31910bf02a594f42de328f8569e3d8eac4f80b7d2228b446a8643f71334976
+https://drive.google.com/file/d/1ZyhxW4PXfhQmX8YkAocxyQTUb8gXxDpb/view?usp=drivesdk
+Один immutable SOURCE; собственные ID/hash не встраиваются внутрь себя, итоговые значения во внешнем паспорте/живом индексе. Поздние документы войдут в следующий снимок, APK/ZIP не переписываются. Ключи/build/cache/SDK/local.properties исключены.
+Сертификат SHA256 e5141fbbfad5c2920cef4ee903e1c98a9e93727d206bc03b1ff919de702e9272 — прежняя Android Debug подпись.
+Инструкция: https://drive.google.com/file/d/14E8d63A31UQYHaKLmpzAYLEgPrKgRaXg/view?usp=drivesdk
+Папка1.45: https://drive.google.com/drive/folders/1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Текущий1.45/предыдущий1.44. Старый неключевой1.43 после проверок снимается с хранения; тексты заранее в docs/releases/1.43-history.txt и SOURCE1.45, патч/валидация/журналы сохранены. Ключевые1.41/1.38/1.36/1.32, исторические1.27/1.29, контейнер1.33 и дизайн сохраняются. Нового checkpoint нет.
+
+Проверка1.45 завершена: новые и предыдущие1.44 APK/SOURCE заново скачаны и совпали по SHA256/size/CRC. Текущий1.45/предыдущий1.44. Неключевой1.43 удалён после проверок —4файла/2355726байт и пустая папка, тексты в SOURCE1.45. Выбранные ключевые/исторические/контейнер1.33/дизайн сохранены. TV/phone runtime не заявляется.
+
+
+Инструкция сDrive:
+M30 Companion1.45 — установка и проверка
+Установите поверх текущей версии без удаления. Android8+/TV, package app.m30.companion, прежняя подпись.
+При открытии джойстиков в landscape показывается верх страницы с Gamepad1/2 на одной высоте; положение восстанавливается после layout/автофокуса. Шапка остаётся частью общей ручной прокрутки. В portrait прежняя схема. Первый выбранный джойстик — серый фон с жёлтыми текстом/рамкой.
+Bluetooth: «Ранее подключённые (N)» — число уникальных сохранённых геймпадов в этом списке; найденное совпадение второй раз не учитывается. У saved-колонки слева незатухающий индикатор позиции, видимый при переполнении. Одна кнопка «Старт поиска» после успешного начала меняется на «Стоп», повторное нажатие останавливает собственный поиск. По завершении/ошибке/уходе возвращается «Старт поиска»; разрешения/ограничение времени прежние.
+Проверьте TV: переключение Gamepad1↔2 после прокрутки/с пульта без потери верхней подписи; рамка tab1, правильное N после добавления/забывания пары; длинный saved-список и ползунок; Start/Stop и удержание фокуса.20 host-наборов/сборка/lint прошли, UI-проверки только скомпилированы, реальные TV/phone здесь не проверены.
+APK: https://drive.google.com/file/d/1fwj5S5qy0C_f-DS2sZkuv_yzLHTHyyYH/view?usp=drivesdk
+Папка1.45: https://drive.google.com/drive/folders/1p81YuIvmUUSaFTUvmrpT7bDuCz-XJ6vQ
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+
