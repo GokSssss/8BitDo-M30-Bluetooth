@@ -1,4 +1,10 @@
-# 8BitDo-M30-Bluetooth
+# 8BitDo M30 Bluetooth
+
+M30 Companion для подключения и проверки геймпадов 8BitDo M30 на Android и Android TV.
+
+[Скачать APK1.59](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.59/1.59-M30.Companion.apk) · [Release1.59](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.59) · [SOURCE ZIP](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.59/1.59-M30.Companion-SOURCE.zip)
+
+Проверочный выпуск (Pre-release). Установка поверх1.58 без удаления. Ключи подписи в репозиторий не включаются.
 
 # M30 Companion1.59
 

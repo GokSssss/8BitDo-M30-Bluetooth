@@ -1,0 +1,49 @@
+{
+  "status": "published_verified",
+  "account": "GokSssss",
+  "proposed_repository": "GokSssss/M30-Companion",
+  "repository_exists": true,
+  "local_checkout": "/workspace/github/M30-Companion",
+  "commit": "0b7692dff6f49dbf3fd3f87b0a4ebc0ac612c2d3",
+  "planned_tag": "v1.59",
+  "prerelease": true,
+  "assets_dir": "/workspace/github/release-assets-1.59",
+  "notes_file": "/workspace/scratch/github159-release-notes.md",
+  "source_comparison": "Immutable SOURCE exact except README adds owner title and .gitignore excludes signing material; all runtime sources match",
+  "apk_sha256": "a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9",
+  "source_sha256": "c2ba15e25352b5298b375aea1ab352d04efbe976c24eb2115d4a24cce8891040",
+  "blocker": null,
+  "repository": "GokSssss/8BitDo-M30-Bluetooth",
+  "repository_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth",
+  "visibility": "public",
+  "initial_remote_commit": "f7c0e5ee08b611b276f428bed66f27f9c9a559d3",
+  "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.59",
+  "release_id": 445332683,
+  "tag": "v1.59",
+  "draft": false,
+  "workflow_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43602589761",
+  "workflow_success": true,
+  "verification": "All three assets downloaded from GitHub and compared byte-for-byte to prepared Drive artifacts; tag commit checked",
+  "assets": [
+    {
+      "github_name": "1.59-M30.Companion.apk",
+      "drive_name": "1.59-M30 Companion.apk",
+      "size": 1014165,
+      "sha256": "a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9"
+    },
+    {
+      "github_name": "1.59-M30.Companion-SOURCE.zip",
+      "drive_name": "1.59-M30 Companion-SOURCE.zip",
+      "size": 2630116,
+      "sha256": "c2ba15e25352b5298b375aea1ab352d04efbe976c24eb2115d4a24cce8891040"
+    },
+    {
+      "github_name": "1.59-M30.Companion-PASSPORT.txt",
+      "drive_name": "1.59-M30 Companion-Паспорт.txt",
+      "size": 3860,
+      "sha256": "34f536681307e24810d73591f86384b9e142e1043891f883e3455d548a5a2318"
+    }
+  ],
+  "filename_note": "GitHub enforces ASCII/safe asset filenames: spaces become dots and Cyrillic is removed. Original Drive names preserved as asset display labels; passport asset has ASCII PASSPORT suffix. Bytes/hashes identical.",
+  "temporary_branch_removed_after_verified_release": true
+}
