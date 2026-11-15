@@ -1,0 +1,38 @@
+{
+  "repository": "GokSssss/8BitDo-M30-Bluetooth",
+  "date": "2026-11-15",
+  "head": "f1706f5523963546493c8b3723a992a9dca6e5cf",
+  "releases": [
+    {
+      "id": 445332683,
+      "tag": "v1.59",
+      "name": "8BitDo M30 Bluetooth — 1.59",
+      "body": "На коротком горизонтальном экране телефона схема теперь целиком помещается по высоте. «Подключение» прокручивает страницу к Bluetooth, крестик возвращает прежнее место. В портрете две справочные кнопки выровнены с «Клавишами», версия и прошивка перенесены над ними.\n\nУстановка: поверх 1.58 без удаления; пакет app.m30.companion, versionCode60. Ключ прежний.\n\nПроверки:26 наборов логики,8 headless Android View-тестов (Robolectric/API28/NATIVE Skia), signed build и lint прошли. Instrumentation скомпилирована; физические телефон/TV и Bluetooth-радио не проверялись. Проверочный выпуск (Pre-release).\n\nAPK SHA256: a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9\nSOURCE SHA256: c2ba15e25352b5298b375aea1ab352d04efbe976c24eb2115d4a24cce8891040\n\nAPK и SOURCE взяты из проверенного комплекта Google Диска без пересборки. Ключи/пароли в GitHub не включаются.\n",
+      "prerelease": true,
+      "draft": false,
+      "assets": [
+        {
+          "id": 747662346,
+          "name": "1.59-M30.Companion-PASSPORT.txt",
+          "size": 3860,
+          "digest": "sha256:34f536681307e24810d73591f86384b9e142e1043891f883e3455d548a5a2318",
+          "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.59/1.59-M30.Companion-PASSPORT.txt"
+        },
+        {
+          "id": 747662334,
+          "name": "1.59-M30.Companion-SOURCE.zip",
+          "size": 2630116,
+          "digest": "sha256:c2ba15e25352b5298b375aea1ab352d04efbe976c24eb2115d4a24cce8891040",
+          "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.59/1.59-M30.Companion-SOURCE.zip"
+        },
+        {
+          "id": 747662348,
+          "name": "1.59-M30.Companion.apk",
+          "size": 1014165,
+          "digest": "sha256:a947623bc2f6808ca4eddaed9a929fd396589d842dd56f491489f4a24829f8f9",
+          "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.59/1.59-M30.Companion.apk"
+        }
+      ]
+    }
+  ]
+}
