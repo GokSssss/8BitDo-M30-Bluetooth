@@ -4,6 +4,13 @@
 
 ## Русский
 
+### 1.61 · Одно действие для удаления устройства
+
+- Два пункта удаления заменены единым **Забыть устройство**.
+- Пока пара есть в Android, метка и привязка сохраняются. Очистка выполняется после подтверждённого удаления пары; отмена ничего не удаляет.
+- После возврата из настроек состояние проверяется заново. Сохранённый M30 можно подключить из **Ранее подключённых** без повторного поиска.
+
+
 ### 1.60 · Пары Bluetooth и повторное сопряжение
 
 - После удаления пары в Android приложение обновляет список, метку и привязку этого устройства.
@@ -55,6 +62,13 @@
 ---
 
 ## English
+
+### 1.61 · One action to forget a device
+
+- Replaced the two removal options with a single **Forget device** action.
+- The label and slot link stay while the Android pair exists. Cleanup follows confirmed pair removal; cancelling keeps everything.
+- Returning from settings rechecks the pair. Reconnect a saved M30 from **Previously connected** without searching again.
+
 
 ### 1.60 · Bluetooth pairs and re-pairing
 

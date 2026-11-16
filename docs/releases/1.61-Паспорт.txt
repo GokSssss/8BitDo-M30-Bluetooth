@@ -1,0 +1,18 @@
+M30 Companion1.61 · versionCode62 · app.m30.companion
+16.11.2026. Проверочный выпуск по уточнению пользовательского сценария.
+
+Один пункт «Забыть устройство» вместо двух вариантов удаления. Пока пара есть в Android, приложение сохраняет метку, номер и привязку. Удаление выполняется в настройках Android; после свежей проверки отсутствия пары приложение завершает очистку. Если удаление отменено, всё остаётся и M30 можно подключить из Ранее подключённых без сканирования. Если пары уже нет, тот же пункт очищает остаточную запись. Ожидание удаления сохраняется при пересоздании; отсутствие доступа/выключенный Bluetooth не стирают данные.
+Изменение не добавляет скрытый removeBond и не меняет прошивку/назначения/другие устройства. Прямое отключение1.60 сохраняется на поддерживаемом Android.
+
+Проверки:26pure host/22headless Android PASS(API28/API35,NATIVE Skia;14Bluetooth+8UI), signed build/lint/instrumentation compile PASS,0errors/69warnings. Физический контроллер/BT-радио/Android17 не запускались. Instrumentation только скомпилирована.
+Установка поверх1.60 без удаления. Ключ12Nov свежо скачан и использован, новый не создавался.
+Сертификат SHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+APK: https://drive.google.com/file/d/1hpK-otX0m5hhRCDM0BNYkQ-ize578g15/view
+Размер: 1018305bytes
+SHA256: e46ce4ab6653baf5d3bb56d942348face8b9ef277a6c97015cf5569488fafa8b
+SOURCE: окончательные ID/размер/SHA256 добавляются во внешний паспорт после загрузки. ZIP неизменяемый.
+Папка: https://drive.google.com/drive/folders/1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+Сборка: прежние JDK17/Gradle8.11.1/SDK35 плюс официальный SDK37 android.jar для helper, см. docs/history/README-before-2026-11-15.md. Ключи/пароли/SDKstubs в SOURCE не включены.
+GitHub: публикация v1.61/Pre-release в GokSssss/8BitDo-M30-Bluetooth готовится; фактическая ссылка после проверки. Имена APK/SOURCE/Passport ASCII одинаковы на обоих сервисах.

@@ -1,0 +1,14 @@
+Compiled from "BluetoothConnect37.java"
+public final class app.m30.companion.BluetoothConnect37 {
+  public static int stop(android.bluetooth.BluetoothDevice);
+    Code:
+       0: aload_0
+       1: invokevirtual #7                  // Method android/bluetooth/BluetoothDevice.disconnect:()I
+       4: ireturn
+
+  public static int start(android.bluetooth.BluetoothDevice);
+    Code:
+       0: aload_0
+       1: invokevirtual #13                 // Method android/bluetooth/BluetoothDevice.connect:()I
+       4: ireturn
+}

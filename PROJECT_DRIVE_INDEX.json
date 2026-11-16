@@ -9,14 +9,14 @@
   },
   "folders": {
     "current": {
+      "id": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
+      "name": "1.61 — Единое удаление устройства",
+      "url": "https://drive.google.com/drive/folders/1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc"
+    },
+    "previous": {
       "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
       "name": "1.60 — Состояние Bluetooth и повторное сопряжение",
       "url": "https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4"
-    },
-    "previous": {
-      "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
-      "name": "1.59 — Компактный экран и видимое подключение",
-      "url": "https://drive.google.com/drive/folders/1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
     },
     "resources": {
       "id": "1GRRJgf9OZSetefKJQuUTZCrHMc_jebvO",
@@ -884,7 +884,7 @@
       }
     },
     "1.60": {
-      "role": "current_full_verified",
+      "role": "previous_full_verified",
       "versionCode": 61,
       "folder": {
         "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
@@ -956,6 +956,34 @@
         "parent": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
         "verification": "Exact Drive readback and public GitHub bytes PASS"
       }
+    },
+    "1.61": {
+      "role": "current_prepared_source_upload_pending",
+      "versionCode": 62,
+      "folder": {
+        "id": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
+        "name": "1.61 — Единое удаление устройства",
+        "url": "https://drive.google.com/drive/folders/1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc"
+      },
+      "apk": {
+        "id": "1hpK-otX0m5hhRCDM0BNYkQ-ize578g15",
+        "name": "1.61-M30-Companion.apk",
+        "size": 1018305,
+        "sha256": "e46ce4ab6653baf5d3bb56d942348face8b9ef277a6c97015cf5569488fafa8b",
+        "url": "https://drive.google.com/file/d/1hpK-otX0m5hhRCDM0BNYkQ-ize578g15/view"
+      },
+      "source": {
+        "status": "Immutable SOURCE ID/hash added externally after upload"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.60 without uninstalling",
+      "github": {
+        "status": "pending",
+        "repository": "GokSssss/8BitDo-M30-Bluetooth",
+        "tag": "v1.61",
+        "prerelease": true
+      },
+      "protected": false
     }
   },
   "checkpoints": [
@@ -1169,7 +1197,7 @@
     "deleted_non_key_apks": 32,
     "deleted_bytes": 29295960,
     "archive_removed": true,
-    "preserved_artifacts": "Current1.60 and previous1.59 complete verified; protected1.54/1.47 and other selected checkpoints unchanged. GitHub1.59/1.60 retained.",
+    "preserved_artifacts": "Current1.61 prepared,previous1.60 fresh downloads verified;1.59 pending retirement after1.61 verification. Protected checkpoints unchanged.",
     "text_readback": "Rules, AGENTS, registry and both logs matched local; journal history retained.",
     "signing_gap": "New main key backed up/restored and used for1.54. Original historical private key remains unavailable; no update compatibility over1.47.",
     "github_gap": null,
@@ -1178,13 +1206,11 @@
   },
   "source_snapshot_note": "Own archive SHA256 cannot be embedded in itself. This snapshot precedes SOURCE upload; use the live PROJECT_DRIVE_INDEX.json and passport on Drive for final artifact IDs/hashes.",
   "publication": {
-    "version": "1.60",
+    "version": "1.61",
     "date": "2026-11-16",
-    "status": "drive_and_github_verified",
-    "checks": "M30 Companion1.60/code61;16Nov2026.26pure host suites PASS;18headless Android tests PASS(API28/API35), including10Bluetooth+8UI. Signed build/lint/instrumentation compile PASS,0errors/67warnings. Physical Bluetooth/Android17 not run. Same stable certificate 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, fresh Drive key/parameters restored and used; update over1.59.\n",
-    "new_signature_reinstall_required": false,
-    "github_release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.60",
-    "verification": "Current1.60 and previous1.59 complete verified; all3 public GitHub assets exact names/bytes/SHA256.18Android+26host PASS; real radio untested."
+    "status": "prepared_pending_verification_and_github",
+    "checks": "M30 Companion1.61/code62;16Nov2026.26pure host suites PASS;22headless Android tests PASS(API28/API35,NATIVE Skia;14Bluetooth+8UI). Signed build/lint/instrumentation compile PASS,0errors/69warnings. Physical M30/radio not run. Same stable cert 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, fresh Drive key/parameters restored and used. Update over1.60.\n",
+    "new_signature_reinstall_required": false
   },
   "cleanup_1_35": {
     "files_deleted": 3,

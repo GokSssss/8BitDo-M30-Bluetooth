@@ -7,8 +7,8 @@ android {
         applicationId (previewMode ? 'app.m30.companion.preview' : 'app.m30.companion')
         minSdk 26
         targetSdk 35
-        versionCode 61
-        versionName (previewMode ? '1.60-preview' : '1.60')
+        versionCode 62
+        versionName (previewMode ? '1.61-preview' : '1.61')
         manifestPlaceholders = [m30AppLabel: previewMode ? 'M30 Проверка' : 'M30 Companion']
         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
     }

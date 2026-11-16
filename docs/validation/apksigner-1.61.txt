@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=M30 Companion, OU=Project 20, O=M30 Companion, C=ID
+Signer #1 certificate SHA-256 digest: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+Signer #1 certificate SHA-1 digest: 9b2b70043d25a43efd398f6d5d9fa48250ef4374
+Signer #1 certificate MD5 digest: 5d9862cf622d81b22d18ae26320ee114
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 98565dd9120e736d2ffa18c27c4133d866f1f106bbd30ca2ed10d09e24fa43e6
+Signer #1 public key SHA-1 digest: 7e6198875c44081fadcaf8f514e94dad4fb8ae61
+Signer #1 public key MD5 digest: 08612b663bc1ec9e05c6f168222ce9bf
