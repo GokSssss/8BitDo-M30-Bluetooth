@@ -1,0 +1,64 @@
+{
+  "version": "1.62",
+  "date": "2026-11-16",
+  "drive": {
+    "apk_id": "1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y",
+    "source_id": "1OzBBdHDz0y8uSR7mvd76wv-k6ZS1ZDar",
+    "passport_id": "1A89WGbQoirqf9hdBck-fJjxzqsPffsQw",
+    "new_exact_downloads_verified": true,
+    "previous_1_61_complete_fresh_downloads_verified": true,
+    "current_root_entries": 7,
+    "current_release_children": 2,
+    "previous_release_children": 2,
+    "live_document_raw_readbacks": [
+      {
+        "document": "base",
+        "exact": true
+      },
+      {
+        "document": "agents",
+        "exact": true
+      },
+      {
+        "document": "user",
+        "exact": true
+      },
+      {
+        "document": "dev",
+        "exact": true
+      },
+      {
+        "document": "index",
+        "exact": true
+      },
+      {
+        "document": "registry",
+        "exact": true
+      },
+      {
+        "document": "parameters",
+        "exact": true
+      }
+    ],
+    "stable_signing_backup_restored_used_and_parameters_preserved": true
+  },
+  "github": {
+    "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62",
+    "code_commit": "a1a9e14a39e963a93771f544c0f34b090d1519c4",
+    "public_assets_exact_downloads_verified": true,
+    "workflow": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43897110886",
+    "workflow_success": true,
+    "temporary_branch_removed": true
+  },
+  "cleanup": {
+    "removed_drive_nonkey": "1.60",
+    "bytes": 4441862,
+    "protected_checkpoints_untouched": true,
+    "github_history_retained": true
+  },
+  "validation": {
+    "host_suites": 26,
+    "headless_android_tests": 34,
+    "physical_radio_executed": false
+  }
+}

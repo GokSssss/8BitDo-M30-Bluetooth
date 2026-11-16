@@ -1,0 +1,37 @@
+{
+  "version": "1.62",
+  "tag": "v1.62",
+  "commit": "a1a9e14a39e963a93771f544c0f34b090d1519c4",
+  "repository": "GokSssss/8BitDo-M30-Bluetooth",
+  "release_id": 447226192,
+  "prerelease": true,
+  "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62",
+  "assets": [
+    {
+      "name": "1.62-M30-Companion.apk",
+      "size": 1021377,
+      "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62",
+      "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion.apk"
+    },
+    {
+      "name": "1.62-M30-Companion-SOURCE.zip",
+      "size": 4415071,
+      "sha256": "5ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa",
+      "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-SOURCE.zip"
+    },
+    {
+      "name": "1.62-M30-Companion-Passport.txt",
+      "size": 4065,
+      "sha256": "09565d2fbeb72e9e9e10ce1a3af18be9c665e141ff301396a41ca8a024220a08",
+      "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-Passport.txt"
+    }
+  ],
+  "status": "published_verified",
+  "draft": false,
+  "workflow_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43897110886",
+  "workflow_success": true,
+  "verification": "All3 public downloads exact names/bytes/SHA256; public annotated tag points to code commit; workflow success and temporary branch removed",
+  "temporary_branch_removed": true,
+  "visibility": "public",
+  "tag_scheme": "v<version>"
+}

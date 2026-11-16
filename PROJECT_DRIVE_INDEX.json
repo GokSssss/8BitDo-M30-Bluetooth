@@ -886,28 +886,28 @@
       "retirement_reason": "Current1.61/previous1.60 verified; former1.59 covered by1.60; history/GitHub retained."
     },
     "1.60": {
-      "role": "previous_full_verified",
+      "role": "deleted_non_key_after162_verified",
       "versionCode": 61,
       "folder": {
-        "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
         "name": "1.60 — Состояние Bluetooth и повторное сопряжение",
-        "url": "https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4"
+        "status": "deleted",
+        "former_id": "1res0jT_CopXGyhpntkTlpbH96giIugw4"
       },
       "apk": {
-        "id": "1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP",
         "name": "1.60-M30-Companion.apk",
         "size": 1188841,
         "sha256": "e0f95306ffd9bc52c78d6dff85f0dae8f417488319bf1c43cffc92885656a13a",
-        "url": "https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view",
-        "verification": "Fresh Drive size/SHA256/CRC/stable certificate and exact public GitHub download PASS"
+        "verification": "Fresh Drive size/SHA256/CRC/stable certificate and exact public GitHub download PASS",
+        "status": "deleted",
+        "former_id": "1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP"
       },
       "source": {
-        "id": "14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa",
         "name": "1.60-M30-Companion-SOURCE.zip",
-        "url": "https://drive.google.com/file/d/14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa/view",
         "size": 3249190,
         "sha256": "90af0b7b6f41ae69d2ed70d5e68d0a61f39e7baff9657b92364688f0f75e7c9e",
-        "verification": "Fresh Drive size/SHA256/CRC/exact runtime source and public GitHub bytes PASS"
+        "verification": "Fresh Drive size/SHA256/CRC/exact runtime source and public GitHub bytes PASS",
+        "status": "deleted",
+        "former_id": "14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa"
       },
       "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
       "install": "Update over1.59 without uninstalling",
@@ -952,11 +952,17 @@
       },
       "protected": false,
       "passport": {
-        "id": "16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX",
         "name": "1.60-M30-Companion-Passport.txt",
-        "url": "https://drive.google.com/file/d/16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX/view",
         "parent": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
-        "verification": "Exact Drive readback and public GitHub bytes PASS"
+        "verification": "Exact Drive readback and public GitHub bytes PASS",
+        "status": "deleted",
+        "former_id": "16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX"
+      },
+      "cleanup": {
+        "date": "2026-11-16",
+        "reason": "Normal current+previous retention after complete1.62/1.61 fresh Drive verification and public1.62 GitHub exact downloads; not a selected checkpoint",
+        "history": "docs/changes/1.60.patch; logs; GitHub v1.60 retained",
+        "deleted_bytes": 4441862
       }
     },
     "1.61": {
@@ -1030,10 +1036,11 @@
         "url": "https://drive.google.com/file/d/1Pb-w1f2aC_ss1vjCaU8EV-xQMEK9wMkr/view",
         "parent": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
         "verification": "Exact Drive readback and public GitHub bytes PASS"
-      }
+      },
+      "retention_verification_1_62": "Fresh downloads ofAPK/SOURCE/Passport sizes/hash/ZIP and certificate confirmed before retiring1.60"
     },
     "1.62": {
-      "role": "current_publication_in_progress",
+      "role": "current_full_verified",
       "versionCode": 63,
       "folder": {
         "id": "16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg",
@@ -1044,11 +1051,67 @@
         "id": "1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y",
         "name": "1.62-M30-Companion.apk",
         "size": 1021377,
-        "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62"
+        "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62",
+        "url": "https://drive.google.com/file/d/1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y/view",
+        "verification": "Fresh Drive bytes/hash/CRC/stable certificate and exact public GitHub download PASS"
       },
       "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
       "install": "Update over1.61 without uninstalling",
-      "protected": false
+      "protected": false,
+      "source": {
+        "id": "1OzBBdHDz0y8uSR7mvd76wv-k6ZS1ZDar",
+        "name": "1.62-M30-Companion-SOURCE.zip",
+        "size": 4415071,
+        "sha256": "5ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa",
+        "url": "https://drive.google.com/file/d/1OzBBdHDz0y8uSR7mvd76wv-k6ZS1ZDar/view",
+        "verification": "Fresh Drive bytes/hash/CRC/exact runtime source and public GitHub download PASS"
+      },
+      "passport": {
+        "id": "1A89WGbQoirqf9hdBck-fJjxzqsPffsQw",
+        "name": "1.62-M30-Companion-Passport.txt",
+        "size": 4065,
+        "sha256": "09565d2fbeb72e9e9e10ce1a3af18be9c665e141ff301396a41ca8a024220a08",
+        "url": "https://drive.google.com/file/d/1A89WGbQoirqf9hdBck-fJjxzqsPffsQw/view",
+        "parent": "16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg",
+        "verification": "Exact raw Drive readback and public GitHub bytes PASS"
+      },
+      "github": {
+        "version": "1.62",
+        "tag": "v1.62",
+        "commit": "a1a9e14a39e963a93771f544c0f34b090d1519c4",
+        "repository": "GokSssss/8BitDo-M30-Bluetooth",
+        "release_id": 447226192,
+        "prerelease": true,
+        "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62",
+        "assets": [
+          {
+            "name": "1.62-M30-Companion.apk",
+            "size": 1021377,
+            "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62",
+            "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion.apk"
+          },
+          {
+            "name": "1.62-M30-Companion-SOURCE.zip",
+            "size": 4415071,
+            "sha256": "5ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa",
+            "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-SOURCE.zip"
+          },
+          {
+            "name": "1.62-M30-Companion-Passport.txt",
+            "size": 4065,
+            "sha256": "09565d2fbeb72e9e9e10ce1a3af18be9c665e141ff301396a41ca8a024220a08",
+            "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-Passport.txt"
+          }
+        ],
+        "status": "published_verified",
+        "draft": false,
+        "workflow_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43897110886",
+        "workflow_success": true,
+        "verification": "All3 public downloads exact names/bytes/SHA256; public annotated tag points to code commit; workflow success and temporary branch removed",
+        "temporary_branch_removed": true,
+        "visibility": "public",
+        "tag_scheme": "v<version>"
+      }
     }
   },
   "checkpoints": [
@@ -1273,9 +1336,11 @@
   "publication": {
     "version": "1.62",
     "date": "2026-11-16",
-    "status": "in_progress",
+    "status": "drive_and_github_verified",
     "checks": "M30 Companion1.62/code63,16Nov2026.26pure host suites and34headless Android tests PASS(API28/API35/API36,NATIVE Skia;12nativeforget/14bond/8UI). Signed build/lint/instrumentation compile PASS;0errors/73warnings. Physical controller/radio untested. Same stable cert12Nov restored fromDrive and used; update over1.61. API36 tests run onJava21; app buildJDK17/target35/min26 unchanged.",
-    "new_signature_reinstall_required": false
+    "new_signature_reinstall_required": false,
+    "github_release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62",
+    "verification": "Current1.62/previous1.61 complete fresh Drive verified; all3 public1.62GitHub downloads exact names/bytes/SHA256;34Android+26host PASS. Physical radio untested."
   },
   "cleanup_1_35": {
     "files_deleted": 3,
@@ -1896,42 +1961,41 @@
     "total_bytes": 1426200
   },
   "github": {
-    "version": "1.61",
-    "status": "published_verified",
+    "version": "1.62",
+    "tag": "v1.62",
+    "commit": "a1a9e14a39e963a93771f544c0f34b090d1519c4",
     "repository": "GokSssss/8BitDo-M30-Bluetooth",
-    "visibility": "public",
-    "tag": "v1.61",
-    "commit": "4dc89453d4eb0409f067e153b4e8d8bf9c3e9c08",
+    "release_id": 447226192,
     "prerelease": true,
-    "apk_sha256": "e46ce4ab6653baf5d3bb56d942348face8b9ef277a6c97015cf5569488fafa8b",
-    "source_sha256": "61b9eba867fcdc1dcbe6d692f58565128abdf3096a09b77932f7707e7a4cef5c",
-    "draft": false,
-    "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.61",
-    "release_id": 447056068,
-    "workflow_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43873124388",
-    "workflow_success": true,
+    "release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62",
     "assets": [
       {
-        "name": "1.61-M30-Companion-Passport.txt",
-        "size": 3373,
-        "sha256": "8b29495d2f697dd74e208777246103348379b661bd5852dafca27a2776dad9cb",
-        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.61/1.61-M30-Companion-Passport.txt"
+        "name": "1.62-M30-Companion.apk",
+        "size": 1021377,
+        "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62",
+        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion.apk"
       },
       {
-        "name": "1.61-M30-Companion-SOURCE.zip",
-        "size": 3822067,
-        "sha256": "61b9eba867fcdc1dcbe6d692f58565128abdf3096a09b77932f7707e7a4cef5c",
-        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.61/1.61-M30-Companion-SOURCE.zip"
+        "name": "1.62-M30-Companion-SOURCE.zip",
+        "size": 4415071,
+        "sha256": "5ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa",
+        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-SOURCE.zip"
       },
       {
-        "name": "1.61-M30-Companion.apk",
-        "size": 1018305,
-        "sha256": "e46ce4ab6653baf5d3bb56d942348face8b9ef277a6c97015cf5569488fafa8b",
-        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.61/1.61-M30-Companion.apk"
+        "name": "1.62-M30-Companion-Passport.txt",
+        "size": 4065,
+        "sha256": "09565d2fbeb72e9e9e10ce1a3af18be9c665e141ff301396a41ca8a024220a08",
+        "url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion-Passport.txt"
       }
     ],
-    "verification": "All3 public downloads exact names/bytes/SHA256 versus Drive-prepared files; release tag commit confirmed",
-    "temporary_branch_removed": true
+    "status": "published_verified",
+    "draft": false,
+    "workflow_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43897110886",
+    "workflow_success": true,
+    "verification": "All3 public downloads exact names/bytes/SHA256; public annotated tag points to code commit; workflow success and temporary branch removed",
+    "temporary_branch_removed": true,
+    "visibility": "public",
+    "tag_scheme": "v<version>"
   },
   "cleanup_1_54": {
     "date": "2026-11-12",
@@ -2408,5 +2472,129 @@
     "requires": "BLUETOOTH_CONNECT plus own CDM association. Exact MAC; OS scopes getMyAssociations to caller/user",
     "confirmation": "Accepted request is not completion: BOND_NONE or fresh successful absent snapshot only",
     "tests": "Java21 / Robolectric4.16.1 SDK36; app remains JDK17,min26/target35"
+  },
+  "cleanup_1_62": {
+    "version": "1.62",
+    "retired": "1.60",
+    "date": "2026-11-16",
+    "reason": "Normal current+previous retention after complete1.62/1.61 fresh Drive verification and public1.62 GitHub exact downloads; not a selected checkpoint",
+    "before": {
+      "apk": {
+        "id": "1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP",
+        "title": "1.60-M30-Companion.apk",
+        "mime_type": "application/vnd.android.package-archive",
+        "size": "1188841",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1res0jT_CopXGyhpntkTlpbH96giIugw4"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "source": {
+        "id": "14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa",
+        "title": "1.60-M30-Companion-SOURCE.zip",
+        "mime_type": "application/zip",
+        "size": "3249190",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "passport": {
+        "id": "16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX",
+        "title": "1.60-M30-Companion-Passport.txt",
+        "mime_type": "text/plain",
+        "size": "3831",
+        "url": null,
+        "file_or_folder": "file",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1res0jT_CopXGyhpntkTlpbH96giIugw4"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      },
+      "folder": {
+        "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
+        "title": "1.60 — Состояние Bluetooth и повторное сопряжение",
+        "mime_type": "application/vnd.google-apps.folder",
+        "size": null,
+        "url": null,
+        "file_or_folder": "folder",
+        "created_time": null,
+        "modified_time": null,
+        "parent_ids": [
+          "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+        ],
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    },
+    "children": [
+      {
+        "id": "16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX",
+        "title": "1.60-M30-Companion-Passport.txt",
+        "mime_type": "text/plain",
+        "size": "3831",
+        "url": "https://drive.google.com/file/d/16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX/view?usp=drivesdk",
+        "display_url": "https://drive.google.com/file/d/16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX/view?usp=drivesdk",
+        "file_or_folder": "file",
+        "created_time": "2026-11-16T12:11:49.817Z",
+        "modified_time": "2026-11-16T12:11:49.817Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": false,
+        "permissions": null,
+        "source_visibility_status": "not_shared"
+      },
+      {
+        "id": "1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP",
+        "title": "1.60-M30-Companion.apk",
+        "mime_type": "application/vnd.android.package-archive",
+        "size": "1188841",
+        "url": "https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view?usp=drivesdk",
+        "display_url": "https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view?usp=drivesdk",
+        "file_or_folder": "file",
+        "created_time": "2026-11-16T12:06:31.903Z",
+        "modified_time": "2026-11-16T12:06:31.903Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": false,
+        "permissions": null,
+        "source_visibility_status": "not_shared"
+      }
+    ],
+    "deleted_bytes": 4441862,
+    "completed": true
   }
 }

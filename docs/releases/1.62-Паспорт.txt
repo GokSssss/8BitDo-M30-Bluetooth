@@ -13,10 +13,15 @@ APK: 1.62-M30-Companion.apk
 SHA256: 112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62
 СертификатSHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
 APK наDrive: https://drive.google.com/file/d/1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y/view
-SOURCE: окончательные ID/размер/SHA256 — во внешнем паспорте после загрузки. Исходный ZIP неизменяемый.
+SOURCE: 1.62-M30-Companion-SOURCE.zip
+Размер: 4415071 bytes
+SHA256: 5ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa
+https://drive.google.com/file/d/1OzBBdHDz0y8uSR7mvd76wv-k6ZS1ZDar/view
+Исходный ZIP неизменяемый. Внутренний паспорт/индекс в ZIP — снимки до получения собственного ID; этот внешний паспорт содержит окончательные ссылки.
 Папка: https://drive.google.com/drive/folders/16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg
 Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
 Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
-GitHub v1.62/Pre-release: https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62 (публикация готовится).
+GitHub v1.62/Pre-release: https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62 (выпуск Pre-release).
+Тег v1.62 указывает код: a1a9e14a39e963a93771f544c0f34b090d1519c4.
 Сборка: JDK17/Gradle8.11.1/SDK35 + официальный SDK37 jar дляpublic API36/API37helper. ДляAPI36headlessтестов Java21, M30_TEST_JAVA_HOME. Ключи/пароли/SDKstubs вSOURCE/GitHub не входят. Восстановление по README/docs/DEVELOPMENT.md.
 Публичный источник API: https://developer.android.com/reference/android/companion/CompanionDeviceManager#removeBond(int)

@@ -1,4 +1,6 @@
 20База! — правила ведения проекта 20 / M30 Companion
+Текущий проверочный выпуск1.62/code63; предыдущий1.61. https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62
+
 Действует с 27.10.2026. Читать перед каждой задачей и каждым выпуском.
 Прямые актуальные указания владельца имеют приоритет. Изменения договорённостей вносить в этот файл и рабочие инструкции проекта.
 
@@ -370,3 +372,12 @@ true от removeBond означает только принятый запрос
 Общая редакция правил15Nov проверена: modifiedTime2026-11-15T07:53:46.300Z; прежняя ссылка на12Nov — историческая. Новый ключ не создаётся, подпись12Nov восстанавливается с GoogleDrive. Публикация1.62/code63 поверх1.61, APK/SOURCE неизменяемые с одинаковыми ASCII именами наDrive/GitHub. После проверки текущей1.62/предыдущей1.61 обычная очистка неключевой1.60 только наDrive; protected1.54/1.47 и GitHubистория сохраняются. Подробные результаты проверок/ID добавляются после фактической публикации.
 
 1.62 — результаты фактической сборки: M30 Companion1.62/code63,16Nov2026.26pure host suites and34headless Android tests PASS(API28/API35/API36,NATIVE Skia;12nativeforget/14bond/8UI). Signed build/lint/instrumentation compile PASS;0errors/73warnings. Physical controller/radio untested. Same stable cert12Nov restored fromDrive and used; update over1.61. API36 tests run onJava21; app buildJDK17/target35/min26 unchanged.
+
+16.11.2026 /1.62 — публикация и резерв фактически проверены.
+Текущий полный1.62, предыдущий полный1.61. APK/SOURCE/Passport скачаны сDrive и сверены размером/SHA256/ZIP; обе подписи прежние. Все3 публичных GitHub файла1.62 скачаны и совпали побайтно; v1.62 → a1a9e14a39e963a93771f544c0f34b090d1519c4. ReleaseID447226192, Pre-release, workflow success: https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43897110886. Временная публикационная ветка удалена, теги/бинарники/SOURCE неизменяемы.
+Папка1.62: https://drive.google.com/drive/folders/16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg
+APK: https://drive.google.com/file/d/1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y/view ; 1021377 bytes; SHA256112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62
+SOURCE: https://drive.google.com/file/d/1OzBBdHDz0y8uSR7mvd76wv-k6ZS1ZDar/view ; 4415071 bytes; SHA2565ee934bbb72cf5fca45fa7944b962e82195a3fc8037b72889eb8bc071b960faa
+Паспорт: https://drive.google.com/file/d/1A89WGbQoirqf9hdBck-fJjxzqsPffsQw/view
+GitHub: https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62
+По правилам после этих проверок удалён неключевой комплект1.60 наDrive (4441862bytes:APK/SOURCE/Passport; затем пустая папка). Parents и2children проверены до удаления, пустота — перед снятием папки. История1.60/patch/logs иGitHub v1.60 сохранены; ключевые1.54/1.47 и прежние защищённые точки не тронуты. Подпись12Nov и фактические параметры остаются вСборка и подпись с теми жеID. Нового ключа нет. √ не добавлен из-за исторических пробелов восстановления1.27/1.29. Общие правила15Nov прочитаны и учтены, но наличие комплектов не объявляет физический M30 проверенным.
