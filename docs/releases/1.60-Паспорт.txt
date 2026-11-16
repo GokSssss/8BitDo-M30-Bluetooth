@@ -14,9 +14,13 @@ Off/нет разрешения не считаются удалением па�
 APK: https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view
 Размер: 1188841bytes
 SHA256: e0f95306ffd9bc52c78d6dff85f0dae8f417488319bf1c43cffc92885656a13a
-SOURCE: окончательные ID/размер/SHA256 добавляются во внешний паспорт после загрузки. ZIP неизменяемый.
+SOURCE: https://drive.google.com/file/d/14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa/view
+Размер: 3249190bytes
+SHA256: 90af0b7b6f41ae69d2ed70d5e68d0a61f39e7baff9657b92364688f0f75e7c9e
+APK/SOURCE повторно скачаны с Диска: размер/SHA256/ZIPCRC/сертификат и точный runtime-код совпали; предыдущий1.59 APK/SOURCE/паспорт проверен. ZIP неизменяемый.
 Папка: https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4
 Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
 Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
 Восстановление: JDK17/Gradle8.11.1/SDK35 плюс официальный SDK37 android.jar для helper; прежняя инструкция в docs/history/README-before-2026-11-15.md. Ключей/паролей/SDKstubs в SOURCE нет.
-GitHub: публикация v1.60/Pre-release в GokSssss/8BitDo-M30-Bluetooth готовится; фактическая ссылка добавляется после проверки. Имена APK/SOURCE/Passport ASCII одинаковы на обоих сервисах.
+GitHub Release(Pre-release): https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.60
+Тег v1.60; коммит 5c2f2d0c7ddb4d47995869cb10ceda1090853d40. Имена APK/SOURCE/Passport ASCII одинаковы на обоих сервисах, байты/SHA256 те же. Ключи и пароли не публикуются.

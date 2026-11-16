@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-16",
+  "reason": "Current1.60 and previous1.59 verified; non-key1.58 superseded, history preserved, selected checkpoints unchanged",
+  "files": {
+    "source": {
+      "id": "1DbUTbaEvEsN4jipWyagJVpEJ9DrwpcJz",
+      "title": "1.58-M30 Companion-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "2084182",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "passport": {
+      "id": "1yysB2HW-K0AaY8DGpJG7thw96sBm5sVE",
+      "title": "1.58-M30 Companion-Паспорт.txt",
+      "mime_type": "text/plain",
+      "size": "3370",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "apk": {
+      "id": "1nxnjW0FBX69DFtkJV88RfTLZYLvHo0lq",
+      "title": "1.58-M30 Companion.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1013401",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "folder": {
+      "id": "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr",
+      "title": "1.58 — Пульт, кнопки и поиск на TV",
+      "mime_type": "application/vnd.google-apps.folder",
+      "size": null,
+      "url": null,
+      "file_or_folder": "folder",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  },
+  "bytes": 3100953,
+  "status": "deleted_after_verified_current_and_previous",
+  "folder_checked_empty_before_delete": true
+}

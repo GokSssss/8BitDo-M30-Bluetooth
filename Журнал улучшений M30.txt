@@ -438,3 +438,14 @@ GitHub явно отложен владельцем до репозитория.
 
 
 16.11.2026 / 1.60 — обновление списка после удаления пары, свежее имя при поиске, повторное сопряжение, локальное удаление метки/номера/привязки и отключение на поддерживаемом Android. Переход к отсутствующей паре в настройках убран.
+
+16.11.2026 / 1.60 — публикация завершена и проверена. APK/SOURCE свежо скачаны с Диска, размер/SHA256/ZIPCRC/сертификат/точный runtime-код совпали. Предыдущий1.59 APK/SOURCE/паспорт проверен. Новый ключ не создавался; прежние фактические параметры и ключ свежо получены и использованы, запись параметров обновлена с прежним ID и сверена raw-readback. Поверх1.59 без удаления.
+APK: https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view
+Размер 1188841bytes; SHA256 e0f95306ffd9bc52c78d6dff85f0dae8f417488319bf1c43cffc92885656a13a
+SOURCE: https://drive.google.com/file/d/14ILNz0w7Uk3zOHnLdE2XOPVA_tUiImCa/view
+Размер 3249190bytes; SHA256 90af0b7b6f41ae69d2ed70d5e68d0a61f39e7baff9657b92364688f0f75e7c9e
+Паспорт: https://drive.google.com/file/d/16ZBr-Mw8LOVDquH24K2dUxGth0AOW0ZX/view
+Папка: https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4
+GitHub: https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.60 (draftfalse/prereleasetrue, releaseID446992094). Тегv1.60 на 5c2f2d0c7ddb4d47995869cb10ceda1090853d40. Все три файла скачаны по публичным ссылкам и побайтово совпали с комплектом Диска, включая имена ASCII. Разовая задача https://github.com/GokSssss/8BitDo-M30-Bluetooth/actions/runs/43864306964 success: только проверка SHA256/тега и загрузка готовых файлов, без пересборки. Временная ветка publish-release-1.60 удалена после проверки; tag/Release/main сохранены. Ключей/паролей в репозитории и вложениях нет. Поздние ID/проверки только в живой документации и внешнем паспорте; опубликованные APK/SOURCE не переписывались.
+26host/18headless Android-тестов PASS(API28/API35), signed build/lint/instrumentation compile PASS,0errors/67warnings. Физический Android17/BT-радио не проверялся. Существующие RU/EN-каталог и история владельца15Nov сохранены и обновлены по каноническим правилам.
+После этих проверок убрана неключевая1.58 на Диске: APK1nxnjW0FBX69DFtkJV88RfTLZYLvHo0lq(1013401bytes), SOURCE1DbUTbaEvEsN4jipWyagJVpEJ9DrwpcJz(2084182bytes), паспорт1yysB2HW-K0AaY8DGpJG7thw96sBm5sVE(3370bytes) и опустевшая папка1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr. Всего3100953bytes. Назначение/parents/дети проверены до удаления, роль1.58 покрыта1.59, история/патчи/логи сохранены; выбранные1.54/1.47, прочие точки, ключи и GitHub-релизы не тронуты. Аудит docs/organization/cleanup-1.60.json.
