@@ -1,0 +1,22 @@
+M30 Companion1.60 · versionCode61 · app.m30.companion
+16.11.2026. Проверочный выпуск по сообщению владельца.
+
+ИЗМЕНЕНИЯ
+После удаления пары в Android список, метка и MAC-привязка устройства обновляются. Старый кэшированный BONDED/alias/name не блокирует новое сопряжение найденного M30. Проверка есть при открытом списке без поиска и после возвращения в приложение.
+«Удалить из приложения» очищает метку, номер и связь со слотом; Android-пару не удаляет. «Забыть в Android» открывает системные настройки только если пара ещё есть. Отсутствующая пара обновляется без бесполезного перехода.
+На Android17/API37+ при companion-доступе доступен public disconnect. SUCCESS — только отправленный запрос; реальное отключение по ACL/InputDevice. На остальных Android — системные настройки. Public removeBond в SDK37 нет; скрытых API/reflection не добавлено.
+Off/нет разрешения не считаются удалением пары; отмена нового pairing не стирает намеренную метку. Прочие устройства, глобальные профили и назначения кнопок сохранены.
+
+ПРОВЕРКИ И УСТАНОВКА
+26pure host и18headless Android-тестов PASS, API28/API35/NATIVE Skia;10Bluetooth+8UI. Signed assembleDebug/lintDebug/assembleDebugAndroidTest/testDebugUnitTest PASS,0errors/67warnings. Instrumentation скомпилирована, физическое устройство/радио/Android17 не запускались. Новые меню на снимках из тестовой среды Android.
+Поверх1.59 без удаления. Ключ12Nov свежо скачан и использован, нового ключа нет.
+Сертификат SHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+APK: https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view
+Размер: 1188841bytes
+SHA256: e0f95306ffd9bc52c78d6dff85f0dae8f417488319bf1c43cffc92885656a13a
+SOURCE: окончательные ID/размер/SHA256 добавляются во внешний паспорт после загрузки. ZIP неизменяемый.
+Папка: https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+Восстановление: JDK17/Gradle8.11.1/SDK35 плюс официальный SDK37 android.jar для helper; прежняя инструкция в docs/history/README-before-2026-11-15.md. Ключей/паролей/SDKstubs в SOURCE нет.
+GitHub: публикация v1.60/Pre-release в GokSssss/8BitDo-M30-Bluetooth готовится; фактическая ссылка добавляется после проверки. Имена APK/SOURCE/Passport ASCII одинаковы на обоих сервисах.

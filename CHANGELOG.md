@@ -4,6 +4,14 @@
 
 ## Русский
 
+### 1.60 · Пары Bluetooth и повторное сопряжение
+
+- После удаления пары в Android приложение обновляет список, метку и привязку этого устройства.
+- Старое имя из кэша больше не заменяет имя, полученное при поиске. Найденный заново M30 можно снова сопрячь.
+- Добавлено **Удалить из приложения**: очищает метку, номер и привязку к слоту. Пара Android остаётся отдельной.
+- Для подходящих версий Android добавлено отключение внутри приложения. Если пара уже удалена, приложение не отправляет искать её в настройках.
+
+
 ### 1.59 · Экран телефона и подключение
 
 - Схема геймпада целиком помещается на невысоком горизонтальном экране.
@@ -47,6 +55,14 @@
 ---
 
 ## English
+
+### 1.60 · Bluetooth pairs and re-pairing
+
+- Removing a pair in Android refreshes that device's app entry, label and slot link.
+- Cached names no longer replace freshly discovered names. A rediscovered M30 can be paired again.
+- Added **Remove from app** to clear its label, number and slot link; the Android pair is separate.
+- Added in-app disconnection on supported Android versions. Missing pairs no longer send you to settings to find a device that is already gone.
+
 
 ### 1.59 · Phone layout and connection
 

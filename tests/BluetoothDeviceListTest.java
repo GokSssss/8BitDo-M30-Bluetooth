@@ -23,7 +23,9 @@ public final class BluetoothDeviceListTest {
         list.offer(b,other.name,other.kind,12,false);check(list.section(true).size()==2&&list.section(false).size()==2,"Pair completion adds saved without hiding a discovered entry");
         list.newSearch();check(!saved.found&&!other.found&&saved.mode==1&&list.section(false).isEmpty(),"New search clears presence, retains bonds and mode");
         list.offer(b,other.name,other.kind,12,true);list.syncSaved(Collections.singleton(a));
+        check(other.alias.isEmpty(),"Forgotten system alias must be cleared");
         check(other.bond==10&&other.found&&other.action()==BluetoothDeviceList.PAIR&&list.section(false).size()==1,"Unpaired system entry found nearby remains pairable");
+        list.offer(b,"Fresh M30",BluetoothGamepadFilter.M30,10,true);list.offer(b,"Old cached M30",BluetoothGamepadFilter.M30,10,false);check(other.name.equals("Fresh M30"),"Menu/cache refresh cannot replace freshly discovered name");
         list.newSearch();check(list.get(b)==null&&list.get(a)==saved,"Unseen unpaired entries cannot survive new scan");
         check(list.offer("invalid","fake",1,12,true)==null,"Invalid identity must be rejected");
         saved.mode=8;check(saved.modeCaption().equals("Режим не указан"),"Invalid mode cannot become a claim");

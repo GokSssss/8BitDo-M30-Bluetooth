@@ -7,5 +7,6 @@ import android.bluetooth.BluetoothDevice;
 @TargetApi(37)
 public final class BluetoothConnect37 {
     private BluetoothConnect37(){}
+    public static int stop(BluetoothDevice device){return device.disconnect();}
     public static int start(BluetoothDevice device){return device.connect();}
 }

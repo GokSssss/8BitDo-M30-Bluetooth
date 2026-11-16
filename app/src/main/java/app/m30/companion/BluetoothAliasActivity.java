@@ -14,11 +14,11 @@ import android.widget.*;
 
 /** System action first; a persistent alternative is enabled only after explicit user consent. */
 public final class BluetoothAliasActivity extends Activity {
-    static final String OPERATION="operation",CONNECT="connect";
+    static final String OPERATION="operation",CONNECT="connect",DISCONNECT="disconnect";
     private static final int CONFIRM=1,PERMISSION=2;
     private String address,systemName,draft,screen="name",reason="";
     private int owner=-1;
-    private boolean connect,done;
+    private boolean connect,disconnect,done;
     private CompanionDeviceManager manager;
     private BluetoothDevice device;
     private AlertDialog prompt;
@@ -29,21 +29,22 @@ public final class BluetoothAliasActivity extends Activity {
     static boolean supported(Context c){return Build.VERSION.SDK_INT>=31&&c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP);}
     static boolean connectSupported(Context c){return Build.VERSION.SDK_INT>=37&&c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP);}
     @Override public void onCreate(Bundle saved){
-        super.onCreate(saved);address=getIntent().getStringExtra("address");systemName=getIntent().getStringExtra("name");owner=getIntent().getIntExtra("owner",-1);connect=CONNECT.equals(getIntent().getStringExtra(OPERATION));if(systemName==null)systemName="M30";draft=systemName;
+        super.onCreate(saved);address=getIntent().getStringExtra("address");systemName=getIntent().getStringExtra("name");owner=getIntent().getIntExtra("owner",-1);connect=CONNECT.equals(getIntent().getStringExtra(OPERATION));disconnect=DISCONNECT.equals(getIntent().getStringExtra(OPERATION));if(systemName==null)systemName="M30";draft=systemName;
         if(address==null||!BluetoothAdapter.checkBluetoothAddress(address)){new FocusDialogBuilder(this).setTitle("Устройство недоступно").setMessage("Обновите список Bluetooth и выберите устройство снова.").setPositiveButton("Закрыть",(d,w)->finish()).setOnCancelListener(d->finish()).show();return;}
-        setResult(RESULT_CANCELED,new Intent().putExtra(OPERATION,connect?CONNECT:"rename").putExtra("address",address));
+        setResult(RESULT_CANCELED,new Intent().putExtra(OPERATION,operation()).putExtra("address",address));
         if(saved!=null){screen=saved.getString("screen","name");draft=saved.getString("draft",systemName);reason=saved.getString("reason","");labelDraft=saved.getBundle("local_draft");}
         if(screen.equals("local")){showLocalLabel();return;}
         if(screen.equals("offer")){offerAlternative(reason);return;}
-        if(connect&&BluetoothCompatibility.external(this)){openExternal();return;}
-        if(!connect&&BluetoothCompatibility.labels(this)){showLocalLabel();return;}
+        if((connect||disconnect)&&BluetoothCompatibility.external(this)){openExternal();return;}
+        if(!connect&&!disconnect&&BluetoothCompatibility.labels(this)){showLocalLabel();return;}
         if(saved==null&&getIntent().getBooleanExtra("alternative",false)){offerAlternative("Подключение выбранного M30 пока не подтверждено. Можно использовать системные настройки Bluetooth.");return;}
-        if((connect?BluetoothActionPolicy.connect(Build.VERSION.SDK_INT,getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),true,false,false):BluetoothActionPolicy.rename(Build.VERSION.SDK_INT,getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),false))==BluetoothActionPolicy.UNAVAILABLE){offerAlternative(connect?"На этом Android подключение сохранённого геймпада из приложения недоступно.":"На этом устройстве переименование в Bluetooth из приложения недоступно.");return;}
+        if((disconnect?BluetoothActionPolicy.disconnect(Build.VERSION.SDK_INT,getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),false):connect?BluetoothActionPolicy.connect(Build.VERSION.SDK_INT,getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),true,false,false):BluetoothActionPolicy.rename(Build.VERSION.SDK_INT,getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),false))==BluetoothActionPolicy.UNAVAILABLE){offerAlternative(disconnect?"На этом Android отключение геймпада из приложения недоступно.":connect?"На этом Android подключение сохранённого геймпада из приложения недоступно.":"На этом устройстве переименование в Bluetooth из приложения недоступно.");return;}
         if(screen.equals("permission"))return; // Android will return the outstanding permission result.
         if(screen.equals("confirming")){if(prepareDevice())handler.postDelayed(timeout,90_000);return;}
-        if(screen.equals("associating")||connect){begin();return;}
+        if(screen.equals("associating")||connect||disconnect){begin();return;}
         showName();
     }
+    private String operation(){return disconnect?DISCONNECT:connect?CONNECT:"rename";}
     private int dp(int v){return Math.round(v*getResources().getDisplayMetrics().density);}
     private void dismiss(){nameField=null;if(prompt!=null){prompt.dismiss();prompt=null;}}
     private void showName(){
@@ -54,8 +55,9 @@ public final class BluetoothAliasActivity extends Activity {
     }
     private boolean prepareDevice(){
         if(Build.VERSION.SDK_INT>=31&&checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)!=PackageManager.PERMISSION_GRANTED){offerAlternative("Android не предоставил доступ к Bluetooth.");return false;}
-        try{BluetoothManager bluetooth=getSystemService(BluetoothManager.class);BluetoothAdapter adapter=bluetooth==null?null:bluetooth.getAdapter();manager=getSystemService(CompanionDeviceManager.class);if(adapter==null||!adapter.isEnabled()||manager==null){offerAlternative("Bluetooth выключен или системный доступ недоступен.");return false;}device=adapter.getRemoteDevice(address);if(device.getBondState()!=BluetoothDevice.BOND_BONDED){offerAlternative("Сначала нужно подтвердить сопряжение с этим M30.");return false;}return true;}catch(SecurityException error){offerAlternative("Android не разрешил доступ к Bluetooth.");return false;}catch(RuntimeException error){offerAlternative("Не удалось обратиться к выбранному устройству Bluetooth.");return false;}
+        try{BluetoothManager bluetooth=getSystemService(BluetoothManager.class);BluetoothAdapter adapter=bluetooth==null?null:bluetooth.getAdapter();manager=getSystemService(CompanionDeviceManager.class);if(adapter==null||!adapter.isEnabled()||manager==null){offerAlternative("Bluetooth выключен или системный доступ недоступен.");return false;}device=adapter.getRemoteDevice(address);java.util.Set<BluetoothDevice> saved=BluetoothBondMemory.read(this,adapter);if(saved==null){offerAlternative("Не удалось проверить пары Android. Проверьте доступ к Bluetooth.");return false;}boolean bonded=false;if(saved!=null)for(BluetoothDevice d:saved)if(address.equals(d.getAddress()))bonded=true;if(!bonded){if(connect||disconnect)missingPair();else offerAlternative("Сначала нужно подтвердить сопряжение с этим M30.");return false;}return true;}catch(SecurityException error){offerAlternative("Android не разрешил доступ к Bluetooth.");return false;}catch(RuntimeException error){offerAlternative("Не удалось обратиться к выбранному устройству Bluetooth.");return false;}
     }
+    private void missingPair(){dismiss();screen="missing";prompt=new FocusDialogBuilder(this).setTitle("Пара больше не сохранена").setMessage("Устройства уже нет в парах Android. Включите PAIR на M30, найдите его и выполните новое сопряжение.").setPositiveButton("Закрыть",(d,w)->finish()).setOnCancelListener(d->finish()).show();}
     private void begin(){
         dismiss();screen="associating";
         if(Build.VERSION.SDK_INT>=31&&checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)!=PackageManager.PERMISSION_GRANTED){screen="permission";requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT},PERMISSION);return;}
@@ -73,19 +75,20 @@ public final class BluetoothAliasActivity extends Activity {
         if(!operating())return;
         if(checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)!=PackageManager.PERMISSION_GRANTED){offerAlternative("Доступ к Bluetooth отозван.");return;}
         try{
-            if(connect){if(Build.VERSION.SDK_INT<37){offerAlternative("На этом Android подключение из приложения недоступно.");return;}int result=BluetoothConnect37.start(device);if(result!=BluetoothStatusCodes.SUCCESS){offerAlternative("Android не начал подключение выбранного M30.");return;}done=true;setResult(RESULT_OK,new Intent().putExtra(OPERATION,connect?CONNECT:"rename").putExtra("address",address));Toast.makeText(this,"Запрос подключения отправлен. Нажмите кнопку на M30 для проверки.",Toast.LENGTH_LONG).show();finish();}
-            else{if(Build.VERSION.SDK_INT<31){offerAlternative("На этом Android переименование в Bluetooth недоступно.");return;}int result=device.setAlias(draft);if(result==BluetoothStatusCodes.SUCCESS&&draft.equals(device.getAlias())){done=true;setResult(RESULT_OK,new Intent().putExtra(OPERATION,connect?CONNECT:"rename").putExtra("address",address));Toast.makeText(this,"Имя в Bluetooth: "+draft,Toast.LENGTH_LONG).show();finish();}else offerAlternative("Android не подтвердил новое имя Bluetooth.");}
+            if(disconnect){if(Build.VERSION.SDK_INT<37){offerAlternative("На этом Android отключение из приложения недоступно.");return;}int result=BluetoothConnect37.stop(device);if(result!=BluetoothStatusCodes.SUCCESS){offerAlternative("Android не начал отключение выбранного M30.");return;}done=true;setResult(RESULT_OK,new Intent().putExtra(OPERATION,operation()).putExtra("address",address));Toast.makeText(this,"Запрос отключения отправлен Android.",Toast.LENGTH_LONG).show();finish();}
+            else if(connect){if(Build.VERSION.SDK_INT<37){offerAlternative("На этом Android подключение из приложения недоступно.");return;}int result=BluetoothConnect37.start(device);if(result!=BluetoothStatusCodes.SUCCESS){offerAlternative("Android не начал подключение выбранного M30.");return;}done=true;setResult(RESULT_OK,new Intent().putExtra(OPERATION,operation()).putExtra("address",address));Toast.makeText(this,"Запрос подключения отправлен. Нажмите кнопку на M30 для проверки.",Toast.LENGTH_LONG).show();finish();}
+            else{if(Build.VERSION.SDK_INT<31){offerAlternative("На этом Android переименование в Bluetooth недоступно.");return;}int result=device.setAlias(draft);if(result==BluetoothStatusCodes.SUCCESS&&draft.equals(device.getAlias())){done=true;setResult(RESULT_OK,new Intent().putExtra(OPERATION,operation()).putExtra("address",address));Toast.makeText(this,"Имя в Bluetooth: "+draft,Toast.LENGTH_LONG).show();finish();}else offerAlternative("Android не подтвердил новое имя Bluetooth.");}
         }catch(SecurityException error){offerAlternative("Android запретил это действие из приложения.");}catch(RuntimeException error){offerAlternative("Не удалось выполнить действие через Bluetooth.");}
     }
     private void offerAlternative(String message){
         if(done||isFinishing()||isDestroyed())return;handler.removeCallbacks(timeout);dismiss();screen="offer";reason=message;
-        LinearLayout form=new LinearLayout(this);form.setOrientation(LinearLayout.VERTICAL);form.setPadding(dp(16),0,dp(16),dp(4));TextView detail=new TextView(this);detail.setText(message);detail.setTextSize(14);form.addView(detail);CheckBox use=new CheckBox(this);use.setText(connect?"Использовать настройки Bluetooth":"Использовать метки в приложении");use.setTextSize(14);use.setMinHeight(dp(48));use.setTag(R.id.navigation_key,"bt:enable-alternative");form.addView(use);
-        prompt=new FocusDialogBuilder(this).setTitle(connect?"Другой способ подключения":"Другой способ переименования").setView(form).setPositiveButton("Продолжить",(d,w)->{BluetoothCompatibility.set(this,connect?BluetoothCompatibility.EXTERNAL:BluetoothCompatibility.LABELS,true);if(connect)openExternal();else showLocalLabel();}).setNegativeButton("Отмена",(d,w)->finish()).setOnCancelListener(d->finish()).show();FocusDialogBuilder.confirmation(prompt,use);
+        LinearLayout form=new LinearLayout(this);form.setOrientation(LinearLayout.VERTICAL);form.setPadding(dp(16),0,dp(16),dp(4));TextView detail=new TextView(this);detail.setText(message);detail.setTextSize(14);form.addView(detail);CheckBox use=new CheckBox(this);use.setText((connect||disconnect)?"Использовать настройки Bluetooth":"Использовать метки в приложении");use.setTextSize(14);use.setMinHeight(dp(48));use.setTag(R.id.navigation_key,"bt:enable-alternative");form.addView(use);
+        prompt=new FocusDialogBuilder(this).setTitle(disconnect?"Другой способ отключения":connect?"Другой способ подключения":"Другой способ переименования").setView(form).setPositiveButton("Продолжить",(d,w)->{BluetoothCompatibility.set(this,(connect||disconnect)?BluetoothCompatibility.EXTERNAL:BluetoothCompatibility.LABELS,true);if(connect||disconnect)openExternal();else showLocalLabel();}).setNegativeButton("Отмена",(d,w)->finish()).setOnCancelListener(d->finish()).show();FocusDialogBuilder.confirmation(prompt,use);
     }
     private void showLocalLabel(){
         dismiss();screen="local";String suggested=draft!=null&&!draft.equals(systemName)?draft:"";prompt=DeviceLabelEditor.show(this,address,owner,suggested,labelDraft,()->Toast.makeText(this,"Метка сохранена в приложении",Toast.LENGTH_SHORT).show());prompt.setOnDismissListener(d->{if(screen.equals("local")&&!isChangingConfigurations()){done=true;finish();}});
     }
-    private void openExternal(){dismiss();screen="external";String text="В Bluetooth выберите «"+systemName+"» ("+address.substring(9)+") и нажмите «Подключить».";Toast.makeText(this,text,Toast.LENGTH_LONG).show();try{startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));setResult(RESULT_OK,new Intent().putExtra(OPERATION,connect?CONNECT:"rename").putExtra("address",address));}catch(ActivityNotFoundException error){Toast.makeText(this,"Системные настройки Bluetooth недоступны",Toast.LENGTH_LONG).show();}done=true;finish();}
+    private void openExternal(){dismiss();screen="external";String text="В Bluetooth выберите «"+systemName+"» ("+address.substring(9)+") и нажмите «"+(disconnect?"Отключить":"Подключить")+"».";Toast.makeText(this,text,Toast.LENGTH_LONG).show();try{startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));setResult(RESULT_OK,new Intent().putExtra(OPERATION,operation()).putExtra("address",address));}catch(ActivityNotFoundException error){Toast.makeText(this,"Системные настройки Bluetooth недоступны",Toast.LENGTH_LONG).show();}done=true;finish();}
     @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);if(nameField!=null)draft=nameField.getText().toString();if(screen.equals("local"))out.putBundle("local_draft",DeviceLabelEditor.save(prompt));out.putString("screen",screen);out.putString("draft",draft);out.putString("reason",reason);}
     @Override protected void onDestroy(){handler.removeCallbacksAndMessages(null);if(prompt!=null)prompt.setOnDismissListener(null);dismiss();super.onDestroy();}
 }

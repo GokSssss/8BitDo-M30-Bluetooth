@@ -35,6 +35,7 @@ final class BluetoothSearchController {
     static final int PERMISSIONS=51,ENABLE=52,READ_SAVED=53,DEVICE_ACTION=54;
     private BluetoothAdapter adapter;
     private final Handler handler=new Handler(Looper.getMainLooper());
+    private final Set<String> savedAddresses=new HashSet<>();
     private final Map<String,BluetoothDevice> candidates=new LinkedHashMap<>();
     private final Map<String,Button> rows=new LinkedHashMap<>();
     private final BluetoothPairingState pairing=new BluetoothPairingState();
@@ -46,7 +47,7 @@ final class BluetoothSearchController {
     private Space headerReserve;
     private AlertDialog deviceMenu,labelEditor,labelPresets,scanDialog;
     private final BluetoothControllerNames controllerNames;
-    private boolean registered,ownsDiscovery,resumed;
+    private boolean registered,ownsDiscovery,resumed,savedSnapshotValid;
     private final Runnable scanTimeout=()->finishScan("Поиск завершён. Если M30 не найден, включите PAIR и повторите.");
     private final Runnable pairTimeout=()->reconcilePair();
     private final BroadcastReceiver receiver=new BroadcastReceiver(){@Override public void onReceive(Context context,Intent intent){
@@ -63,10 +64,10 @@ final class BluetoothSearchController {
             if(BluetoothDevice.ACTION_FOUND.equals(action)&&ownsDiscovery){String name=intent.getStringExtra(BluetoothDevice.EXTRA_NAME);offer(found,name,true,false);}
             else if((BluetoothDevice.ACTION_NAME_CHANGED.equals(action)||BluetoothDevice.ACTION_ALIAS_CHANGED.equals(action))&&(ownsDiscovery||candidates.containsKey(found.getAddress())))offer(found,intent.getStringExtra(BluetoothDevice.EXTRA_NAME));
             else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)){
-                int bond=intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,BluetoothDevice.ERROR);
-                
-                if(candidates.containsKey(found.getAddress()))offer(found,null);
-                if(pairing.bondEvent(found.getAddress(),intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,BluetoothDevice.ERROR)))showPairState();
+                int bond=intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,BluetoothDevice.ERROR);String address=found.getAddress();
+                if(bond==BluetoothDevice.BOND_NONE){boolean wasSaved=savedAddresses.contains(address)||intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,BluetoothDevice.ERROR)==BluetoothDevice.BOND_BONDED;devices.bondChanged(address,bond);if(wasSaved){BluetoothBondMemory.removed(activity,address);savedAddresses.remove(address);clearWaiting(address);pairing.forget(address);handler.removeCallbacks(pairTimeout);closeDeviceMenu();status.setText("Пара удалена в Android. Включите PAIR на M30 и найдите его заново.");}else if(pairing.bondEvent(address,bond))showPairState();refreshRows();updateControls();}
+                else{if(bond==BluetoothDevice.BOND_BONDED)savedAddresses.add(address);if(candidates.containsKey(address))offer(found,null,false,bond==BluetoothDevice.BOND_BONDED);devices.bondChanged(address,bond);if(pairing.bondEvent(address,bond))showPairState();refreshRows();}
+
             }
         }catch(SecurityException error){accessLost();}
     }};
@@ -182,11 +183,12 @@ final class BluetoothSearchController {
     }
     private boolean canReadSaved(){return Build.VERSION.SDK_INT<31||activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED;}
     private void loadSaved(boolean request){
+        savedSnapshotValid=false;
         if(adapter==null||ownsDiscovery||pairing.phase()==BluetoothPairingState.PAIRING)return;
         if(!canReadSaved()){if(request)activity.requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT},READ_SAVED);return;}
         try{
             if(!adapter.isEnabled()){status.setText("Bluetooth выключен. Включите его через системные настройки или запустите поиск.");return;}
-            Set<String> bonded=new HashSet<>();for(BluetoothDevice device:adapter.getBondedDevices()){bonded.add(device.getAddress());offer(device,null,false,true);}devices.syncSaved(bonded);refreshRows();savedEmpty.setText("Сохранённых геймпадов нет.");
+            Set<BluetoothDevice> snapshot=BluetoothBondMemory.read(activity,adapter);if(snapshot==null)return;savedAddresses.clear();for(BluetoothDevice device:snapshot)savedAddresses.add(device.getAddress());devices.syncSaved(savedAddresses);savedSnapshotValid=true;for(BluetoothDevice device:snapshot)offer(device,null,false,true);if(resumed)registerBluetooth();refreshRows();savedEmpty.setText("Сохранённых геймпадов нет.");
             if(request)status.setText("Список сохранённых устройств обновлён.");updateControls();
         }catch(SecurityException error){accessLost();}
     }
@@ -208,7 +210,7 @@ final class BluetoothSearchController {
             registerBluetooth();
             if(adapter.isDiscovering()){status.setText("Уже идёт другой поиск Bluetooth. Дождитесь его завершения и повторите.");return;}
             devices.newSearch();refreshRows();
-            Set<String> saved=new HashSet<>();for(BluetoothDevice bonded:adapter.getBondedDevices()){saved.add(bonded.getAddress());offer(bonded,null,false,true);}devices.syncSaved(saved);refreshRows();
+            loadSaved(false);if(!savedSnapshotValid)return;refreshRows();
             ownsDiscovery=adapter.startDiscovery();
             if(ownsDiscovery){status.setText("Поиск… Устройства появляются по мере обнаружения.");foundEmpty.setText("Идёт поиск геймпадов рядом…");handler.postDelayed(scanTimeout,25_000);}
             else offerSystemSearch("Android не запустил поиск из приложения. Можно использовать системный Bluetooth.");
@@ -239,8 +241,10 @@ final class BluetoothSearchController {
             if(kind==BluetoothGamepadFilter.NONE&&existing!=null&&(name==null||name.isEmpty()))kind=existing.kind;
             if(kind==BluetoothGamepadFilter.NONE){devices.remove(address);refreshRows();return;}
             String clean=BluetoothGamepadFilter.cleanName(name);if(clean.isEmpty())clean=existing==null?"Геймпад без имени":existing.name;
-            BluetoothDeviceList.Entry entry=devices.offer(address,clean,kind,device.getBondState(),discovered);if(entry==null)return;
-            if(Build.VERSION.SDK_INT>=30){String alias=device.getAlias();entry.alias=alias==null?"":BluetoothGamepadFilter.cleanName(alias);}
+            int bond=savedSnapshot||savedAddresses.contains(address)?BluetoothDevice.BOND_BONDED:device.getBondState()==BluetoothDevice.BOND_BONDING?BluetoothDevice.BOND_BONDING:BluetoothDevice.BOND_NONE;
+            BluetoothDeviceList.Entry entry=devices.offer(address,clean,kind,bond,discovered);if(entry==null)return;
+            if(announcedName!=null&&!announcedName.isEmpty())entry.name=clean;
+            if(Build.VERSION.SDK_INT>=30&&entry.saved()){String alias=device.getAlias();entry.alias=alias==null?"":BluetoothGamepadFilter.cleanName(alias);}
             entry.mode=activity.getSharedPreferences("bluetooth_modes",0).getInt(entry.address,-1);
             candidates.put(entry.address,device);refreshRows();
         }catch(SecurityException error){accessLost();}
@@ -266,7 +270,7 @@ final class BluetoothSearchController {
                 if(row.getParent()!=group||group.indexOfChild(row)!=n){boolean focused=row.hasFocus();if(row.getParent() instanceof ViewGroup)((ViewGroup)row.getParent()).removeView(row);group.addView(row,Math.min(n,group.getChildCount()));if(focused)row.requestFocus();}
                 boolean match=e.saved()&&e.found;int slot=controllerNames.activeSlot(e.address);boolean connected=slot>=0;GradientDrawable bg=shape(connected?0xff18363c:match?0xff203125:0xff242424);if(connected||match)bg.setStroke(dp(connected?2:1),connected?0xff77dce5:0xff73d39b);row.setBackground(bg);
                 String detail=connected?"Подключён · Джойстик "+(slot+1):e.bond==BluetoothDevice.BOND_BONDING?"Сопряжение…":match?"Совпадение · пара сохранена":saved?"Пара сохранена":"Найден в поиске";
-                String displayName=controllerNames.label(e.address).displayName(e.displayName());
+                String displayName=e.saved()?controllerNames.label(e.address).displayName(e.displayName()):e.displayName();
                 row.setText(deviceRowText(displayName,detail,e.address.substring(9)));row.setEnabled(pairing.phase()!=BluetoothPairingState.PAIRING);
                 row.setContentDescription(displayName+". Имя в Android: "+e.displayName()+". "+detail+". "+e.address+(connected?". По вашей привязке к активному источнику ввода":""));
             }
@@ -278,7 +282,7 @@ final class BluetoothSearchController {
         if(device==null||pairing.phase()==BluetoothPairingState.PAIRING)return;
         finishScan(null);
         try{
-            offer(device,null);BluetoothDeviceList.Entry e=devices.get(device.getAddress());if(e==null)return;
+            loadSaved(false);if(!savedSnapshotValid)return;offer(device,null);BluetoothDeviceList.Entry e=devices.get(device.getAddress());if(e==null)return;
             if(e.action()==BluetoothDeviceList.WAIT){pairing.select(e.address,SystemClock.elapsedRealtime());pairing.poll(e.address,device.getBondState());registerBluetooth();showPairState();return;}
             boolean saved=e.action()==BluetoothDeviceList.SYSTEM_CONNECT;
             showDeviceMenu(e,device,saved);
@@ -292,11 +296,12 @@ final class BluetoothSearchController {
         if(!controllerNames.label(entry.address).empty()){Button local=menuButton("Метка в приложении",()->showLabelEditor(entry));local.setTag(R.id.navigation_key,"bt:local-label");menu.addView(local);}
         if(saved){
             LinearLayout row=new LinearLayout(activity);row.setBaselineAligned(false);menu.addView(row);
-            for(String command:new String[]{"Отключить","Забыть устройство"}){Button action=menuButton(command,()->{closeDeviceMenu();deviceActionInSettings(entry,command);});LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(0,dp(5),dp(4),0);row.addView(action,lp);}
+            Button disconnect=menuButton("Отключить",()->{closeDeviceMenu();disconnectDevice(entry);});disconnect.setTag(R.id.navigation_key,"bt:disconnect");Button forget=menuButton("Забыть в Android",()->{closeDeviceMenu();forgetInAndroid(entry);});forget.setTag(R.id.navigation_key,"bt:forget-system");for(Button action:new Button[]{disconnect,forget}){LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(0,dp(5),dp(4),0);row.addView(action,lp);}
             Button link=menuButton("Привязка к джойстику…",()->{closeDeviceMenu();String[] options=new String[controllerNames.linked(entry.address)?3:2];for(int n=0;n<2;n++){android.view.InputDevice source=controllerNames.source(n);options[n]="Это Джойстик "+(n+1)+" · "+(source==null?"нет источника":source.getName());}if(options.length==3)options[2]="Убрать привязку";
                 deviceMenu=new FocusDialogBuilder(activity).setTitle("Источник кнопок этого M30").setItems(options,(d,n)->{if(n==2)controllerNames.unlink(entry.address);else if(!controllerNames.bind(entry.address,n))Toast.makeText(activity,"Сначала подключите и выберите источник кнопок этого джойстика.",Toast.LENGTH_LONG).show();refreshRows();}).setNegativeButton("Отмена",null).show();});menu.addView(link);
         }
-        AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(controllerNames.label(entry.address).displayName(entry.displayName())).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;dialog.setOnDismissListener(d->{if(deviceMenu==dialog)deviceMenu=null;});
+        Button clear=menuButton("Удалить из приложения",()->confirmLocalRemoval(entry));clear.setTag(R.id.navigation_key,"bt:forget-local");menu.addView(clear);
+        AlertDialog dialog=new FocusDialogBuilder(activity).setTitle(entry.saved()?controllerNames.label(entry.address).displayName(entry.displayName()):entry.displayName()).setView(scroll).setNegativeButton("Закрыть",null).show();deviceMenu=dialog;dialog.setOnDismissListener(d->{if(deviceMenu==dialog)deviceMenu=null;});
     }
     private void showLabelEditor(BluetoothDeviceList.Entry entry){
         closeDeviceMenu();closeLabelEditor();labelEditor=DeviceLabelEditor.show(activity,entry.address,owner,"",()->{status.setText("Метка сохранена в приложении.");refreshRows();});AlertDialog current=labelEditor;current.setOnDismissListener(d->{if(labelEditor==current)labelEditor=null;});
@@ -307,9 +312,10 @@ final class BluetoothSearchController {
     }
     private void connectDevice(BluetoothDeviceList.Entry entry,BluetoothDevice device){
         if(device==null){status.setText("Устройство уже недоступно. Обновите список.");return;}
+        loadSaved(false);if(!savedSnapshotValid)return;entry.bond=savedAddresses.contains(entry.address)?BluetoothDevice.BOND_BONDED:BluetoothDevice.BOND_NONE;if(!entry.saved())entry.alias="";
         waitingAddress=entry.address;connectionDeadline=SystemClock.elapsedRealtime()+15_000;fallback.setVisibility(View.GONE);
         if(connectionChoice!=null)connectionChoice.select(entry.address,owner);
-        int assigned=controllerNames.activeSlot(entry.address);boolean confirmed=assigned>=0&&(owner<0||assigned==owner);
+        int assigned=controllerNames.activeSlot(entry.address);boolean confirmed=entry.saved()&&assigned>=0&&(owner<0||assigned==owner);
         int action=BluetoothActionPolicy.connect(Build.VERSION.SDK_INT,activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),entry.saved(),BluetoothCompatibility.external(activity),confirmed);
         if(action==BluetoothActionPolicy.CONNECTED)checkConnection();else if(action==BluetoothActionPolicy.PAIR)pair(device);else launchDeviceAction(entry,true,false);
     }
@@ -324,6 +330,26 @@ final class BluetoothSearchController {
     }
     private void closeLabelEditor(){if(labelPresets!=null){AlertDialog previous=labelPresets;labelPresets=null;previous.dismiss();}if(labelEditor!=null){AlertDialog previous=labelEditor;labelEditor=null;previous.dismiss();}}
     private void closeDeviceMenu(){if(deviceMenu!=null){AlertDialog previous=deviceMenu;deviceMenu=null;previous.dismiss();}}
+    private void clearWaiting(String address){if(waitingAddress.equals(address)){waitingAddress="";connectionActionPending=false;handler.removeCallbacks(connectionTimeout);if(fallback!=null)fallback.setVisibility(View.GONE);if(cancelConnection!=null)cancelConnection.run();}}
+    private boolean stillSaved(BluetoothDeviceList.Entry entry){
+        if(!canReadSaved()){status.setText("Разрешите доступ к Bluetooth и обновите список.");return false;}
+        if(adapter==null||!adapter.isEnabled()){status.setText("Включите Bluetooth, чтобы проверить состояние пары.");return false;}
+        loadSaved(false);if(!savedSnapshotValid)return false;if(savedAddresses.contains(entry.address))return true;
+        BluetoothBondMemory.removed(activity,entry.address);clearWaiting(entry.address);pairing.forget(entry.address);devices.bondChanged(entry.address,BluetoothDevice.BOND_NONE);refreshRows();status.setText("Этой пары уже нет в Android. Включите PAIR на M30 и выполните новое сопряжение.");return false;
+    }
+    private void disconnectDevice(BluetoothDeviceList.Entry entry){
+        if(!stillSaved(entry))return;clearWaiting(entry.address);
+        int action=BluetoothActionPolicy.disconnect(Build.VERSION.SDK_INT,activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP),BluetoothCompatibility.external(activity));
+        if(action==BluetoothActionPolicy.NATIVE)activity.startActivityForResult(new Intent(activity,BluetoothAliasActivity.class).putExtra("address",entry.address).putExtra("name",entry.displayName()).putExtra(BluetoothAliasActivity.OPERATION,BluetoothAliasActivity.DISCONNECT),DEVICE_ACTION);
+        else deviceActionInSettings(entry,"Отключить");
+    }
+    private void forgetInAndroid(BluetoothDeviceList.Entry entry){
+        if(!stillSaved(entry))return;
+        deviceMenu=new FocusDialogBuilder(activity).setTitle("Забыть пару в Android").setMessage("Android разрешает удалить эту Bluetooth-пару только в системных настройках. После удаления метка и привязка в приложении очистятся автоматически.").setPositiveButton("Открыть настройки",(d,w)->{if(stillSaved(entry))deviceActionInSettings(entry,"Забыть устройство");}).setNegativeButton("Отмена",null).show();
+    }
+    private void confirmLocalRemoval(BluetoothDeviceList.Entry entry){
+        closeDeviceMenu();deviceMenu=new FocusDialogBuilder(activity).setTitle("Удалить из приложения?").setMessage("Удалим метку, номер и привязку к слоту. Пара в настройках Android останется, если она ещё сохранена. Джойстик можно будет найти и подключить заново.").setPositiveButton("Удалить",(d,w)->{clearWaiting(entry.address);pairing.forget(entry.address);controllerNames.forget(entry.address);devices.remove(entry.address);candidates.remove(entry.address);loadSaved(false);refreshRows();status.setText("Метка и привязка удалены. Для нового поиска включите PAIR на M30.");}).setNegativeButton("Отмена",null).show();
+    }
     private void deviceActionInSettings(BluetoothDeviceList.Entry entry,String command){
         String instruction="В настройках Bluetooth выберите «"+entry.displayName()+"» ("+entry.address.substring(9)+")";
         if(!command.equals("Системные настройки Bluetooth"))instruction+=" → «"+(command.equals("Подключить устройство")?"Подключить":command)+"»";
@@ -333,7 +359,7 @@ final class BluetoothSearchController {
         if(pairing.phase()==BluetoothPairingState.PAIRING)return;
         try{
             registerBluetooth();pairing.select(device.getAddress(),SystemClock.elapsedRealtime());
-            int state=device.getBondState();
+            int state=savedAddresses.contains(device.getAddress())?BluetoothDevice.BOND_BONDED:device.getBondState()==BluetoothDevice.BOND_BONDING?BluetoothDevice.BOND_BONDING:BluetoothDevice.BOND_NONE;
             if(state==BluetoothDevice.BOND_BONDED||state==BluetoothDevice.BOND_BONDING)pairing.poll(device.getAddress(),state);
             else if(!device.createBond()){pairing.fail();status.setText("Android не начал сопряжение. Можно выбрать другой способ подключения.");fallback.setVisibility(View.VISIBLE);FocusNavigation.prepare(fallback);updateControls();return;}
             showPairState();
@@ -344,7 +370,7 @@ final class BluetoothSearchController {
         if(!resumed||pairing.phase()!=BluetoothPairingState.PAIRING)return;
         if(!canReadSaved()){accessLost();return;}
         if(adapter==null){pairing.fail();status.setText("Bluetooth недоступен. Результат сопряжения неизвестен.");updateControls();return;}
-        try{BluetoothDevice selected=adapter.getRemoteDevice(pairing.address());pairing.poll(pairing.address(),selected.getBondState());if(pairing.phase()==BluetoothPairingState.PAIRED){if(candidates.containsKey(pairing.address()))offer(selected,null);}if(pairing.expire(SystemClock.elapsedRealtime())){status.setText("Время ожидания сопряжения истекло. Повторите PAIR.");updateControls();return;}showPairState();}catch(SecurityException error){accessLost();}
+        try{BluetoothDevice selected=adapter.getRemoteDevice(pairing.address());Set<BluetoothDevice> snapshot=BluetoothBondMemory.read(activity,adapter);if(snapshot==null)return;boolean bonded=false;for(BluetoothDevice d:snapshot)if(d.getAddress().equals(pairing.address()))bonded=true;pairing.poll(pairing.address(),bonded?BluetoothDevice.BOND_BONDED:selected.getBondState()==BluetoothDevice.BOND_BONDING?BluetoothDevice.BOND_BONDING:BluetoothDevice.BOND_NONE);if(pairing.phase()==BluetoothPairingState.PAIRED)loadSaved(false);if(pairing.expire(SystemClock.elapsedRealtime())){status.setText("Время ожидания сопряжения истекло. Повторите PAIR.");updateControls();return;}showPairState();}catch(SecurityException error){accessLost();}
     }
     private void showPairState(){
         handler.removeCallbacks(pairTimeout);
@@ -371,6 +397,7 @@ final class BluetoothSearchController {
     }
     void activityResult(int request,int result){activityResult(request,result,null);}
     void activityResult(int request,int result,Intent data){
+        if(request==DEVICE_ACTION&&data!=null&&BluetoothAliasActivity.DISCONNECT.equals(data.getStringExtra(BluetoothAliasActivity.OPERATION))){loadSaved(false);status.setText(result==Activity.RESULT_OK?"Запрос отключения передан Android. Состояние обновится после ответа системы.":"Отключение отменено.");}
         if(request==DEVICE_ACTION&&data!=null&&BluetoothAliasActivity.CONNECT.equals(data.getStringExtra(BluetoothAliasActivity.OPERATION))&&waitingAddress.equals(data.getStringExtra("address"))){
             connectionActionPending=false;
             if(result==Activity.RESULT_OK){connectionDeadline=SystemClock.elapsedRealtime()+15_000;checkConnection();}

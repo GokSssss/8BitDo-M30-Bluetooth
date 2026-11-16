@@ -1,0 +1,26 @@
+PASS: press/release, repeats, simultaneous keys, focus loss, calibration conflicts, diagonal axes, deadzones, reset
+PASS: mode evidence, ambiguous IDs, selected/other source isolation, unbound keys, retained release, bounded monitoring, unknown scancodes
+PASS: keyboard-style M30, changed descriptor, explicit source, phone-source exclusion, connection-scoped mode confirmation
+PASS: two combined pages, both swipe directions, boundaries, vertical/diagonal scroll, taps
+PASS: selected-mode instructions, no stale combinations, Windows X+START, matching short/full guides, per-mode signals
+PASS: two identical controllers, stable numbering, independent simultaneous input, hidden release, reconnect, focus loss, logical-source grouping, dual swipes
+PASS: mode-specific button help, raw-code semantics, trigger axes, conditional HOME, unknown keys, local mapping and controller isolation
+PASS: model-only request, CRC reference vector, model decode, rejected/corrupt/truncated/mismatched responses
+PASS: USB runtime/boot eligibility, observed M30 Xbox identity, unrelated USB excluded
+PASS: official M30 version read packet, decimal version, unknown fields, CRC/address/status/length guards
+PASS: approved radial reference, 14 distinct callouts, no crossing leaders, action margins, separate shoulder anchors, game-only dashes
+PASS: two-section M30 DAT, immutable bytes, model/address/version bounds, truncation/overflow rejection, catalog integrity mismatch
+PASS: native command-5 read, M30 CRC, exact encrypted section, native erase/write/version/reset order, source pin, ACK validation, disconnect stops, progress never announces premature success
+PASS: firmware success requires verified reconnect, exact version persists, errors/unknown outcomes stay distinct, existing 1.29 report migration without reflashing
+PASS: universal keyboard/controller input, source isolation, repeats, neutral axes, virtual keys, unplug/focus release and bounded held state
+PASS: per-controller logical source telemetry, primary/zero battery, sibling fallback, invalid/absent battery and observed D-input identity
+PASS: direction inference, hat/XY/right-axis pairs, trigger exclusion, mirrored-signal ambiguity, chords, neutral/focus/reconnect and per-controller isolation
+PASS: remote/keyboard menu keys remain navigable; gamepad input and test keys stay separate
+PASS: gamepad-only discovery hints, explicit M30, generic candidates, keyboard/audio/phone exclusion, sanitized names, pairing correlation/cancel/resume/timeout; bonding never claims HID ready
+PASS: system-like Bluetooth sections, immediate dedup, repeat selection, mode provenance, bond refresh and scan reset
+PASS: explicit Bluetooth/slot identity, duplicate names, disconnection, mode changes, rebinding and ambiguous mappings
+PASS: app-only label/number formatting, reset, unknown values and Unicode limits
+PASS: controller auto-follow, reverse press, release/repeat/noise guards, raw tab, modal and source isolation
+PASS: requested slot 2, physical confirmation, remote/repeat/release isolation, session swap, reconnect and cancellation
+PASS: OS capabilities, explicit alternatives, new pairing, native API37 connection and confirmed-input precedence
+PASS: old-TV scan fallback, modern Nearby permissions and persistent external-search choice

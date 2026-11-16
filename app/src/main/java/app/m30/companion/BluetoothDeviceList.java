@@ -23,15 +23,16 @@ public final class BluetoothDeviceList {
     public Entry offer(String address,String name,int kind,int bond,boolean found){
         String key=key(address);if(key==null)return null;
         Entry entry=entries.get(key);if(entry==null){if(entries.size()>=64)return null;entry=new Entry(key);entries.put(key,entry);}
-        if(name!=null&&!name.isEmpty())entry.name=name;
-        entry.kind=kind;entry.bond=bond;entry.found|=found;return entry;
+        if(name!=null&&!name.isEmpty()&&(found||!entry.found||entry.name.isEmpty()))entry.name=name;
+        entry.kind=kind;entry.bond=bond;if(bond!=12)entry.alias="";entry.found|=found;return entry;
     }
+    public void bondChanged(String address,int bond){Entry e=get(address);if(e==null)return;e.bond=bond;if(bond!=12)e.alias="";if(bond==10&&!e.found)remove(address);}
     public void remove(String address){entries.remove(key(address));}
     public void clear(){entries.clear();}
     public void newSearch(){for(Entry e:new ArrayList<>(entries.values())){e.found=false;if(!e.saved()&&e.bond!=11)entries.remove(e.address);}}
     public void syncSaved(Set<String> addresses){
         Set<String> normalized=new HashSet<>();for(String address:addresses){String key=key(address);if(key!=null)normalized.add(key);}
-        for(Entry entry:new ArrayList<>(entries.values()))if(entry.saved()&&!normalized.contains(entry.address)){entry.bond=10;if(!entry.found)entries.remove(entry.address);}
+        for(Entry entry:new ArrayList<>(entries.values()))if(entry.saved()&&!normalized.contains(entry.address)){entry.bond=10;entry.alias="";if(!entry.found)entries.remove(entry.address);}
     }
     public List<Entry> section(boolean saved){
         List<Entry> result=new ArrayList<>();for(Entry e:entries.values())if(saved?e.saved():e.found)result.add(e);

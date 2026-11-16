@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "project": "20 / M30 Companion",
-  "updated": "2026-11-14",
+  "updated": "2026-11-16",
   "root": {
     "id": "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
     "url": "https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY",
@@ -9,14 +9,14 @@
   },
   "folders": {
     "current": {
+      "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
+      "name": "1.60 — Состояние Bluetooth и повторное сопряжение",
+      "url": "https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4"
+    },
+    "previous": {
       "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
       "name": "1.59 — Компактный экран и видимое подключение",
       "url": "https://drive.google.com/drive/folders/1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
-    },
-    "previous": {
-      "id": "1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr",
-      "name": "1.58 — Пульт, кнопки и поиск на TV",
-      "url": "https://drive.google.com/drive/folders/1ItRh2zuvutUjXy7YoSCQUF9qB6wYtebr"
     },
     "resources": {
       "id": "1GRRJgf9OZSetefKJQuUTZCrHMc_jebvO",
@@ -810,7 +810,7 @@
       }
     },
     "1.59": {
-      "role": "current_full_verified",
+      "role": "previous_full_verified",
       "versionCode": 60,
       "folder": {
         "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
@@ -880,6 +880,34 @@
         "parent": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
         "verification": "Exact Drive text readback PASS"
       }
+    },
+    "1.60": {
+      "role": "current_prepared_source_upload_pending",
+      "versionCode": 61,
+      "folder": {
+        "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
+        "name": "1.60 — Состояние Bluetooth и повторное сопряжение",
+        "url": "https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4"
+      },
+      "apk": {
+        "id": "1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP",
+        "name": "1.60-M30-Companion.apk",
+        "size": 1188841,
+        "sha256": "e0f95306ffd9bc52c78d6dff85f0dae8f417488319bf1c43cffc92885656a13a",
+        "url": "https://drive.google.com/file/d/1EaYQ_4PO0vSCgVW9EGNGazoi-pRBr0KP/view"
+      },
+      "source": {
+        "status": "Immutable SOURCE ID/hash recorded externally after upload"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.59 without uninstalling",
+      "github": {
+        "status": "pending",
+        "repository": "GokSssss/8BitDo-M30-Bluetooth",
+        "tag": "v1.60",
+        "prerelease": true
+      },
+      "protected": false
     }
   },
   "checkpoints": [
@@ -1085,7 +1113,7 @@
     "observed_modified_time": "2026-11-12T15:14:11.854Z"
   },
   "compliance": {
-    "date": "2026-11-14",
+    "date": "2026-11-16",
     "status": "checked_with_historical_source_gaps",
     "known_gap": "Historical selected APK 1.27/1.29 have no standalone SOURCE; retained for active recovery, not claimed full backups.",
     "mark_applied": false,
@@ -1093,23 +1121,20 @@
     "deleted_non_key_apks": 31,
     "deleted_bytes": 26195007,
     "archive_removed": true,
-    "preserved_artifacts": "Current1.59 and previous1.58 full verified; protected1.54/1.47 and selected historical/source-only checkpoints unchanged.",
+    "preserved_artifacts": "1.60 prepared,1.59 freshly verified;1.58 pending retirement after1.60 verification. Selected checkpoints unchanged.",
     "text_readback": "Rules, AGENTS, registry and both logs matched local; journal history retained.",
     "signing_gap": "New main key backed up/restored and used for1.54. Original historical private key remains unavailable; no update compatibility over1.47.",
     "github_gap": null,
-    "github_verification": "Current1.59 published/verified14Nov2026. Earlier owner deferral remains historical."
+    "github_verification": "Current1.59 published/verified14Nov2026. Earlier owner deferral remains historical.",
+    "rules_modified": "2026-11-15T07:53:46.300Z"
   },
   "source_snapshot_note": "Own archive SHA256 cannot be embedded in itself. This snapshot precedes SOURCE upload; use the live PROJECT_DRIVE_INDEX.json and passport on Drive for final artifact IDs/hashes.",
   "publication": {
-    "version": "1.59",
-    "date": "2026-11-14",
-    "timezone": "Asia/Makassar",
-    "status": "drive_and_github_verified",
-    "checks": "M30 Companion1.59/code60;14Nov2026Asia/Makassar(13NovUTC).26pure host suites PASS.8headless Android View tests PASS, Robolectric4.14.1/API28/NATIVE Skia: TV1280x720, portrait360x780+landscape640x320/fontScale1.3, landscape780x360. Signed build/lint/instrumentation compile PASS,0errors/62warnings. Physical phone/TV/Bluetooth/HID untested. Same stable cert 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, freshly restored key/parameters; update over1.58. GitHub deferred by owner.\n",
-    "new_signature_reinstall_required": false,
-    "github": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.59",
-    "verification": "Current1.59 and previous1.58 fresh downloads/hashes/CRC/certificate/passport PASS.8actual headless Android UI tests PASS incl short phones and restore; physical hardware untested. Non-key1.57 retired after verification.",
-    "github_verification": "Published prerelease, tag commit,3assets downloaded exact bytes/hashes PASS; temporary upload branch removed."
+    "version": "1.60",
+    "date": "2026-11-16",
+    "status": "prepared_pending_verification_and_github",
+    "checks": "M30 Companion1.60/code61;16Nov2026.26pure host suites PASS;18headless Android tests PASS(API28/API35), including10Bluetooth+8UI. Signed build/lint/instrumentation compile PASS,0errors/67warnings. Physical Bluetooth/Android17 not run. Same stable certificate 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, fresh Drive key/parameters restored and used; update over1.59.\n",
+    "new_signature_reinstall_required": false
   },
   "cleanup_1_35": {
     "files_deleted": 3,

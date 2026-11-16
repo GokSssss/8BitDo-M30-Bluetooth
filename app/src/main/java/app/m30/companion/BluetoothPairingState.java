@@ -27,6 +27,7 @@ public final class BluetoothPairingState {
         return true;
     }
     public boolean expire(long now){if(phase!=PAIRING||now<deadline)return false;phase=ERROR;return true;}
+    public void forget(String from){if(address.equalsIgnoreCase(from==null?"":from)){address="";phase=IDLE;deadline=0;sawBonding=false;}}
     public void fail(){if(phase==PAIRING)phase=ERROR;}
     public void restore(String selected,int savedPhase,long savedDeadline,boolean seen,long now){
         if(selected==null||!selected.matches("(?i)([0-9a-f]{2}:){5}[0-9a-f]{2}")||savedPhase<0||savedPhase>ERROR)return;

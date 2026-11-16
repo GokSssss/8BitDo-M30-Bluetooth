@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.m30.companion.BluetoothBondRegressionTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-16T12:04:57" hostname="59c1b38d05a9" time="13.285">
+  <properties/>
+  <testcase name="unpairedDiscoveryDoesNotReuseAndroidCachedAlias" classname="app.m30.companion.BluetoothBondRegressionTest" time="7.8"/>
+  <testcase name="bondRemovalUpdatesIdlePanelAndOnlyRemovedIdentityIsPurged" classname="app.m30.companion.BluetoothBondRegressionTest" time="4.184"/>
+  <testcase name="staleDisconnectMenuDoesNotOpenSettingsForMissingPair" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.229"/>
+  <testcase name="localRemovalClearsOnlyAppIdentityAndKeepsRealAndroidBond" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.462"/>
+  <testcase name="missingPermissionCannotBeMisreadAsRemovedBond" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.123"/>
+  <testcase name="cancelledNewPairKeepsIntentionalLabelAndRemainsRetryable" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.152"/>
+  <testcase name="removalWhilePausedIsReconciledFromSnapshotOnResume" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.105"/>
+  <testcase name="bluetoothOffIsUnknownAndNeverDeletesRememberedMetadata" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.034"/>
+  <testcase name="neverPairedDiscoveryLabelSurvivesUnrelatedSnapshot" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.033"/>
+  <testcase name="staleDeviceBondAndCachedNameCannotBlockNewPairing" classname="app.m30.companion.BluetoothBondRegressionTest" time="0.161"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Intent = Intent { act=android.bluetooth.device.action.BOND_STATE_CHANGED (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothControllerNames$1@2d1136ee], context=[android.app.ContextImpl@367ab0f5], intentFilter=[android.content.IntentFilter@5a5c3724]], Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@27ac3212], context=[android.app.ContextImpl@367ab0f5], intentFilter=[android.content.IntentFilter@32ed64f]]]
+Intent = Intent { act=android.bluetooth.device.action.FOUND (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@27ac3212], context=[android.app.ContextImpl@367ab0f5], intentFilter=[android.content.IntentFilter@32ed64f]]]
+Intent = Intent { act=android.bluetooth.device.action.BOND_STATE_CHANGED (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothControllerNames$1@290414b5], context=[android.app.ContextImpl@570652f0], intentFilter=[android.content.IntentFilter@4cb0eb56]], Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@7bc07b4b], context=[android.app.ContextImpl@570652f0], intentFilter=[android.content.IntentFilter@72e8793a]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=android.bluetooth.device.action.FOUND (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@70dcd380], context=[android.app.ContextImpl@6c68796e], intentFilter=[android.content.IntentFilter@78826615]]]
+Intent = Intent { act=android.bluetooth.device.action.BOND_STATE_CHANGED (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothControllerNames$1@51af3578], context=[android.app.ContextImpl@6c68796e], intentFilter=[android.content.IntentFilter@2b37654d]], Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@70dcd380], context=[android.app.ContextImpl@6c68796e], intentFilter=[android.content.IntentFilter@78826615]]]
+Intent = Intent { act=android.bluetooth.device.action.BOND_STATE_CHANGED (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothControllerNames$1@4323397a], context=[android.app.ContextImpl@607d35e6], intentFilter=[android.content.IntentFilter@2e299f8b]], Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@3d68ae5d], context=[android.app.ContextImpl@607d35e6], intentFilter=[android.content.IntentFilter@67dab863]]]
+Intent = Intent { act=android.bluetooth.device.action.FOUND (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@3d68ae5d], context=[android.app.ContextImpl@607d35e6], intentFilter=[android.content.IntentFilter@67dab863]]]
+]]></system-err>
+</testsuite>

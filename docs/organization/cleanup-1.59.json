@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-14",
+  "timezone": "Asia/Makassar",
+  "reason": "Current1.59 and previous1.58 complete verified; non-key1.57 covered by1.58; history/patches preserved",
+  "files": {
+    "folder": {
+      "id": "18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg",
+      "title": "1.57 — Переименование и совместимость Bluetooth",
+      "mime_type": "application/vnd.google-apps.folder",
+      "size": null,
+      "url": null,
+      "file_or_folder": "folder",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "source": {
+      "id": "1ITMAjBWZ13kanjUyCtCxhBkSYdje38zk",
+      "title": "1.57-M30 Companion-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "1642391",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "apk": {
+      "id": "1ALJZDuO8suBBYE1LeaBjv57sYAKMGlb9",
+      "title": "1.57-M30 Companion.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1167990",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "passport": {
+      "id": "1ZLnWCg-mymK-qdEZmKX9y-CPcBrSNJ5c",
+      "title": "1.57-M30 Companion-Паспорт.txt",
+      "mime_type": "text/plain",
+      "size": "5068",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "18m0QqT39kEmUbw8jUmSJn5Wet-wL02Hg"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  },
+  "bytes": 2815449,
+  "status": "deleted_after_verified_current_and_previous",
+  "folder_checked_empty_before_delete": true
+}

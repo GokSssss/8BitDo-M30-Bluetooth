@@ -15,6 +15,8 @@ public class BluetoothActionPolicyTest {
         check(connect(37,true,false,true,false)==EXTERNAL&&connect(26,false,true,true,false)==EXTERNAL,"Only explicit external choice bypasses native actions");
         check(connect(26,false,true,false,true)==CONNECTED,"Confirmed input must not be sent to settings just because its OS is old");
         check(connect(37,true,true,true,true)==CONNECTED,"Already connected input wins over the saved fallback choice");
+        check(disconnect(36,true,false)==UNAVAILABLE&&disconnect(37,true,false)==NATIVE,"Disconnect requires the public API37 companion path");
+        check(disconnect(37,false,false)==UNAVAILABLE&&disconnect(37,true,true)==EXTERNAL,"Disconnect respects capabilities and explicit host choice");
         System.out.println("PASS: OS capabilities, explicit alternatives, new pairing, native API37 connection and confirmed-input precedence");
     }
 }

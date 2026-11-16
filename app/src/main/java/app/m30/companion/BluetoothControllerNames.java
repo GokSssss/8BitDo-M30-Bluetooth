@@ -17,7 +17,7 @@ final class BluetoothControllerNames implements InputManager.InputDeviceListener
     private final BluetoothSlotLinks links=new BluetoothSlotLinks();
     private final Map<String,String> names=new HashMap<>();
     private final Set<String> disconnected=new HashSet<>();
-    private boolean started,receiverRegistered;
+    private boolean started,receiverRegistered,reloading;
     private final BroadcastReceiver receiver=new BroadcastReceiver(){@Override public void onReceive(Context c,Intent intent){
         BluetoothDevice d=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
         if(d!=null){if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction()))disconnected.add(d.getAddress());else if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(intent.getAction()))disconnected.remove(d.getAddress());}
@@ -35,12 +35,16 @@ final class BluetoothControllerNames implements InputManager.InputDeviceListener
     }
     private boolean allowed(){return Build.VERSION.SDK_INT<31||context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED;}
     private void reload(){
+        if(reloading)return;reloading=true;try{
         for(String a:new ArrayList<>(links.snapshot().keySet()))links.remove(a);
         for(Map.Entry<String,?> e:preferences.getAll().entrySet())if(e.getValue() instanceof String)links.restore(e.getKey(),(String)e.getValue());
         names.clear();if(!allowed())return;
         try{BluetoothManager m=context.getSystemService(BluetoothManager.class);BluetoothAdapter a=m==null?null:m.getAdapter();if(a==null||!a.isEnabled())return;
-            for(BluetoothDevice d:a.getBondedDevices()){String name=Build.VERSION.SDK_INT>=30?d.getAlias():null;if(name==null||name.isEmpty())name=d.getName();names.put(d.getAddress(),BluetoothGamepadFilter.cleanName(name==null?"Геймпад":name));}
+            Set<BluetoothDevice> snapshot=BluetoothBondMemory.read(context,a);if(snapshot==null)return;
+            for(String address:new ArrayList<>(links.snapshot().keySet()))if(!preferences.contains(address))links.remove(address);
+            for(BluetoothDevice d:snapshot){String name=Build.VERSION.SDK_INT>=30?d.getAlias():null;if(name==null||name.isEmpty())name=d.getName();names.put(d.getAddress(),BluetoothGamepadFilter.cleanName(name==null?"Геймпад":name));}
         }catch(SecurityException ignored){names.clear();}
+        }finally{reloading=false;}
     }
     InputDevice source(int slot){
         String descriptor=slots.getString("controller."+slot,slot==0?slots.getString("device",""):"");if(descriptor.isEmpty())return null;
@@ -58,13 +62,14 @@ final class BluetoothControllerNames implements InputManager.InputDeviceListener
         SharedPreferences.Editor editor=preferences.edit();for(String old:preferences.getAll().keySet())editor.remove(old);for(Map.Entry<String,String> e:links.snapshot().entrySet())editor.putString(e.getKey(),e.getValue());editor.apply();changed.run();return true;
     }
     void unlink(String address){preferences.edit().remove(address).apply();}
+    void forget(String address){BluetoothBondMemory.clear(context,address);links.remove(address);names.remove(address);disconnected.remove(address);reload();changed.run();}
     void start(){if(started)return;started=true;disconnected.clear();preferences.registerOnSharedPreferenceChangeListener(this);slots.registerOnSharedPreferenceChangeListener(this);labels.registerOnSharedPreferenceChangeListener(this);legacyModes.registerOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.registerInputDeviceListener(this,new Handler(Looper.getMainLooper()));
         IntentFilter f=new IntentFilter();f.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);f.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);f.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);f.addAction(BluetoothDevice.ACTION_NAME_CHANGED);f.addAction(BluetoothDevice.ACTION_ALIAS_CHANGED);f.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         if(allowed())try{context.registerReceiver(receiver,f,Build.VERSION.SDK_INT>=33?Context.RECEIVER_EXPORTED:0);receiverRegistered=true;}catch(SecurityException ignored){}
         reload();changed.run();
     }
     void stop(){if(!started)return;started=false;preferences.unregisterOnSharedPreferenceChangeListener(this);slots.unregisterOnSharedPreferenceChangeListener(this);labels.unregisterOnSharedPreferenceChangeListener(this);legacyModes.unregisterOnSharedPreferenceChangeListener(this);InputManager m=context.getSystemService(InputManager.class);if(m!=null)m.unregisterInputDeviceListener(this);if(receiverRegistered){context.unregisterReceiver(receiver);receiverRegistered=false;}}
-    @Override public void onSharedPreferenceChanged(SharedPreferences p,String key){if(p==slots&&key!=null&&!key.startsWith("controller.")&&!key.equals("device"))return;reload();changed.run();}
+    @Override public void onSharedPreferenceChanged(SharedPreferences p,String key){if(reloading)return;if(p==slots&&key!=null&&!key.startsWith("controller.")&&!key.equals("device"))return;reload();changed.run();}
     @Override public void onInputDeviceAdded(int id){changed.run();}
     @Override public void onInputDeviceRemoved(int id){changed.run();}
     @Override public void onInputDeviceChanged(int id){changed.run();}
