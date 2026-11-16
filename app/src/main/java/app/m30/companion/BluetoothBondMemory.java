@@ -1,6 +1,7 @@
 package app.m30.companion;
 
 import android.bluetooth.*;
+import android.companion.*;
 import android.content.*;
 import android.Manifest;
 import android.os.Build;
@@ -18,12 +19,23 @@ final class BluetoothBondMemory {
         Set<String> previous=new HashSet<>(known.getStringSet(KEY,Collections.emptySet()));
         // Existing links could only be made for a saved pair; migrate them without erasing labels on never-paired discoveries.
         for(String address:links.getAll().keySet())if(BluetoothSlotLinks.address(address)!=null)previous.add(address);
-        previous.removeAll(current);for(String address:previous)clear(context,address);
+        previous.removeAll(current);for(String address:previous){clear(context,address);clearAssociation(context,address);}
         if(!current.equals(known.getStringSet(KEY,Collections.emptySet())))known.edit().putStringSet(KEY,current).apply();
         return new HashSet<>(snapshot);
     }
     static void removed(Context context,String address){
-        clear(context,address);SharedPreferences known=context.getSharedPreferences(STORE,0);Set<String> values=new HashSet<>(known.getStringSet(KEY,Collections.emptySet()));if(values.remove(address))known.edit().putStringSet(KEY,values).apply();
+        clear(context,address);clearAssociation(context,address);SharedPreferences known=context.getSharedPreferences(STORE,0);Set<String> values=new HashSet<>(known.getStringSet(KEY,Collections.emptySet()));if(values.remove(address))known.edit().putStringSet(KEY,values).apply();
+    }
+    static int associationId(Context context,CompanionDeviceManager manager,String address){
+        if(Build.VERSION.SDK_INT<33||manager==null||BluetoothSlotLinks.address(address)==null)return -1;
+        // getMyAssociations is scoped by Android to this application and user.
+        for(AssociationInfo info:manager.getMyAssociations())if(info.getDeviceMacAddress()!=null&&address.equalsIgnoreCase(info.getDeviceMacAddress().toString()))return info.getId();return -1;
+    }
+    @SuppressWarnings("deprecation") private static void clearAssociation(Context context,String address){
+        try{CompanionDeviceManager manager=context.getSystemService(CompanionDeviceManager.class);if(manager==null)return;
+            if(Build.VERSION.SDK_INT>=33){for(AssociationInfo info:manager.getMyAssociations())if(info.getDeviceMacAddress()!=null&&address.equalsIgnoreCase(info.getDeviceMacAddress().toString()))manager.disassociate(info.getId());}
+            else for(String value:manager.getAssociations())if(address.equalsIgnoreCase(value))manager.disassociate(value);
+        }catch(RuntimeException unavailable){/* A removed pair still needs local cleanup when the companion service is absent. */}
     }
     static void clear(Context context,String address){
         if(BluetoothSlotLinks.address(address)==null)return;

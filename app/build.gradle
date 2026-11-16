@@ -7,13 +7,13 @@ android {
         applicationId (previewMode ? 'app.m30.companion.preview' : 'app.m30.companion')
         minSdk 26
         targetSdk 35
-        versionCode 62
-        versionName (previewMode ? '1.61-preview' : '1.61')
+        versionCode 63
+        versionName (previewMode ? '1.62-preview' : '1.62')
         manifestPlaceholders = [m30AppLabel: previewMode ? 'M30 Проверка' : 'M30 Companion']
         testInstrumentationRunner 'app.m30.companion.SmokeInstrumentation'
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
-    testOptions { unitTests.includeAndroidResources = true; unitTests.all { maxHeapSize = "1536m"; jvmArgs "-XX:-UseContainerSupport"; systemProperty "robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2"; ["http.proxyHost","http.proxyPort","https.proxyHost","https.proxyPort","javax.net.ssl.trustStore"].each { key -> if (System.getProperty(key)) systemProperty key, System.getProperty(key) } } }
+    testOptions { unitTests.includeAndroidResources = true; unitTests.all { maxHeapSize = "1536m"; if (System.getenv("M30_TEST_JAVA_HOME")) executable = "${System.getenv('M30_TEST_JAVA_HOME')}/bin/java"; jvmArgs "-XX:-UseContainerSupport"; systemProperty "robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2"; ["http.proxyHost","http.proxyPort","https.proxyHost","https.proxyPort","javax.net.ssl.trustStore"].each { key -> if (System.getProperty(key)) systemProperty key, System.getProperty(key) } } }
     // Stable main key is explicitly approved and backed up on Drive; never auto-generate a debug key.
     def m30Store = System.getenv(previewMode ? 'M30_PREVIEW_SIGNING_STORE' : 'M30_SIGNING_STORE')
     signingConfigs {
@@ -29,7 +29,7 @@ android {
     buildTypes { debug { signingConfig m30Store ? signingConfigs.original : null } }
 }
 
-// Keep the established SDK35 app target. Isolate the public API37 call behind a runtime guard.
+// Keep the established SDK35 app target. Isolate the public API36/API37 calls behind a runtime guard.
 def bluetooth37Compile = tasks.register('compileBluetooth37', JavaCompile) {
     source = fileTree('src/api37/java') { include '**/*.java' }
     classpath = files(System.getenv('M30_ANDROID37_JAR') ?: "${android.sdkDirectory}/platforms/android-37.0/android.jar")
@@ -44,4 +44,4 @@ def bluetooth37Jar = tasks.register('bluetooth37Jar', Jar) {
 }
 dependencies { implementation files(bluetooth37Jar) }
 
-dependencies { testImplementation "junit:junit:4.13.2"; testImplementation "org.robolectric:robolectric:4.14.1" }
+dependencies { testImplementation "junit:junit:4.13.2"; testImplementation "org.robolectric:robolectric:4.16.1" }

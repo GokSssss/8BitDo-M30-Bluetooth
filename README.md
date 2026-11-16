@@ -6,7 +6,7 @@
 
 Помощник для подключения и проверки геймпадов 8BitDo M30 на Android и Android TV.
 
-**[Скачать APK 1.61](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.61/1.61-M30-Companion.apk)**
+**[Скачать APK 1.62](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion.apk)**
 
 ### Что умеет
 
@@ -14,7 +14,7 @@
 - **Проверка кнопок:** подсветка на схеме, направления крестовины, коды нажатий и значения осей.
 - **Два джойстика:** отдельные профили и подписи; на широком экране обе схемы видны рядом.
 - **Схема и подписи:** собственные имена устройств и соответствие нажатий кнопкам на схеме.
-- **Управление устройствами:** единый пункт **Забыть устройство**. Пара удаляется в настройках Android, затем приложение очищает запись, метку и привязку. При отмене всё сохраняется. Отключение внутри приложения доступно на поддерживаемых версиях Android.
+- **Управление устройствами:** единый пункт **Забыть устройство**. На поддерживаемом Android 16 и новее пара удаляется из приложения, иначе предлагаются настройки Bluetooth. После подтверждения удаления очищаются запись, метка, номер и привязка. При отмене всё сохраняется. Отключение внутри приложения доступно на поддерживаемых версиях Android.
 - **Справка:** режимы включения M30, сопряжение и переключение крестовины.
 - **Информация:** версия приложения, прошивка и заряд при наличии данных.
 
@@ -22,13 +22,13 @@
 
 Снимки из тестовой среды Android.
 
-![Меню устройства](docs/validation/bluetooth-1.61/device-menu.png)
+![Меню устройства](docs/validation/bluetooth-1.62/device-menu.png)
 
 Приложение помогает проверить и подписать кнопки на схеме. Режим геймпада переключается на самом M30.
 
 Проверочный выпуск. Для Obtainium включите **Предварительные выпуски**.
 
-[Помощь](docs/USAGE.md#русский) · [История версий](CHANGELOG.md#русский) · [Файлы выпуска](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.61)
+[Помощь](docs/USAGE.md#русский) · [История версий](CHANGELOG.md#русский) · [Файлы выпуска](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62)
 
 [↑ Русский / English](#m30-companion--8bitdo-m30-bluetooth)
 
@@ -38,7 +38,7 @@
 
 A companion app for connecting and testing 8BitDo M30 controllers on Android and Android TV.
 
-**[Download APK 1.61](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.61/1.61-M30-Companion.apk)**
+**[Download APK 1.62](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/download/v1.62/1.62-M30-Companion.apk)**
 
 ### Features
 
@@ -46,7 +46,7 @@ A companion app for connecting and testing 8BitDo M30 controllers on Android and
 - **Button testing:** highlights on the controller diagram, D-pad directions, button codes and axis values.
 - **Two controllers:** separate profiles and labels; wide screens show both diagrams side by side.
 - **Diagram and labels:** name devices and match their input to buttons on the diagram.
-- **Device management:** one **Forget device** action. Remove the pair in Android settings, then the app clears its entry, label and slot link. Cancelling keeps everything. In-app disconnection is available on supported Android versions.
+- **Device management:** one **Forget device** action. On supported Android 16 and newer devices, remove the pair in the app; otherwise use the offered Bluetooth settings. Confirmed removal clears the entry, label, number and slot link. Cancelling keeps everything. In-app disconnection is available on supported Android versions.
 - **Help:** M30 startup modes, pairing and D-pad switching.
 - **Information:** app version, firmware and battery when available.
 
@@ -54,13 +54,13 @@ A companion app for connecting and testing 8BitDo M30 controllers on Android and
 
 Screenshots from an Android test environment.
 
-![Device menu](docs/validation/bluetooth-1.61/device-menu.png)
+![Device menu](docs/validation/bluetooth-1.62/device-menu.png)
 
 The app helps you test and label buttons on its diagram. Switch the controller's mode on the M30 itself.
 
 Preview release. Enable **Pre-releases** in Obtainium.
 
-[Help](docs/USAGE.md#english) · [Version history](CHANGELOG.md#english) · [Release files](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.61)
+[Help](docs/USAGE.md#english) · [Version history](CHANGELOG.md#english) · [Release files](https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62)
 
 [↑ Русский / English](#m30-companion--8bitdo-m30-bluetooth)
 

@@ -4,6 +4,12 @@
 
 ## Русский
 
+### 1.62 · Удаление пары внутри приложения
+
+- **Забыть устройство** пробует удалить пару из приложения на поддерживаемом Android 16 и новее. Если это недоступно, предлагаются настройки Bluetooth.
+- Метка, номер и привязка очищаются только после подтверждённого удаления пары. Отмена, отказ Android и отсутствие доступа сохраняют данные.
+- Удаление в настройках Android также синхронизируется с приложением. Другой джойстик сохраняет свои данные.
+
 ### 1.61 · Одно действие для удаления устройства
 
 - Два пункта удаления заменены единым **Забыть устройство**.
@@ -62,6 +68,12 @@
 ---
 
 ## English
+
+### 1.62 · In-app pair removal
+
+- **Forget device** tries in-app pair removal on supported Android 16 and newer devices. Bluetooth settings are offered when unavailable.
+- The label, number and slot link are cleared only after removal is confirmed. Cancellation, Android refusal or lost access keeps the data.
+- Removal in Android settings is also synchronized with the app. The other controller keeps its data.
 
 ### 1.61 · One action to forget a device
 

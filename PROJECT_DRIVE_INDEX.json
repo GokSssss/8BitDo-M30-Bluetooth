@@ -9,14 +9,14 @@
   },
   "folders": {
     "current": {
+      "id": "16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg",
+      "name": "1.62 — Удаление пары и синхронизация меток",
+      "url": "https://drive.google.com/drive/folders/16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg"
+    },
+    "previous": {
       "id": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
       "name": "1.61 — Единое удаление устройства",
       "url": "https://drive.google.com/drive/folders/1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc"
-    },
-    "previous": {
-      "id": "1res0jT_CopXGyhpntkTlpbH96giIugw4",
-      "name": "1.60 — Состояние Bluetooth и повторное сопряжение",
-      "url": "https://drive.google.com/drive/folders/1res0jT_CopXGyhpntkTlpbH96giIugw4"
     },
     "resources": {
       "id": "1GRRJgf9OZSetefKJQuUTZCrHMc_jebvO",
@@ -960,7 +960,7 @@
       }
     },
     "1.61": {
-      "role": "current_full_verified",
+      "role": "previous_full_verified",
       "versionCode": 62,
       "folder": {
         "id": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
@@ -1031,6 +1031,24 @@
         "parent": "1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc",
         "verification": "Exact Drive readback and public GitHub bytes PASS"
       }
+    },
+    "1.62": {
+      "role": "current_publication_in_progress",
+      "versionCode": 63,
+      "folder": {
+        "id": "16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg",
+        "name": "1.62 — Удаление пары и синхронизация меток",
+        "url": "https://drive.google.com/drive/folders/16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg"
+      },
+      "apk": {
+        "id": "1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y",
+        "name": "1.62-M30-Companion.apk",
+        "size": 1021377,
+        "sha256": "112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62"
+      },
+      "certificate_sha256": "9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e",
+      "install": "Update over1.61 without uninstalling",
+      "protected": false
     }
   },
   "checkpoints": [
@@ -1232,8 +1250,8 @@
   "general_rules": {
     "id": "1PC7jbtXP9HRTi1C8t3JTG8xc_Y-F9H_z",
     "url": "https://drive.google.com/file/d/1PC7jbtXP9HRTi1C8t3JTG8xc_Y-F9H_z/view",
-    "edition": "2026-11-12",
-    "observed_modified_time": "2026-11-12T15:14:11.854Z"
+    "edition": "2026-11-15",
+    "observed_modified_time": "2026-11-15T07:53:46.300Z"
   },
   "compliance": {
     "date": "2026-11-16",
@@ -1251,15 +1269,13 @@
     "github_verification": "Current1.61 verified16Nov, exact names and bytes on both services.",
     "rules_modified": "2026-11-15T07:53:46.300Z"
   },
-  "source_snapshot_note": "Own archive SHA256 cannot be embedded in itself. This snapshot precedes SOURCE upload; use the live PROJECT_DRIVE_INDEX.json and passport on Drive for final artifact IDs/hashes.",
+  "source_snapshot_note": "SOURCE frozen before its own Drive ID/hash and final publication/cleanup; external Passport/liveindex hold final verified links. Never repack a published SOURCE.",
   "publication": {
-    "version": "1.61",
+    "version": "1.62",
     "date": "2026-11-16",
-    "status": "drive_and_github_verified",
-    "checks": "M30 Companion1.61/code62;16Nov2026.26pure host suites PASS;22headless Android tests PASS(API28/API35,NATIVE Skia;14Bluetooth+8UI). Signed build/lint/instrumentation compile PASS,0errors/69warnings. Physical M30/radio not run. Same stable cert 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e, fresh Drive key/parameters restored and used. Update over1.60.\n",
-    "new_signature_reinstall_required": false,
-    "github_release_url": "https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.61",
-    "verification": "Current1.61/previous1.60 complete verified; all3 public GitHub downloads exact names/bytes/SHA256.22Android+26host PASS; physical radio untested."
+    "status": "in_progress",
+    "checks": "M30 Companion1.62/code63,16Nov2026.26pure host suites and34headless Android tests PASS(API28/API35/API36,NATIVE Skia;12nativeforget/14bond/8UI). Signed build/lint/instrumentation compile PASS;0errors/73warnings. Physical controller/radio untested. Same stable cert12Nov restored fromDrive and used; update over1.61. API36 tests run onJava21; app buildJDK17/target35/min26 unchanged.",
+    "new_signature_reinstall_required": false
   },
   "cleanup_1_35": {
     "files_deleted": 3,
@@ -2384,5 +2400,13 @@
     "bytes": 3648141,
     "status": "deleted_after_verified_current_and_previous",
     "folder_checked_empty_before_delete": true
+  },
+  "build_api36": {
+    "public_api": "CompanionDeviceManager.removeBond(int)",
+    "introduced_api": 36,
+    "compile_bridge": "Official SDK37 android.jar, no stubs packaged",
+    "requires": "BLUETOOTH_CONNECT plus own CDM association. Exact MAC; OS scopes getMyAssociations to caller/user",
+    "confirmation": "Accepted request is not completion: BOND_NONE or fresh successful absent snapshot only",
+    "tests": "Java21 / Robolectric4.16.1 SDK36; app remains JDK17,min26/target35"
   }
 }

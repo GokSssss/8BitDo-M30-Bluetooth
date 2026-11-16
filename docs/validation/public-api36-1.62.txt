@@ -1,0 +1,43 @@
+Official Android SDK37 stub confirms public method introduced in Android16/API36.
+https://developer.android.com/reference/android/companion/CompanionDeviceManager#removeBond(int)
+Compiled from "CompanionDeviceManager.java"
+public final class android.companion.CompanionDeviceManager {
+  public static final java.lang.String EXTRA_ASSOCIATION;
+  public static final java.lang.String EXTRA_DEVICE;
+  public static final int FLAG_AIRPLANE_MODE;
+  public static final int FLAG_CALL_METADATA;
+  public static final int FLAG_TASK_CONTINUITY;
+  public static final int FLAG_UNIVERSAL_MODES;
+  public static final int RESULT_CANCELED;
+  public static final int RESULT_DISCOVERY_TIMEOUT;
+  public static final int RESULT_INTERNAL_ERROR;
+  public static final int RESULT_OK;
+  public static final int RESULT_SECURITY_ERROR;
+  public static final int RESULT_USER_REJECTED;
+  android.companion.CompanionDeviceManager();
+  public void associate(android.companion.AssociationRequest, android.companion.CompanionDeviceManager$Callback, android.os.Handler);
+  public void associate(android.companion.AssociationRequest, java.util.concurrent.Executor, android.companion.CompanionDeviceManager$Callback);
+  public void attachSystemDataTransport(int, java.io.InputStream, java.io.OutputStream) throws android.companion.DeviceNotAssociatedException;
+  public android.content.IntentSender buildAssociationCancellationIntent();
+  public android.content.IntentSender buildPermissionTransferUserConsentIntent(int) throws android.companion.DeviceNotAssociatedException;
+  public android.companion.DeviceId createAndSetDeviceId(int, android.companion.DeviceId);
+  public void detachSystemDataTransport(int) throws android.companion.DeviceNotAssociatedException;
+  public void disableSystemDataSyncForTypes(int, int);
+  public void disassociate(int);
+  public void disassociate(java.lang.String);
+  public void enableSystemDataSyncForTypes(int, int);
+  public java.util.List<java.lang.String> getAssociations();
+  public java.util.List<android.companion.AssociationInfo> getMyAssociations();
+  public boolean hasNotificationAccess(android.content.ComponentName);
+  public boolean isPermissionTransferUserConsented(int);
+  public boolean isSystemDataTransportAttached(int);
+  public void notifyActionResult(int, android.companion.ActionResult);
+  public boolean removeBond(int);
+  public void requestNotificationAccess(android.content.ComponentName);
+  public void setDeviceId(int, android.companion.DeviceId);
+  public void startObservingDevicePresence(android.companion.ObservingDevicePresenceRequest);
+  public void startObservingDevicePresence(java.lang.String) throws android.companion.DeviceNotAssociatedException;
+  public void startSystemDataTransfer(int, java.util.concurrent.Executor, android.os.OutcomeReceiver<java.lang.Void, android.companion.CompanionException>) throws android.companion.DeviceNotAssociatedException;
+  public void stopObservingDevicePresence(android.companion.ObservingDevicePresenceRequest);
+  public void stopObservingDevicePresence(java.lang.String) throws android.companion.DeviceNotAssociatedException;
+}

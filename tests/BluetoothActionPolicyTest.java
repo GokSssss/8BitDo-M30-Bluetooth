@@ -4,6 +4,7 @@ import static app.m30.companion.BluetoothActionPolicy.*;
 public class BluetoothActionPolicyTest {
     private static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
     public static void main(String[] args){
+        check(forget(35,true)==EXTERNAL&&forget(36,false)==EXTERNAL&&forget(36,true)==NATIVE,"Forget uses public Android16 companion API only on eligible hosts");
         check(rename(30,true,false)==UNAVAILABLE,"Android11 cannot silently pretend to rename the OS device");
         check(rename(31,true,false)==NATIVE&&rename(37,true,false)==NATIVE,"Eligible host starts with public OS renaming");
         check(rename(35,false,false)==UNAVAILABLE,"TV without companion setup needs explicit label alternative");

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.m30.companion.BluetoothNativeForgetTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-11-16T15:26:37" hostname="59c1b38d05a9" time="6.872">
+  <properties/>
+  <testcase name="permissionDeniedBeforeNativeActionCannotCallRemoveBond" classname="app.m30.companion.BluetoothNativeForgetTest" time="3.962"/>
+  <testcase name="emptyCancelledActivityResultCannotLockPanel" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.222"/>
+  <testcase name="pendingRequestSurvivesRecreationWithoutRepeatingNativeCall" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.369"/>
+  <testcase name="refusalPreservesPairAndOffersSettings" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.245"/>
+  <testcase name="confirmedBondEventPurgesOnlyRemovedController" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.268"/>
+  <testcase name="freshSnapshotCompletesWithoutBroadcast" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.26"/>
+  <testcase name="acceptedRequestUsesExactAssociationAndDoesNotPretendSuccess" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.293"/>
+  <testcase name="missingAssociationRequiresConsentForExactAddress" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.235"/>
+  <testcase name="timeoutPreservesPairAndAllowsExplicitSystemFallback" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.298"/>
+  <testcase name="hostWithoutCompanionSetupUsesSameForgetActionWithSettings" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.216"/>
+  <testcase name="cancelledCompanionConsentDoesNotRemovePairOrMetadata" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.245"/>
+  <testcase name="lostPermissionRetainsMetadataUntilReadableSnapshot" classname="app.m30.companion.BluetoothNativeForgetTest" time="0.258"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=android.bluetooth.device.action.BOND_STATE_CHANGED (has extras) }; Matching wrappers: [Wrapper[receiver=[app.m30.companion.BluetoothControllerNames$1@12fe189e], context=[android.app.ContextImpl@4eadbb32], intentFilter=[android.content.IntentFilter@4cf2bdce]], Wrapper[receiver=[app.m30.companion.BluetoothSearchController$1@263cdbab], context=[android.app.ContextImpl@4eadbb32], intentFilter=[android.content.IntentFilter@44641d1a]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

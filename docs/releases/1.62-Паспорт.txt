@@ -1,0 +1,22 @@
+M30 Companion 1.62 / versionCode63 — 16.11.2026
+Проверочный выпуск (Pre-release).
+
+Один пункт «Забыть устройство» пробует удалить системную пару из приложения на Android16+ при поддержке companion device setup. При необходимости Android запрашивает доступ к конкретному M30. Если API/служба недоступны или система отказала, предлагаются настройки Bluetooth. Без root, Accessibility и скрытого removeBond.
+Метка, номер, legacy mode, MAC→source и собственная companion association этого адреса очищаются только после BOND_NONE/свежего успешного снимка без пары. true от API — только начало запроса. Foreground ожидание30s; при timeout данные сохраняются и предлагается Android Settings. Отмена/нет доступа/BT-off не означают удаления. Удаление вне приложения тоже синхронизируется. Другие устройства, назначения кнопок/профили остаются.
+
+Установка: поверх1.61 без удаления приложения и данных. minAndroid8/API26,target35. Тот же стабильный ключ12Nov; новый ключ не создавался. Старый1.47 использовал историческую несовместимую подпись.
+Проверки: M30 Companion1.62/code63,16Nov2026.26pure host suites and34headless Android tests PASS(API28/API35/API36,NATIVE Skia;12nativeforget/14bond/8UI). Signed build/lint/instrumentation compile PASS;0errors/73warnings. Physical controller/radio untested. Same stable cert12Nov restored fromDrive and used; update over1.61. API36 tests run onJava21; app buildJDK17/target35/min26 unchanged.
+Физический M30/Bluetooth/пульт не запускались в этой среде. На устройстве проверить удаление одного из двух одинаковых M30, отмену/отказ и повторное сопряжение со свежим именем.
+
+APK: 1.62-M30-Companion.apk
+Размер: 1021377 bytes
+SHA256: 112a8dcd9274b7e3e13d9585997faebfa22d1d398ebfcb2a3816d257e4da8f62
+СертификатSHA256: 9a3d07af4fae535ca8114995699da17aa385c3ddd305fdda25459d26ae0d028e
+APK наDrive: https://drive.google.com/file/d/1_J_2LooVNAXFMXZQxKYofRQjwbgR-V0Y/view
+SOURCE: окончательные ID/размер/SHA256 — во внешнем паспорте после загрузки. Исходный ZIP неизменяемый.
+Папка: https://drive.google.com/drive/folders/16R4dU3O4-BW1QXEpKA0_4WJh22ulA7Rg
+Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
+Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
+GitHub v1.62/Pre-release: https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.62 (публикация готовится).
+Сборка: JDK17/Gradle8.11.1/SDK35 + официальный SDK37 jar дляpublic API36/API37helper. ДляAPI36headlessтестов Java21, M30_TEST_JAVA_HOME. Ключи/пароли/SDKstubs вSOURCE/GitHub не входят. Восстановление по README/docs/DEVELOPMENT.md.
+Публичный источник API: https://developer.android.com/reference/android/companion/CompanionDeviceManager#removeBond(int)
