@@ -10,9 +10,13 @@ M30 Companion1.61 · versionCode62 · app.m30.companion
 APK: https://drive.google.com/file/d/1hpK-otX0m5hhRCDM0BNYkQ-ize578g15/view
 Размер: 1018305bytes
 SHA256: e46ce4ab6653baf5d3bb56d942348face8b9ef277a6c97015cf5569488fafa8b
-SOURCE: окончательные ID/размер/SHA256 добавляются во внешний паспорт после загрузки. ZIP неизменяемый.
+SOURCE: https://drive.google.com/file/d/1_1V1wW2F8aQNmYvhCSwQJfw1v6Ov_Vzf/view
+Размер: 3822067bytes
+SHA256: 61b9eba867fcdc1dcbe6d692f58565128abdf3096a09b77932f7707e7a4cef5c
+APK/SOURCE свежо скачаны с Диска, размер/SHA256/ZIPCRC/сертификат/точный runtime-код совпали. Предыдущий1.60 APK/SOURCE/паспорт проверен. ZIP неизменяемый.
 Папка: https://drive.google.com/drive/folders/1cRZUxJp3nE8WBGdTYSTvRNPED15QB5mc
 Проект: https://drive.google.com/drive/folders/1xpfasnpQiuKJIOZR_sKqb0012qggvoiY
 Резерв подписи: https://drive.google.com/drive/folders/1xZjcbyW-ACMsUZ7Ag2zGePqhr7HGlX2P
 Сборка: прежние JDK17/Gradle8.11.1/SDK35 плюс официальный SDK37 android.jar для helper, см. docs/history/README-before-2026-11-15.md. Ключи/пароли/SDKstubs в SOURCE не включены.
-GitHub: публикация v1.61/Pre-release в GokSssss/8BitDo-M30-Bluetooth готовится; фактическая ссылка после проверки. Имена APK/SOURCE/Passport ASCII одинаковы на обоих сервисах.
+GitHub Release(Pre-release): https://github.com/GokSssss/8BitDo-M30-Bluetooth/releases/tag/v1.61
+Тег v1.61; коммит 4dc89453d4eb0409f067e153b4e8d8bf9c3e9c08. Имена APK/SOURCE/Passport и байты/SHA256 одинаковы на обоих сервисах. Ключи/пароли не публикуются.

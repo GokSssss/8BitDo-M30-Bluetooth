@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-16",
+  "reason": "Current1.61/previous1.60 verified; non-key1.59 superseded on Drive, history and GitHub releases preserved",
+  "files": {
+    "source": {
+      "id": "1GunN8tgUHY9NMUO1eGc8ulisCf6xc7C9",
+      "title": "1.59-M30 Companion-SOURCE.zip",
+      "mime_type": "application/zip",
+      "size": "2630116",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "11LrriEm_BOK0pTaqCSTAwMcBhLxJN1Ge"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "passport": {
+      "id": "1eAcYV4dVMIDb5hrZxPys3M6qDRc75FUW",
+      "title": "1.59-M30 Companion-Паспорт.txt",
+      "mime_type": "text/plain",
+      "size": "3860",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "folder": {
+      "id": "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH",
+      "title": "1.59 — Компактный экран и видимое подключение",
+      "mime_type": "application/vnd.google-apps.folder",
+      "size": null,
+      "url": null,
+      "file_or_folder": "folder",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1xpfasnpQiuKJIOZR_sKqb0012qggvoiY"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    "apk": {
+      "id": "1S5-j6s-CgyGyXqy6F2qpyADFQ3q_hRAi",
+      "title": "1.59-M30 Companion.apk",
+      "mime_type": "application/vnd.android.package-archive",
+      "size": "1014165",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": null,
+      "parent_ids": [
+        "1JiFmAaqXnulE_C-_sqvL4O7KMv6VZBhH"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  },
+  "bytes": 3648141,
+  "status": "deleted_after_verified_current_and_previous",
+  "folder_checked_empty_before_delete": true
+}
